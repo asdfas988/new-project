@@ -7,6 +7,14 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -17,7 +25,7 @@
             padding: 20px;
             line-height: 1.6;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1600px; margin: 0 auto; }
         
         /* 头部样式 */
         .header {
@@ -41,7 +49,7 @@
         /* 网格布局 */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 30px;
             margin-bottom: 40px;
         }
@@ -66,6 +74,9 @@
             color: #5a4a42;
             font-size: 1.6em;
             font-family: 'Gochi Hand', cursive;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         /* 按钮样式 */
@@ -104,6 +115,17 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger {
+            background: linear-gradient(90deg, #ff7b6b, #d45d5d);
+            box-shadow: 3px 3px 0px #b84a4a;
+        }
+        .btn-secondary {
+            background: linear-gradient(90deg, #8a9eff, #6a82fb);
+            box-shadow: 3px 3px 0px #5a6ae0;
         }
         
         /* 输入框样式 */
@@ -209,6 +231,131 @@
             font-size: 1.1em;
         }
         
+        /* 列表样式 */
+        .item-list {
+            margin-top: 20px;
+        }
+        .item {
+            background: #fffaf5;
+            border: 2px solid #e0c9b8;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .item:hover {
+            background: #fff8f0;
+            border-color: #ff9a8b;
+        }
+        .item-content {
+            flex: 1;
+        }
+        .item-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #5a4a42;
+        }
+        .item-desc {
+            color: #7a6a62;
+            font-size: 0.95em;
+        }
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .xp-badge {
+            background: linear-gradient(90deg, #4ecdc4, #2ba69b);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        /* 富文本编辑器 */
+        .quill-editor {
+            height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #e0c9b8;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        /* 标签样式 */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .tag {
+            background: #e0f7fa;
+            color: #006064;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        /* 知识库样式 */
+        .knowledge-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .knowledge-sidebar {
+            width: 300px;
+            background: #fffaf0;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0c9b8;
+        }
+        .knowledge-content {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #e0c9b8;
+        }
+        .knowledge-tree {
+            margin-top: 20px;
+        }
+        .tree-item {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tree-item:hover {
+            background: #ffe8d6;
+        }
+        .tree-item.active {
+            background: #ffd6cc;
+            font-weight: bold;
+        }
+        .tree-children {
+            margin-left: 25px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7a6a62;
+        }
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #e0c9b8;
+        }
+        
         /* 登录面板 */
         .login-panel {
             max-width: 600px;
@@ -225,6 +372,30 @@
             flex-wrap: wrap;
         }
         
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 3px solid #5a4a42;
+        }
+        
         /* 响应式 */
         @media (max-width: 768px) {
             .header h1 { font-size: 2em; }
@@ -233,6 +404,12 @@
                 position: static;
                 justify-content: center;
                 margin-top: 20px;
+            }
+            .knowledge-container {
+                flex-direction: column;
+            }
+            .knowledge-sidebar {
+                width: 100%;
             }
         }
     </style>
@@ -294,20 +471,20 @@
                 
                 <!-- 顶部导航 -->
                 <div class="header">
-                    <h1>✏️ 智能成长手账</h1>
+                    <h1>📚 智能成长手账</h1>
                     <p>数据自动同步至云端 | 用户: {{ userEmail }}</p>
                     
                     <div class="action-buttons">
                         <button class="btn-sm" @click="syncData" :disabled="syncing">
-                            <span v-if="syncing">⌛ 同步中</span>
-                            <span v-else>🔄 同步数据</span>
+                            <span v-if="syncing"><i class="fas fa-spinner fa-spin"></i> 同步中</span>
+                            <span v-else><i class="fas fa-sync-alt"></i> 同步数据</span>
                         </button>
                         <button class="btn-sm" @click="saveData" :disabled="saving" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
-                            <span v-if="saving">💾 保存中</span>
-                            <span v-else>💾 保存</span>
+                            <span v-if="saving"><i class="fas fa-spinner fa-spin"></i> 保存中</span>
+                            <span v-else><i class="fas fa-save"></i> 保存</span>
                         </button>
                         <button class="btn-sm" @click="logout" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d);">
-                            👋 退出
+                            <i class="fas fa-sign-out-alt"></i> 退出
                         </button>
                     </div>
                 </div>
@@ -316,7 +493,7 @@
                 <div class="grid">
                     <!-- 成长状态 -->
                     <div class="card">
-                        <h2>📊 成长状态</h2>
+                        <h2><i class="fas fa-chart-line"></i> 成长状态</h2>
                         <div class="level-display">Lv. {{ playerData.level }}</div>
                         <div style="margin: 25px 0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: bold;">
@@ -331,13 +508,13 @@
                             </div>
                         </div>
                         <button class="btn" @click="addXp" style="background:linear-gradient(90deg, #ffd166, #ffb347);">
-                            ⚡ 获得 50 XP
+                            <i class="fas fa-bolt"></i> 获得 50 XP
                         </button>
                     </div>
                     
                     <!-- 数据统计 -->
                     <div class="card">
-                        <h2>📈 数据统计</h2>
+                        <h2><i class="fas fa-chart-bar"></i> 数据统计</h2>
                         
                         <div class="stat-card">
                             <div class="stat-value" style="color: #ff6b6b;">{{ stats.totalXp }}</div>
@@ -358,6 +535,269 @@
                             <div class="stat-value" style="color: #ffd166;">{{ stats.achievementCount }}</div>
                             <div class="stat-label">成就数量</div>
                         </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: #8a9eff;">{{ stats.todoCount }}</div>
+                            <div class="stat-label">待办事项</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 核心功能区 -->
+                <div class="grid">
+                    <!-- 技能树 -->
+                    <div class="card">
+                        <h2><i class="fas fa-tree"></i> 技能树</h2>
+                        <input 
+                            type="text" 
+                            v-model="newSkill.name" 
+                            class="note-input" 
+                            placeholder="技能名称"
+                        >
+                        <textarea 
+                            v-model="newSkill.description" 
+                            class="note-input" 
+                            placeholder="技能描述"
+                            rows="3"
+                        ></textarea>
+                        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                            <input 
+                                type="number" 
+                                v-model="newSkill.current_xp" 
+                                class="note-input" 
+                                placeholder="当前 XP"
+                                style="flex: 1;"
+                            >
+                            <input 
+                                type="number" 
+                                v-model="newSkill.target_xp" 
+                                class="note-input" 
+                                placeholder="目标 XP"
+                                style="flex: 1;"
+                            >
+                        </div>
+                        <button class="btn-sm" @click="addSkill" :disabled="!newSkill.name">
+                            <i class="fas fa-plus"></i> 添加技能
+                        </button>
+                        
+                        <div class="item-list">
+                            <div v-for="skill in skills" :key="skill.id" class="item">
+                                <div class="item-content">
+                                    <div class="item-title">
+                                        {{ skill.name }}
+                                        <span class="xp-badge">{{ skill.current_xp }}/{{ skill.target_xp }}</span>
+                                    </div>
+                                    <div class="item-desc">{{ skill.description }}</div>
+                                    <div class="xp-progress" style="height: 15px; margin-top: 8px;">
+                                        <div class="xp-fill" :style="{ width: Math.min(100, (skill.current_xp / skill.target_xp) * 100) + '%' }"></div>
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn-sm" @click="addSkillXp(skill.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-plus"></i> +10 XP
+                                    </button>
+                                    <button class="btn-sm btn-danger" @click="deleteSkill(skill.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 笔记系统 -->
+                    <div class="card">
+                        <h2><i class="fas fa-sticky-note"></i> 成长笔记</h2>
+                        <input 
+                            type="text" 
+                            v-model="newNote.title" 
+                            class="note-input" 
+                            placeholder="笔记标题"
+                        >
+                        <div class="quill-editor" ref="noteEditor"></div>
+                        <button class="btn-sm" @click="addNote" :disabled="!newNote.title">
+                            <i class="fas fa-plus"></i> 添加笔记
+                        </button>
+                        
+                        <div class="item-list">
+                            <div v-for="note in notes" :key="note.id" class="item">
+                                <div class="item-content">
+                                    <div class="item-title">{{ note.title }}</div>
+                                    <div class="item-desc" v-html="note.content.substring(0, 100) + '...'"></div>
+                                    <div style="font-size: 0.85em; color: #7a6a62; margin-top: 8px;">
+                                        {{ formatDate(note.created_at) }}
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    <button class="btn-sm" @click="editNote(note)" style="padding: 8px 15px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 成就系统 -->
+                    <div class="card">
+                        <h2><i class="fas fa-trophy"></i> 成就系统</h2>
+                        <input 
+                            type="text" 
+                            v-model="newAchievement.name" 
+                            class="note-input" 
+                            placeholder="成就名称"
+                        >
+                        <textarea 
+                            v-model="newAchievement.description" 
+                            class="note-input" 
+                            placeholder="成就描述"
+                            rows="3"
+                        ></textarea>
+                        <button class="btn-sm" @click="addAchievement" :disabled="!newAchievement.name">
+                            <i class="fas fa-plus"></i> 添加成就
+                        </button>
+                        
+                        <div class="item-list">
+                            <div v-for="achievement in achievements" :key="achievement.id" class="item">
+                                <div class="item-content">
+                                    <div class="item-title">
+                                        {{ achievement.name }}
+                                        <span v-if="achievement.completed" style="color: #4ecdc4; font-weight: bold;">
+                                            <i class="fas fa-check-circle"></i> 已完成
+                                        </span>
+                                        <span v-else style="color: #ff9a8b;">
+                                            <i class="fas fa-hourglass-half"></i> 进行中
+                                        </span>
+                                    </div>
+                                    <div class="item-desc">{{ achievement.description }}</div>
+                                </div>
+                                <div class="item-actions">
+                                    <button v-if="!achievement.completed" class="btn-sm" @click="completeAchievement(achievement.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-check"></i> 完成
+                                    </button>
+                                    <button class="btn-sm btn-danger" @click="deleteAchievement(achievement.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 待办事项 -->
+                    <div class="card">
+                        <h2><i class="fas fa-tasks"></i> 待办事项</h2>
+                        <input 
+                            type="text" 
+                            v-model="newTodo.content" 
+                            class="note-input" 
+                            placeholder="任务内容"
+                        >
+                        <input 
+                            type="number" 
+                            v-model="newTodo.xp_reward" 
+                            class="note-input" 
+                            placeholder="XP奖励"
+                        >
+                        <button class="btn-sm" @click="addTodo" :disabled="!newTodo.content">
+                            <i class="fas fa-plus"></i> 添加任务
+                        </button>
+                        
+                        <div class="item-list">
+                            <div v-for="todo in todos" :key="todo.id" class="item">
+                                <div class="item-content">
+                                    <div class="item-title">
+                                        {{ todo.content }}
+                                        <span class="xp-badge">+{{ todo.xp_reward }} XP</span>
+                                    </div>
+                                    <div style="font-size: 0.85em; color: #7a6a62; margin-top: 8px;">
+                                        创建于 {{ formatDate(todo.created_at) }}
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    <button v-if="!todo.completed" class="btn-sm" @click="completeTodo(todo)" style="padding: 8px 15px;">
+                                        <i class="fas fa-check"></i> 完成
+                                    </button>
+                                    <button class="btn-sm btn-danger" @click="deleteTodo(todo.id)" style="padding: 8px 15px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 知识库模块 -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2><i class="fas fa-book"></i> 知识库</h2>
+                    
+                    <div class="knowledge-container">
+                        <!-- 侧边栏目录 -->
+                        <div class="knowledge-sidebar">
+                            <h3 style="margin-bottom: 20px; color: #5a4a42;">
+                                <i class="fas fa-folder-tree"></i> 目录
+                            </h3>
+                            <button class="btn-sm" @click="showCreateDocumentModal(null)">
+                                <i class="fas fa-plus"></i> 新建文档
+                            </button>
+                            
+                            <div class="knowledge-tree">
+                                <div v-if="knowledgeDocs.length === 0" class="empty-state">
+                                    <i class="fas fa-folder-open"></i>
+                                    <p>暂无文档，点击上方按钮创建</p>
+                                </div>
+                                
+                                <template v-for="doc in knowledgeDocs" :key="doc.id">
+                                    <div 
+                                        :class="['tree-item', { active: activeDocId === doc.id }]"
+                                        @click="selectDocument(doc)"
+                                    >
+                                        <i class="fas" :class="doc.is_folder ? 'fa-folder' : 'fa-file-alt'"></i>
+                                        <span>{{ doc.title }}</span>
+                                        <div style="margin-left: auto;">
+                                            <button class="btn-sm" @click.stop="showCreateDocumentModal(doc.id)" style="padding: 4px 8px; font-size: 0.8em;">
+                                                <i class="fas" :class="doc.is_folder ? 'fa-plus' : 'fa-edit'"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <!-- 文档内容区 -->
+                        <div class="knowledge-content">
+                            <div v-if="!activeDoc" class="empty-state">
+                                <i class="fas fa-book-open"></i>
+                                <h3>欢迎使用知识库</h3>
+                                <p>请从左侧选择或创建文档</p>
+                            </div>
+                            
+                            <div v-else>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                    <h3 style="color: #5a4a42; margin: 0;">{{ activeDoc.title }}</h3>
+                                    <div>
+                                        <button class="btn-sm" @click="editKnowledgeDoc(activeDoc)">
+                                            <i class="fas fa-edit"></i> 编辑
+                                        </button>
+                                        <button class="btn-sm btn-danger" @click="deleteKnowledgeDoc(activeDoc.id)" style="margin-left: 10px;">
+                                            <i class="fas fa-trash"></i> 删除
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div v-if="activeDoc.is_folder" class="empty-state">
+                                    <i class="fas fa-folder"></i>
+                                    <p>这是一个文件夹</p>
+                                    <p style="font-size: 0.9em; margin-top: 10px;">可以在其中创建子文档</p>
+                                </div>
+                                
+                                <div v-else v-html="activeDoc.content"></div>
+                                
+                                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0c9b8; color: #7a6a62; font-size: 0.9em;">
+                                    最后更新: {{ formatDate(activeDoc.updated_at) }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -369,6 +809,41 @@
                     <p style="color: #7a6a62; margin-top: 10px; font-size: 0.9em;">
                         最后同步时间: {{ lastSyncTime }}
                     </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 知识库文档编辑模态框 -->
+        <div v-if="showKnowledgeModal" class="modal">
+            <div class="modal-content">
+                <h2 style="margin-bottom: 20px;">
+                    <i class="fas" :class="editingKnowledgeDoc.is_folder ? 'fa-folder' : 'fa-file-alt'"></i>
+                    {{ editingKnowledgeDoc.id ? '编辑' : '新建' }}文档
+                </h2>
+                
+                <input 
+                    type="text" 
+                    v-model="editingKnowledgeDoc.title" 
+                    class="note-input" 
+                    placeholder="文档标题"
+                >
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" v-model="editingKnowledgeDoc.is_folder">
+                        <span>这是一个文件夹</span>
+                    </label>
+                </div>
+                
+                <div v-if="!editingKnowledgeDoc.is_folder" class="quill-editor" ref="knowledgeEditor"></div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button class="btn" @click="saveKnowledgeDoc" :disabled="!editingKnowledgeDoc.title">
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                    <button class="btn btn-secondary" @click="showKnowledgeModal = false">
+                        <i class="fas fa-times"></i> 取消
+                    </button>
                 </div>
             </div>
         </div>
@@ -418,10 +893,58 @@
                         totalXp: 0,
                         skillCount: 0,
                         noteCount: 0,
-                        achievementCount: 0
+                        achievementCount: 0,
+                        todoCount: 0
                     },
                     
-                    lastSyncTime: '未同步'
+                    lastSyncTime: '未同步',
+                    
+                    // 技能数据
+                    skills: [],
+                    newSkill: {
+                        name: '',
+                        description: '',
+                        current_xp: 0,
+                        target_xp: 100
+                    },
+                    
+                    // 笔记数据
+                    notes: [],
+                    newNote: {
+                        title: '',
+                        content: ''
+                    },
+                    noteEditor: null,
+                    
+                    // 成就数据
+                    achievements: [],
+                    newAchievement: {
+                        name: '',
+                        description: '',
+                        completed: false
+                    },
+                    
+                    // 待办事项数据
+                    todos: [],
+                    newTodo: {
+                        content: '',
+                        xp_reward: 10,
+                        completed: false
+                    },
+                    
+                    // 知识库数据
+                    knowledgeDocs: [],
+                    activeDocId: null,
+                    activeDoc: null,
+                    showKnowledgeModal: false,
+                    editingKnowledgeDoc: {
+                        id: null,
+                        title: '',
+                        content: '',
+                        parent_id: null,
+                        is_folder: false
+                    },
+                    knowledgeEditor: null
                 };
             },
             
@@ -438,6 +961,11 @@
                     setTimeout(() => {
                         this.message = '';
                     }, 5000);
+                },
+                
+                formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
                 },
                 
                 async login() {
@@ -581,29 +1109,54 @@
                             this.playerData = playerData.data;
                         }
                         
-                        // 加载技能统计
+                        // 加载技能
                         const { data: skills } = await sb
                             .from('skills')
                             .select('*')
-                            .eq('user_id', this.userId);
+                            .eq('user_id', this.userId)
+                            .order('created_at', { ascending: false });
                         
-                        this.stats.skillCount = skills ? skills.length : 0;
+                        this.skills = skills || [];
+                        this.stats.skillCount = this.skills.length;
                         
-                        // 加载笔记统计
+                        // 加载笔记
                         const { data: notes } = await sb
                             .from('notes')
                             .select('*')
-                            .eq('user_id', this.userId);
+                            .eq('user_id', this.userId)
+                            .order('created_at', { ascending: false });
                         
-                        this.stats.noteCount = notes ? notes.length : 0;
+                        this.notes = notes || [];
+                        this.stats.noteCount = this.notes.length;
                         
-                        // 加载成就统计
+                        // 加载成就
                         const { data: achievements } = await sb
                             .from('achievements')
                             .select('*')
-                            .eq('user_id', this.userId);
+                            .eq('user_id', this.userId)
+                            .order('created_at', { ascending: false });
                         
-                        this.stats.achievementCount = achievements ? achievements.length : 0;
+                        this.achievements = achievements || [];
+                        this.stats.achievementCount = this.achievements.length;
+                        
+                        // 加载待办事项
+                        const { data: todos } = await sb
+                            .from('todos')
+                            .select('*')
+                            .eq('user_id', this.userId)
+                            .order('created_at', { ascending: false });
+                        
+                        this.todos = todos || [];
+                        this.stats.todoCount = this.todos.length;
+                        
+                        // 加载知识库文档
+                        const { data: knowledgeDocs } = await sb
+                            .from('knowledge_docs')
+                            .select('*')
+                            .eq('user_id', this.userId)
+                            .order('created_at', { ascending: true });
+                        
+                        this.knowledgeDocs = knowledgeDocs || [];
                         
                         // 计算总经验
                         this.stats.totalXp = this.playerData.xp;
@@ -662,6 +1215,497 @@
                     await this.saveData();
                 },
                 
+                // 技能相关方法
+                async addSkill() {
+                    if (!this.newSkill.name.trim()) return;
+                    
+                    try {
+                        const { data, error } = await sb
+                            .from('skills')
+                            .insert({
+                                user_id: this.userId,
+                                name: this.newSkill.name,
+                                description: this.newSkill.description,
+                                current_xp: this.newSkill.current_xp || 0,
+                                target_xp: this.newSkill.target_xp || 100
+                            })
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        
+                        this.skills.unshift(data);
+                        this.stats.skillCount++;
+                        
+                        // 重置表单
+                        this.newSkill = {
+                            name: '',
+                            description: '',
+                            current_xp: 0,
+                            target_xp: 100
+                        };
+                        
+                        this.showMessage('技能添加成功!', 'success');
+                    } catch (error) {
+                        console.error('添加技能失败:', error);
+                        this.showMessage('添加技能失败', 'error');
+                    }
+                },
+                
+                async addSkillXp(skillId) {
+                    try {
+                        const skill = this.skills.find(s => s.id === skillId);
+                        if (!skill) return;
+                        
+                        const newXp = skill.current_xp + 10;
+                        const { error } = await sb
+                            .from('skills')
+                            .update({ current_xp: newXp })
+                            .eq('id', skillId);
+                        
+                        if (error) throw error;
+                        
+                        skill.current_xp = newXp;
+                        this.showMessage('技能经验增加!', 'success');
+                        
+                        // 同时增加玩家经验
+                        this.playerData.xp += 5;
+                        this.stats.totalXp += 5;
+                        await this.saveData();
+                    } catch (error) {
+                        console.error('增加技能经验失败:', error);
+                    }
+                },
+                
+                async deleteSkill(skillId) {
+                    if (!confirm('确定要删除这个技能吗？')) return;
+                    
+                    try {
+                        const { error } = await sb
+                            .from('skills')
+                            .delete()
+                            .eq('id', skillId);
+                        
+                        if (error) throw error;
+                        
+                        this.skills = this.skills.filter(s => s.id !== skillId);
+                        this.stats.skillCount--;
+                        this.showMessage('技能删除成功!', 'success');
+                    } catch (error) {
+                        console.error('删除技能失败:', error);
+                        this.showMessage('删除技能失败', 'error');
+                    }
+                },
+                
+                // 笔记相关方法
+                initNoteEditor() {
+                    if (this.noteEditor) return;
+                    
+                    this.noteEditor = new Quill(this.$refs.noteEditor, {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, 3, false] }],
+                                ['bold', 'italic', 'underline'],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                ['link', 'image'],
+                                ['clean']
+                            ]
+                        }
+                    });
+                },
+                
+                async addNote() {
+                    if (!this.newNote.title.trim()) return;
+                    
+                    const content = this.noteEditor.root.innerHTML;
+                    if (!content.trim()) {
+                        this.showMessage('请输入笔记内容', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const { data, error } = await sb
+                            .from('notes')
+                            .insert({
+                                user_id: this.userId,
+                                title: this.newNote.title,
+                                content: content
+                            })
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        
+                        this.notes.unshift(data);
+                        this.stats.noteCount++;
+                        
+                        // 重置表单
+                        this.newNote = {
+                            title: '',
+                            content: ''
+                        };
+                        this.noteEditor.root.innerHTML = '';
+                        
+                        this.showMessage('笔记添加成功!', 'success');
+                    } catch (error) {
+                        console.error('添加笔记失败:', error);
+                        this.showMessage('添加笔记失败', 'error');
+                    }
+                },
+                
+                editNote(note) {
+                    this.newNote = { ...note };
+                    this.noteEditor.root.innerHTML = note.content;
+                    
+                    // 滚动到笔记编辑器
+                    this.$refs.noteEditor.scrollIntoView({ behavior: 'smooth' });
+                },
+                
+                async deleteNote(noteId) {
+                    if (!confirm('确定要删除这个笔记吗？')) return;
+                    
+                    try {
+                        const { error } = await sb
+                            .from('notes')
+                            .delete()
+                            .eq('id', noteId);
+                        
+                        if (error) throw error;
+                        
+                        this.notes = this.notes.filter(n => n.id !== noteId);
+                        this.stats.noteCount--;
+                        this.showMessage('笔记删除成功!', 'success');
+                    } catch (error) {
+                        console.error('删除笔记失败:', error);
+                        this.showMessage('删除笔记失败', 'error');
+                    }
+                },
+                
+                // 成就相关方法
+                async addAchievement() {
+                    if (!this.newAchievement.name.trim()) return;
+                    
+                    try {
+                        const { data, error } = await sb
+                            .from('achievements')
+                            .insert({
+                                user_id: this.userId,
+                                name: this.newAchievement.name,
+                                description: this.newAchievement.description,
+                                completed: false
+                            })
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        
+                        this.achievements.unshift(data);
+                        this.stats.achievementCount++;
+                        
+                        // 重置表单
+                        this.newAchievement = {
+                            name: '',
+                            description: '',
+                            completed: false
+                        };
+                        
+                        this.showMessage('成就添加成功!', 'success');
+                    } catch (error) {
+                        console.error('添加成就失败:', error);
+                        this.showMessage('添加成就失败', 'error');
+                    }
+                },
+                
+                async completeAchievement(achievementId) {
+                    try {
+                        const { error } = await sb
+                            .from('achievements')
+                            .update({ 
+                                completed: true,
+                                completed_at: new Date().toISOString()
+                            })
+                            .eq('id', achievementId);
+                        
+                        if (error) throw error;
+                        
+                        const achievement = this.achievements.find(a => a.id === achievementId);
+                        if (achievement) {
+                            achievement.completed = true;
+                            achievement.completed_at = new Date().toISOString();
+                            
+                            // 奖励经验值
+                            this.playerData.xp += 50;
+                            this.stats.totalXp += 50;
+                            await this.saveData();
+                            
+                            this.showMessage('🎉 成就完成! 获得50XP', 'success');
+                        }
+                    } catch (error) {
+                        console.error('完成成就失败:', error);
+                    }
+                },
+                
+                async deleteAchievement(achievementId) {
+                    if (!confirm('确定要删除这个成就吗？')) return;
+                    
+                    try {
+                        const { error } = await sb
+                            .from('achievements')
+                            .delete()
+                            .eq('id', achievementId);
+                        
+                        if (error) throw error;
+                        
+                        this.achievements = this.achievements.filter(a => a.id !== achievementId);
+                        this.stats.achievementCount--;
+                        this.showMessage('成就删除成功!', 'success');
+                    } catch (error) {
+                        console.error('删除成就失败:', error);
+                        this.showMessage('删除成就失败', 'error');
+                    }
+                },
+                
+                // 待办事项相关方法
+                async addTodo() {
+                    if (!this.newTodo.content.trim()) return;
+                    
+                    try {
+                        const { data, error } = await sb
+                            .from('todos')
+                            .insert({
+                                user_id: this.userId,
+                                content: this.newTodo.content,
+                                xp_reward: this.newTodo.xp_reward || 10,
+                                completed: false
+                            })
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        
+                        this.todos.unshift(data);
+                        this.stats.todoCount++;
+                        
+                        // 重置表单
+                        this.newTodo = {
+                            content: '',
+                            xp_reward: 10,
+                            completed: false
+                        };
+                        
+                        this.showMessage('待办事项添加成功!', 'success');
+                    } catch (error) {
+                        console.error('添加待办事项失败:', error);
+                        this.showMessage('添加待办事项失败', 'error');
+                    }
+                },
+                
+                async completeTodo(todo) {
+                    try {
+                        const { error } = await sb
+                            .from('todos')
+                            .update({ 
+                                completed: true,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', todo.id);
+                        
+                        if (error) throw error;
+                        
+                        todo.completed = true;
+                        todo.updated_at = new Date().toISOString();
+                        
+                        // 奖励经验值
+                        this.playerData.xp += todo.xp_reward;
+                        this.stats.totalXp += todo.xp_reward;
+                        await this.saveData();
+                        
+                        this.showMessage(`任务完成! 获得${todo.xp_reward}XP`, 'success');
+                    } catch (error) {
+                        console.error('完成任务失败:', error);
+                    }
+                },
+                
+                async deleteTodo(todoId) {
+                    if (!confirm('确定要删除这个任务吗？')) return;
+                    
+                    try {
+                        const { error } = await sb
+                            .from('todos')
+                            .delete()
+                            .eq('id', todoId);
+                        
+                        if (error) throw error;
+                        
+                        this.todos = this.todos.filter(t => t.id !== todoId);
+                        this.stats.todoCount--;
+                        this.showMessage('任务删除成功!', 'success');
+                    } catch (error) {
+                        console.error('删除任务失败:', error);
+                        this.showMessage('删除任务失败', 'error');
+                    }
+                },
+                
+                // 知识库相关方法
+                initKnowledgeEditor() {
+                    if (this.knowledgeEditor) return;
+                    
+                    this.knowledgeEditor = new Quill(this.$refs.knowledgeEditor, {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                [{ 'script': 'sub'}, { 'script': 'super' }],
+                                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                [{ 'direction': 'rtl' }],
+                                [{ 'size': ['small', false, 'large', 'huge'] }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                [{ 'font': [] }],
+                                [{ 'align': [] }],
+                                ['link', 'image', 'video', 'formula'],
+                                ['clean']
+                            ]
+                        }
+                    });
+                },
+                
+                showCreateDocumentModal(parentId = null) {
+                    this.editingKnowledgeDoc = {
+                        id: null,
+                        title: '',
+                        content: '',
+                        parent_id: parentId,
+                        is_folder: false
+                    };
+                    
+                    this.showKnowledgeModal = true;
+                    
+                    // 初始化编辑器
+                    this.$nextTick(() => {
+                        this.initKnowledgeEditor();
+                        if (this.knowledgeEditor) {
+                            this.knowledgeEditor.root.innerHTML = '';
+                        }
+                    });
+                },
+                
+                editKnowledgeDoc(doc) {
+                    this.editingKnowledgeDoc = {
+                        id: doc.id,
+                        title: doc.title,
+                        content: doc.content || '',
+                        parent_id: doc.parent_id,
+                        is_folder: doc.is_folder
+                    };
+                    
+                    this.showKnowledgeModal = true;
+                    
+                    // 初始化编辑器
+                    this.$nextTick(() => {
+                        this.initKnowledgeEditor();
+                        if (this.knowledgeEditor && !doc.is_folder) {
+                            this.knowledgeEditor.root.innerHTML = doc.content || '';
+                        }
+                    });
+                },
+                
+                async saveKnowledgeDoc() {
+                    if (!this.editingKnowledgeDoc.title.trim()) {
+                        this.showMessage('请输入文档标题', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        const content = this.editingKnowledgeDoc.is_folder ? '' : (this.knowledgeEditor.root.innerHTML || '');
+                        const docData = {
+                            user_id: this.userId,
+                            title: this.editingKnowledgeDoc.title,
+                            content: content,
+                            parent_id: this.editingKnowledgeDoc.parent_id,
+                            is_folder: this.editingKnowledgeDoc.is_folder,
+                            updated_at: new Date().toISOString()
+                        };
+                        
+                        let result;
+                        if (this.editingKnowledgeDoc.id) {
+                            // 更新现有文档
+                            const { data, error } = await sb
+                                .from('knowledge_docs')
+                                .update(docData)
+                                .eq('id', this.editingKnowledgeDoc.id)
+                                .select()
+                                .single();
+                            
+                            if (error) throw error;
+                            result = data;
+                            
+                            // 更新本地数据
+                            const index = this.knowledgeDocs.findIndex(d => d.id === this.editingKnowledgeDoc.id);
+                            if (index !== -1) {
+                                this.knowledgeDocs[index] = result;
+                            }
+                            
+                            // 如果当前正在查看这个文档，更新显示
+                            if (this.activeDocId === this.editingKnowledgeDoc.id) {
+                                this.activeDoc = result;
+                            }
+                        } else {
+                            // 创建新文档
+                            const { data, error } = await sb
+                                .from('knowledge_docs')
+                                .insert(docData)
+                                .select()
+                                .single();
+                            
+                            if (error) throw error;
+                            result = data;
+                            
+                            this.knowledgeDocs.push(result);
+                        }
+                        
+                        this.showKnowledgeModal = false;
+                        this.showMessage('文档保存成功!', 'success');
+                    } catch (error) {
+                        console.error('保存文档失败:', error);
+                        this.showMessage('保存文档失败', 'error');
+                    }
+                },
+                
+                selectDocument(doc) {
+                    this.activeDocId = doc.id;
+                    this.activeDoc = doc;
+                },
+                
+                async deleteKnowledgeDoc(docId) {
+                    if (!confirm('确定要删除这个文档吗？')) return;
+                    
+                    try {
+                        const { error } = await sb
+                            .from('knowledge_docs')
+                            .delete()
+                            .eq('id', docId);
+                        
+                        if (error) throw error;
+                        
+                        // 删除本地数据
+                        this.knowledgeDocs = this.knowledgeDocs.filter(d => d.id !== docId);
+                        
+                        // 如果删除的是当前查看的文档，清空显示
+                        if (this.activeDocId === docId) {
+                            this.activeDocId = null;
+                            this.activeDoc = null;
+                        }
+                        
+                        this.showMessage('文档删除成功!', 'success');
+                    } catch (error) {
+                        console.error('删除文档失败:', error);
+                        this.showMessage('删除文档失败', 'error');
+                    }
+                },
+                
                 resetData() {
                     this.playerData = {
                         level: 1,
@@ -673,9 +1717,44 @@
                         totalXp: 0,
                         skillCount: 0,
                         noteCount: 0,
-                        achievementCount: 0
+                        achievementCount: 0,
+                        todoCount: 0
                     };
+                    this.skills = [];
+                    this.notes = [];
+                    this.achievements = [];
+                    this.todos = [];
+                    this.knowledgeDocs = [];
+                    this.activeDocId = null;
+                    this.activeDoc = null;
                     this.lastSyncTime = '未同步';
+                    
+                    // 重置表单
+                    this.newSkill = {
+                        name: '',
+                        description: '',
+                        current_xp: 0,
+                        target_xp: 100
+                    };
+                    this.newNote = {
+                        title: '',
+                        content: ''
+                    };
+                    this.newAchievement = {
+                        name: '',
+                        description: '',
+                        completed: false
+                    };
+                    this.newTodo = {
+                        content: '',
+                        xp_reward: 10,
+                        completed: false
+                    };
+                    
+                    // 重置编辑器
+                    if (this.noteEditor) {
+                        this.noteEditor.root.innerHTML = '';
+                    }
                 }
             },
             
@@ -687,6 +1766,11 @@
                         this.userId = session.user.id;
                         this.userEmail = session.user.email;
                         await this.loadAllData();
+                        
+                        // 初始化笔记编辑器
+                        this.$nextTick(() => {
+                            this.initNoteEditor();
+                        });
                     }
                     
                     sb.auth.onAuthStateChange((event, session) => {
@@ -695,6 +1779,11 @@
                             this.userId = session.user.id;
                             this.userEmail = session.user.email;
                             this.loadAllData();
+                            
+                            // 初始化笔记编辑器
+                            this.$nextTick(() => {
+                                this.initNoteEditor();
+                            });
                         } else if (event === 'SIGNED_OUT') {
                             this.isLoggedIn = false;
                             this.userId = null;
