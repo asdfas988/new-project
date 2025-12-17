@@ -1,0 +1,3873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✏️ 成长手账 | 智能同步版</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+    // Supabase配置
+    window.SUPABASE_URL = 'https://zqmgigcnruvvdcholbuj.supabase.co';
+    window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI';
+    </script>
+    <!-- 引入手绘风格字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ====== 手绘风格全局样式 ====== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Comic Neue', cursive, -apple-system, sans-serif;
+            background: #fef9f3 url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffd6cc' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+            min-height: 100vh;
+            color: #5a4a42;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* ====== 手绘标题与导航 ====== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #fffaf0;
+            border-radius: 24px 24px 48px 24px;
+            color: #5a4a42;
+            box-shadow: 8px 8px 0px #e0c9b8, 12px 12px 15px rgba(0, 0, 0, 0.05);
+            border: 3px solid #5a4a42;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 30px;
+            width: 120px;
+            height: 10px;
+            background: #ff9a8b;
+            border-radius: 5px;
+            opacity: 0.7;
+        }
+        .header h1 {
+            font-size: 3.2em;
+            margin-bottom: 10px;
+            font-family: 'Gochi Hand', cursive;
+            color: #5a4a42;
+            text-shadow: 3px 3px 0px #ffd6cc;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ====== 手绘网格布局 ====== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* ====== 手绘卡片设计 ====== */
+        .card {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 30px;
+            box-shadow: 6px 6px 0px #d4b8a7, 10px 10px 20px rgba(0, 0, 0, 0.07);
+            border: 2.5px solid #5a4a42;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 1px dashed #ff9a8b;
+            border-radius: 24px 10px 24px 10px;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .card:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+            box-shadow: 8px 8px 0px #c9a58f, 15px 15px 25px rgba(0, 0, 0, 0.09);
+        }
+        .card h2 {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px dotted #ff9a8b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: #5a4a42;
+            font-size: 1.6em;
+            font-family: 'Gochi Hand', cursive;
+        }
+        .card h2 .collapse-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #ff6b6b;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid #ff9a8b;
+            background: #fffaf5;
+            transition: all 0.3s;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+        .card h2 .collapse-btn:hover {
+            background: #ff9a8b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ====== 手绘玩家等级显示 ====== */
+        .level-display {
+            font-size: 5em;
+            font-weight: 800;
+            text-align: center;
+            margin: 25px 0;
+            font-family: 'Gochi Hand', cursive;
+            color: #ff6b6b;
+            text-shadow: 4px 4px 0px #ffd6cc, 8px 8px 8px rgba(0,0,0,0.1);
+            letter-spacing: -2px;
+            transform: rotate(-2deg);
+        }
+        .xp-progress {
+            height: 26px;
+            background: #ffe8d6;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid #5a4a42;
+            box-shadow: inset 3px 3px 5px rgba(0,0,0,0.1);
+        }
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #a3de83);
+            border-radius: 13px;
+            transition: width 0.7s ease;
+            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        /* ====== 手绘任务与技能项 ====== */
+        .skill-item {
+            padding: 20px;
+            background: #fffaf5;
+            border-radius: 16px 8px 16px 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 6px solid transparent;
+            border: 2px solid #e0c9b8;
+            position: relative;
+        }
+        .skill-item::before {
+            content: '☁️';
+            position: absolute;
+            top: -12px;
+            right: 10px;
+            font-size: 1.2em;
+            opacity: 0.5;
+        }
+        .skill-item:hover {
+            background: #fffef9;
+            border-left-color: #ff9a8b;
+            transform: translateX(5px);
+        }
+        .xp-badge {
+            background: linear-gradient(45deg, #ff9a00, #ff5e00);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px 8px 20px 8px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+            border: 1px solid #fff;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+
+        /* ====== 手绘按钮样式 ====== */
+        .btn {
+            background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px 15px 50px 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: 'Comic Neue', cursive;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 4px 4px 0px #d45d5d;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn:hover {
+            transform: translateY(-3px) rotate(0.5deg);
+            box-shadow: 6px 6px 0px #b84a4a;
+        }
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 2px 2px 0px #d45d5d;
+        }
+        .btn-sm {
+            padding: 10px 24px;
+            font-size: 0.95em;
+            width: auto;
+            border-radius: 30px 8px 30px 8px;
+            background: linear-gradient(90deg, #4ecdc4, #a3de83);
+            box-shadow: 3px 3px 0px #2ba69b;
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* ====== 手绘配置面板 ====== */
+        .config-panel {
+            max-width: 600px;
+            margin: 40px auto;
+        }
+        .config-info {
+            padding: 20px;
+            background: #fff9f0;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            border: 2px dashed #ffc8a3;
+        }
+        .config-info a {
+            color: #ff6b6b;
+            font-weight: bold;
+            text-decoration: underline wavy;
+        }
+
+        /* ====== 手绘笔记系统 ====== */
+        .note-section {
+            margin-top: 40px;
+        }
+        .note-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .note-tab {
+            padding: 14px 32px;
+            background: #fffaf5;
+            border-radius: 40px 12px 40px 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: 2px solid #e0c9b8;
+            font-family: 'Comic Neue', cursive;
+            color: #5a4a42;
+        }
+        .note-tab.active {
+            background: linear-gradient(90deg, #a3de83, #4ecdc4);
+            color: white;
+            border-color: #2ba69b;
+            box-shadow: 4px 4px 0px #2ba69b;
+            transform: rotate(-0.5deg);
+        }
+        .note-editor {
+            background: #fffefc;
+            border-radius: 20px 10px 20px 10px;
+            padding: 30px;
+            box-shadow: 6px 6px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            margin-bottom: 30px;
+        }
+        .note-input, .tag-input, .note-textarea {
+            width: 100%;
+            padding: 18px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 16px;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            background: #fffaf9;
+        }
+        .note-textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .note-input:focus, .tag-input:focus, .note-textarea:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+            background: #fff;
+        }
+        .note-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        /* 读书笔记在网格布局中的适配 */
+        .note-list .book-note-card {
+            grid-column: span 1;
+            height: auto;
+            min-height: 400px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .note-list .book-note-card .book-note-header {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ffc8a3;
+            flex-shrink: 0;
+        }
+
+        .note-list .book-note-card .rating-stars {
+            margin: 12px 0;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .note-list .book-note-card .book-note-content,
+        .note-list .book-note-card .book-reflection {
+            margin: 12px 0;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .note-list .book-note-card .book-note-content {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .note-list .book-note-card .book-reflection {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .note-list .book-note-card .book-tags {
+            margin: 12px 0;
+            flex-shrink: 0;
+        }
+
+        .note-list .book-note-card .book-note-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px dotted #e0c9b8;
+            flex-shrink: 0;
+        }
+        .note-list .book-note-card .book-note-content div,
+        .note-list .book-note-card .book-reflection div {
+            max-height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+
+        .note-list + .book-empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: #c9b8a7;
+        }
+        .note-card {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 30px;
+            box-shadow: 6px 6px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            position: relative;
+        }
+        .note-card::before {
+            content: '📌';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            font-size: 1.5em;
+            transform: rotate(15deg);
+        }
+        .note-tags { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+        .note-tag {
+            background: rgba(255, 154, 139, 0.15);
+            color: #d45d5d;
+            padding: 6px 14px;
+            border-radius: 20px 8px 20px 8px;
+            font-size: 0.9em;
+            font-weight: 700;
+            border: 1.5px dashed #ff9a8b;
+        }
+        .note-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 15px 5px 15px 5px;
+            margin-top: 20px;
+            box-shadow: 4px 4px 0px #d4b8a7;
+            border: 2px solid #5a4a42;
+            display: block;
+        }
+
+        /* ====== 手绘图片上传区域 ====== */
+        .image-upload-area {
+            margin: 20px 0;
+            padding: 25px;
+            border: 3px dashed #ffc8a3;
+            border-radius: 20px 8px 20px 8px;
+            background: rgba(255, 248, 240, 0.7);
+            text-align: center;
+        }
+        .image-preview {
+            margin-top: 20px;
+        }
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 15px 5px 15px 5px;
+            border: 3px solid #ff9a8b;
+            box-shadow: 4px 4px 0px #ffd6cc;
+        }
+
+        /* ====== 手绘状态提示 ====== */
+        .status-message {
+            padding: 15px 25px;
+            border-radius: 15px 5px 15px 5px;
+            margin: 20px 0;
+            font-weight: 700;
+            border: 2.5px solid;
+            font-family: 'Comic Neue', cursive;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+        }
+        .status-success {
+            background: rgba(163, 222, 131, 0.95);
+            color: #2d5a27;
+            border-color: #2ba69b;
+        }
+        .status-error {
+            background: rgba(255, 154, 139, 0.95);
+            color: #7a2c28;
+            border-color: #d45d5d;
+        }
+        .status-warning {
+            background: rgba(255, 219, 153, 0.95);
+            color: #8a5a29;
+            border-color: #ffa94d;
+        }
+
+        /* ====== 手绘统计信息 ====== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .stat-box {
+            padding: 30px 20px;
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            transition: transform 0.3s;
+        }
+        .stat-box:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+        }
+        .stat-value {
+            font-size: 3.2em;
+            font-weight: 800;
+            font-family: 'Gochi Hand', cursive;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            text-shadow: 2px 2px 0px #ffd6cc;
+        }
+        .stat-label {
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #7a6a62;
+            font-weight: 700;
+            font-family: 'Comic Neue', cursive;
+        }
+
+        /* ====== 加载动画 ====== */
+        .loading-spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 4px solid rgba(255, 154, 139, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff6b6b;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ====== 成就系统手绘样式 ====== */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .achievement-card {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 25px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            position: relative;
+            overflow: hidden;
+        }
+        .achievement-card.locked { 
+            opacity: 0.7; 
+            filter: grayscale(0.3);
+            background: #f5f1eb;
+        }
+        .achievement-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 154, 139, 0.1);
+            border-radius: 0 0 0 40px;
+        }
+        .achievement-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+            transform: rotate(-3deg);
+        }
+        .achievement-progress {
+            height: 12px;
+            background: #ffe8d6;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 1.5px solid #e0c9b8;
+        }
+        .achievement-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
+            border-radius: 6px;
+            transition: width 0.8s ease;
+        }
+
+        /* ====== 新增：折叠面板样式 ====== */
+        .collapse-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #ff6b6b;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid #ff9a8b;
+            background: #fffaf5;
+            transition: all 0.3s;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+        }
+        .collapse-btn:hover {
+            background: #ff9a8b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* ====== 新增：笔记筛选器样式（简化版） ====== */
+        .note-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background: #fffaf5;
+            border-radius: 15px;
+            border: 2px solid #e0c9b8;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+        .filter-group label {
+            font-weight: bold;
+            color: #5a4a42;
+            font-family: 'Comic Neue', cursive;
+        }
+        .filter-group select, .filter-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0c9b8;
+            border-radius: 10px;
+            font-family: 'Comic Neue', cursive;
+            background: #fffefc;
+            color: #5a4a42;
+        }
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 2px 2px 0px #ffd6cc;
+        }
+
+        /* ====== 新增：批量添加成就面板样式 ====== */
+        .batch-add-panel {
+            background: #fff9f0;
+            border: 3px dashed #ffc8a3;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        .batch-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0c9b8;
+            border-radius: 15px;
+            font-family: 'Comic Neue', cursive;
+            font-size: 14px;
+            background: #fffefc;
+            color: #5a4a42;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+        .batch-textarea:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+        }
+        .batch-example {
+            font-size: 0.9em;
+            color: #7a6a62;
+            background: #fffaf5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        /* ====== 思维导图样式 ====== */
+        .mindmap-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #fffaf5;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .mindmap-node {
+            position: absolute;
+            width: 120px;
+            height: 30px;
+            padding: 10px 15px;
+            background: #fffefc;
+            border-radius: 10px 5px 10px 5px;
+            border: 2px solid #5a4a42;
+            box-shadow: 3px 3px 0px #d4b8a7;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            color: #5a4a42;
+            cursor: move;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .mindmap-node:hover {
+            box-shadow: 4px 4px 0px #c9a58f;
+            transform: translateY(-2px);
+        }
+        .mindmap-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .mindmap-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0c9b8;
+            border-radius: 10px;
+            font-family: 'Comic Neue', cursive;
+            background: #fffefc;
+            color: #5a4a42;
+        }
+        .mindmap-input:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 2px 2px 0px #ffd6cc;
+        }
+        .mindmap-nodes-list {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fffaf5;
+            border-radius: 15px;
+            border: 2px solid #e0c9b8;
+        }
+        .mindmap-node-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #ff9a8b;
+        }
+
+        /* ====== 新增：读书笔记样式 ====== */
+        .book-notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .book-note-card {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 25px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .book-note-card:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+            box-shadow: 7px 7px 0px #c9a58f, 12px 12px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .book-note-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ffc8a3;
+        }
+        
+        .book-icon {
+            font-size: 2.5em;
+            transform: rotate(-3deg);
+            background: linear-gradient(45deg, #ffd6cc, #ff9a8b);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 3px 3px 0px #d45d5d;
+        }
+        
+        .book-info {
+            flex-grow: 1;
+        }
+        
+        .book-title {
+            font-size: 1.4em;
+            font-weight: 800;
+            color: #5a4a42;
+            font-family: 'Gochi Hand', cursive;
+            margin-bottom: 5px;
+        }
+        
+        .book-author {
+            font-size: 0.95em;
+            color: #7a6a62;
+            font-weight: bold;
+        }
+        
+        .book-note-content {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fffaf5;
+            border-radius: 12px;
+            border: 2px solid #e0c9b8;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .book-reflection {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(163, 222, 131, 0.1);
+            border-radius: 12px;
+            border: 2px dashed #4ecdc4;
+            font-style: italic;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .star {
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #e0c9b8;
+        }
+        
+        .star.filled {
+            color: #ffd166;
+            text-shadow: 0 0 5px rgba(255, 209, 102, 0.5);
+        }
+        
+        .star:hover {
+            transform: scale(1.2);
+        }
+        
+        .rating-value {
+            text-align: center;
+            font-weight: bold;
+            color: #7a6a62;
+            margin-top: 10px;
+            font-family: 'Gochi Hand', cursive;
+        }
+        
+        .book-note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dotted #e0c9b8;
+        }
+        
+        .book-date {
+            font-size: 0.9em;
+            color: #7a6a62;
+        }
+        
+        .book-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .book-form {
+            grid-column: 1 / -1;
+            background: #fffaf5;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 3px dashed #ffc8a3;
+        }
+        
+        .book-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .book-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 16px;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            background: #fffaf9;
+            resize: vertical;
+        }
+        
+        .book-textarea:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+            background: #fff;
+        }
+        
+        .book-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .book-tag {
+            background: rgba(255, 154, 139, 0.15);
+            color: #d45d5d;
+            padding: 6px 14px;
+            border-radius: 20px 8px 20px 8px;
+            font-size: 0.9em;
+            font-weight: 700;
+            border: 1.5px dashed #ff9a8b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .book-tag:hover {
+            background: #ff9a8b;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .book-tag.active {
+            background: #ff6b6b;
+            color: white;
+            border-color: #d45d5d;
+        }
+        
+        .book-empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #c9b8a7;
+        }
+        
+        .book-empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            transform: rotate(-5deg);
+        }
+        
+        .book-search-bar {
+            grid-column: 1 / -1;
+            margin-bottom: 25px;
+        }
+        
+        .book-search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 16px;
+            font-family: 'Comic Neue', cursive;
+            background: #fffaf9;
+        }
+        
+        .book-search-input:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+        }
+        
+        .book-stats {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            padding: 20px;
+            background: #fffaf5;
+            border-radius: 15px;
+            border: 2px solid #e0c9b8;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .book-stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #ffc8a3;
+            min-width: 120px;
+        }
+        
+        .book-stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #ff6b6b;
+            font-family: 'Gochi Hand', cursive;
+        }
+        
+        .book-stat-label {
+            font-size: 0.9em;
+            color: #7a6a62;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        
+        /* ====== 简化后的笔记内容样式 ====== */
+        .note-content-plain {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #5a4a42;
+            line-height: 1.7;
+            margin: 25px 0;
+            padding: 15px;
+            background: #fffaf5;
+            border-radius: 12px;
+            border: 2px solid #e0c9b8;
+            font-family: 'Comic Neue', cursive;
+            font-size: 16px;
+        }
+        
+        /* ====== 知识库样式 ====== */
+        .knowledge-container {
+            margin-top: 40px;
+        }
+        
+        .knowledge-sidebar {
+            width: 280px;
+            background: #fffaf5;
+            border-radius: 20px 8px 20px 8px;
+            padding: 25px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            margin-right: 30px;
+            float: left;
+        }
+        
+        .knowledge-main {
+            margin-left: 310px;
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 30px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            min-height: 500px;
+        }
+        
+        .knowledge-category-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        .knowledge-category-item {
+            padding: 12px 18px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 12px 5px 12px 5px;
+            border: 2px solid #e0c9b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .knowledge-category-item:hover {
+            background: #fffef9;
+            border-color: #ff9a8b;
+            transform: translateX(5px);
+        }
+        
+        .knowledge-category-item.active {
+            background: rgba(163, 222, 131, 0.2);
+            border-color: #4ecdc4;
+            font-weight: bold;
+        }
+        
+        .knowledge-category-icon {
+            font-size: 1.5em;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .knowledge-doc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .knowledge-doc-card {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 25px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .knowledge-doc-card:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+            box-shadow: 7px 7px 0px #c9a58f, 12px 12px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .knowledge-doc-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-align: center;
+            transform: rotate(-3deg);
+        }
+        
+        .knowledge-doc-title {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #5a4a42;
+            font-family: 'Gochi Hand', cursive;
+            margin-bottom: 10px;
+        }
+        
+        .knowledge-doc-excerpt {
+            font-size: 0.95em;
+            color: #7a6a62;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .knowledge-doc-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px dotted #e0c9b8;
+        }
+        
+        .knowledge-doc-date {
+            font-size: 0.85em;
+            color: #7a6a62;
+        }
+        
+        .knowledge-doc-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .knowledge-editor {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 30px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+        }
+        
+        .knowledge-editor-title {
+            width: 100%;
+            padding: 18px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 1.4em;
+            font-family: 'Gochi Hand', cursive;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            background: #fffaf9;
+        }
+        
+        .knowledge-editor-title:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+            background: #fff;
+        }
+        
+        .knowledge-editor-content {
+            width: 100%;
+            min-height: 400px;
+            padding: 20px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 16px;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            background: #fffaf9;
+            resize: vertical;
+        }
+        
+        .knowledge-editor-content:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+            background: #fff;
+        }
+        
+        .knowledge-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #c9b8a7;
+        }
+        
+        .knowledge-empty-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            transform: rotate(-5deg);
+        }
+        
+        .knowledge-search-bar {
+            margin-bottom: 25px;
+        }
+        
+        .knowledge-search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2.5px solid #e0c9b8;
+            border-radius: 15px 5px 15px 5px;
+            font-size: 16px;
+            font-family: 'Comic Neue', cursive;
+            background: #fffaf9;
+        }
+        
+        .knowledge-search-input:focus {
+            outline: none;
+            border-color: #ff9a8b;
+            box-shadow: 3px 3px 0px #ffd6cc;
+        }
+        
+        .knowledge-viewer {
+            background: #fffefc;
+            border-radius: 20px 8px 20px 8px;
+            padding: 30px;
+            box-shadow: 5px 5px 0px #d4b8a7;
+            border: 2.5px solid #5a4a42;
+            min-height: 500px;
+        }
+        
+        .knowledge-viewer-title {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #5a4a42;
+            font-family: 'Gochi Hand', cursive;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 3px dotted #ffc8a3;
+        }
+        
+        .knowledge-viewer-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #5a4a42;
+            margin-top: 30px;
+        }
+        
+        .knowledge-viewer-content h1,
+        .knowledge-viewer-content h2,
+        .knowledge-viewer-content h3 {
+            font-family: 'Gochi Hand', cursive;
+            margin: 25px 0 15px 0;
+            color: #5a4a42;
+        }
+        
+        .knowledge-viewer-content p {
+            margin-bottom: 20px;
+        }
+        
+        .knowledge-viewer-content ul,
+        .knowledge-viewer-content ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .knowledge-viewer-content code {
+            background: #fffaf5;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid #e0c9b8;
+            font-family: monospace;
+        }
+        
+        .knowledge-viewer-content pre {
+            background: #fffaf5;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0c9b8;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .knowledge-viewer-content blockquote {
+            border-left: 4px solid #ff9a8b;
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #7a6a62;
+        }
+        
+        .knowledge-viewer-footer {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 3px dotted #e0c9b8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .knowledge-viewer-date {
+            font-size: 0.9em;
+            color: #7a6a62;
+        }
+        
+        .knowledge-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            padding: 20px;
+            background: #fffaf5;
+            border-radius: 15px;
+            border: 2px solid #e0c9b8;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .knowledge-stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #ffc8a3;
+            min-width: 120px;
+        }
+        
+        .knowledge-stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #ff6b6b;
+            font-family: 'Gochi Hand', cursive;
+        }
+        
+        .knowledge-stat-label {
+            font-size: 0.9em;
+            color: #7a6a62;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        
+        /* ====== 响应式调整 ====== */
+        @media (max-width: 768px) {
+            .note-list .book-note-card {
+                min-height: 350px;
+            }
+            
+            .note-list .book-note-card .book-note-content {
+                max-height: 100px;
+            }
+            
+            .note-list .book-note-card .book-reflection {
+                max-height: 80px;
+            }
+            
+            .book-form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .knowledge-sidebar {
+                width: 100%;
+                float: none;
+                margin-right: 0;
+                margin-bottom: 25px;
+            }
+            
+            .knowledge-main {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .note-list .book-note-card {
+                min-height: 300px;
+            }
+            
+            .book-form {
+                padding: 20px 15px;
+            }
+            
+            .book-form-row {
+                grid-template-columns: 1fr !important;
+                gap: 15px;
+            }
+            
+            .knowledge-doc-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 强制读书笔记卡片占据整行 */
+        #app .grid > .card:nth-child(4) {
+            grid-column: 1 / -1 !important;
+            width: 100% !important;
+        }
+
+        /* 确保读书笔记列表正确显示网格 */
+        #app .grid > .card:nth-child(4) .note-list {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+            gap: 25px !important;
+            width: 100% !important;
+        }
+
+        /* 确保每个读书笔记卡片填充网格单元格 */
+        #app .grid > .card:nth-child(4) .note-list .book-note-card {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 450px !important;
+        }
+        
+        /* 成就系统卡片占据整行 */
+        #app .grid > .card:nth-child(3) {
+            padding: 35px 40px;
+        }
+
+        #app .grid > .card:nth-child(3) .achievement-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+        
+        #app .grid > .card:nth-child(3) .note-tabs {
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        /* 确保读书笔记卡片也正确布局 */
+        #app .grid > .card:nth-child(4) {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        /* 调整前两个卡片的宽度 */
+        #app .grid > .card:nth-child(1),
+        #app .grid > .card:nth-child(2) {
+            grid-column: span 1;
+        }
+
+        /* 响应式调整：小屏幕上改为单列布局 */
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #app .grid > .card:nth-child(1),
+            #app .grid > .card:nth-child(2),
+            #app .grid > .card:nth-child(3),
+            #app .grid > .card:nth-child(4) {
+                grid-column: 1 / -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- 登录/注册面板 -->
+        <div v-if="!user" class="config-panel">
+            <div class="card">
+                <h2>🔐 登录 / 注册</h2>
+                <div style="margin-bottom: 25px;">
+                    <input type="email" v-model="loginEmail" class="note-input" placeholder="电子邮箱">
+                    <input type="password" v-model="loginPassword" class="note-input" placeholder="密码" style="margin-top:15px;">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn" @click="handleLogin" :disabled="isLoading" style="flex: 1;">
+                        <span v-if="isLoading">⌛ 登录中...</span>
+                        <span v-else>✅ 登录</span>
+                    </button>
+                    <button class="btn" @click="handleSignUp" :disabled="isLoading" style="flex: 1; background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                        📝 注册新账户
+                    </button>
+                </div>
+                <p style="margin-top:20px; font-size:0.9em; color:#7a6a62;">
+                    所有数据将安全存储在你的Supabase数据库中。
+                </p>
+            </div>
+        </div>
+
+        <!-- === 主手账界面 === -->
+        <div v-if="user">
+            <!-- 顶部状态栏 -->
+            <div class="header">
+                <h1>✏️ 智能成长手账</h1>
+                <p>数据同步至: <strong>Supabase数据库</strong></p>
+                
+                <div style="position: absolute; top: 30px; right: 30px; display: flex; gap: 10px;">
+                    <button class="btn-sm" @click="loadFromSupabase" :disabled="isLoading">
+                        <span v-if="isLoading">⌛ 同步中...</span>
+                        <span v-else>🔄 立即同步</span>
+                    </button>
+                    <button class="btn-sm" @click="saveToSupabase" :disabled="isSaving" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                        <span v-if="isSaving">💾 保存中...</span>
+                        <span v-else>💾 立即保存</span>
+                    </button>
+                    <button class="btn-sm" @click="handleLogout" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d);">
+                        👋 退出登录
+                    </button>
+                </div>
+                
+                <!-- 导航选项卡 -->
+                <div class="note-tabs" style="margin-top: 20px; justify-content: center;">
+                    <div class="note-tab" :class="{active: activeView === 'main'}" @click="activeView = 'main'">🏠 首页</div>
+                    <div class="note-tab" :class="{active: activeView === 'knowledge'}" @click="activeView = 'knowledge'">📚 知识库</div>
+                </div>
+                
+                <!-- 用户状态显示 -->
+                <div style="font-size: 0.95em; opacity: 0.9; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 20px;">
+                    <span>👤 用户: {{ user?.email }}</span>
+                    <span v-if="isSaving" style="color: #ff6b6b;">
+                        <span class="loading-spinner" style="margin-right: 5px;"></span> 正在保存至数据库...
+                    </span>
+                </div>
+            </div>
+            
+            <!-- 状态消息 -->
+            <div v-if="statusMessage" :class="['status-message', statusMessage.type === 'success' ? 'status-success' : statusMessage.type === 'error' ? 'status-error' : 'status-warning']">
+                {{ statusMessage.text }}
+            </div>
+
+            <!-- 主页面内容 -->
+            <div v-if="activeView === 'main'">
+                <!-- 主网格布局 -->
+                <div class="grid">
+                    <!-- 玩家状态面板 -->
+                    <div class="card">
+                        <h2>
+                            📊 成长状态
+                            <button class="collapse-btn" @click="collapseStatus = !collapseStatus">
+                                {{ collapseStatus ? '展开' : '折叠' }}
+                            </button>
+                        </h2>
+                        <div v-if="!collapseStatus">
+                            <div class="level-display">Lv. {{ player.level }}</div>
+                            <div style="margin: 25px 0;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-weight:bold;">
+                                    <span>经验值 (XP):</span>
+                                    <span><strong>{{ player.xp }}</strong> / {{ player.nextLevelXp }}</span>
+                                </div>
+                                <div class="xp-progress">
+                                    <div class="xp-fill" :style="{ width: (player.xp / player.nextLevelXp * 100) + '%' }"></div>
+                                </div>
+                                <div style="text-align: center; margin-top: 18px; font-size: 1.05em; color: #7a6a62; font-weight:bold;">
+                                    还需 {{ player.nextLevelXp - player.xp }} XP 升级
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 30px; padding-top: 30px; border-top: 3px dotted #ffc8a3;">
+                                <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <div>
+                                        <div style="font-size: 2.2em; font-weight: bold; color: #ff6b6b; font-family:'Gochi Hand';">{{ totalSkills }}</div>
+                                        <div style="color: #7a6a62; font-weight:bold;">技能数量</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 2.2em; font-weight: bold; color: #4ecdc4; font-family:'Gochi Hand';">{{ completedAchievementsCount }}</div>
+                                        <div style="color: #7a6a62; font-weight:bold;">成就达成</div>
+                                    </div>
+                                </div>
+                                <button class="btn" @click="saveToSupabase" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b); margin-top:20px;">
+                                    💾 立即保存到云端
+                                </button>
+                                <button class="btn" @click="resetData" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d); margin-top:15px;">
+                                    🔄 重置所有数据（谨慎！）
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 技能树 -->
+                    <div class="card">
+                        <h2>
+                            🌱 我的技能树
+                            <button class="collapse-btn" @click="collapseSkills = !collapseSkills">
+                                {{ collapseSkills ? '展开' : '折叠' }}
+                            </button>
+                        </h2>
+                        <div v-if="!collapseSkills">
+                            <p style="margin-bottom:20px; color:#7a6a62; font-weight:bold;">从零开始，自由添加你想培养的任何技能</p>
+                            
+                            <div v-if="skills.length === 0" style="text-align:center; padding:40px 20px; color:#c9b8a7;">
+                                <div style="font-size:3.5em; margin-bottom:15px; transform:rotate(-5deg);">🌱</div>
+                                <p style="font-weight:bold; font-size:1.1em;">技能树空空如也</p>
+                                <p>点击下方按钮添加你的第一个技能吧！</p>
+                            </div>
+                            
+                            <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                                <div style="flex-grow:1;">
+                                    <div style="display:flex; align-items:center; gap:15px; margin-bottom:10px;">
+                                        <span style="font-size:2em; transform:rotate(3deg);">{{ skill.icon }}</span>
+                                        <div>
+                                            <strong style="font-size:1.3em; color:#5a4a42;">{{ skill.name }}</strong>
+                                            <div style="font-size:0.95em; color:#7a6a62; font-weight:bold;">类别: {{ skill.category }} · 等级 {{ skill.level }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="xp-progress" style="height:14px; margin:12px 0;">
+                                        <div class="xp-fill" :style="{ width: (skill.xp / skill.maxXp * 100) + '%' }"></div>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; font-size:0.95em; color:#7a6a62; font-weight:bold;">
+                                        <span>{{ skill.xp }} / {{ skill.maxXp }} XP</span>
+                                        <span>{{ Math.round(skill.xp / skill.maxXp * 100) }}%</span>
+                                    </div>
+                                </div>
+                                <div style="display:flex; gap:12px;">
+                                    <button class="btn-sm" @click="practiceSkill(skill.id)" style="background:linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow:3px 3px 0px #d45d5d;">
+                                        练习 +{{ getSkillXpPerPractice(skill) }}
+                                    </button>
+                                    <button class="btn-sm" @click="deleteSkill(skill.id)" style="background:#f0e6dc; color:#7a6a62; border:2px solid #d4b8a7; box-shadow:3px 3px 0px #c9b8a7;">
+                                        删除
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <button class="btn" @click="addNewSkill" style="background:linear-gradient(90deg, #a3de83, #4ecdc4); margin-top:25px;">
+                                🌟 添加新技能
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 成就系统 -->
+                    <div class="card">
+                        <h2>
+                            🏆 成就系统
+                            <button class="collapse-btn" @click="collapseAchievements = !collapseAchievements">
+                                {{ collapseAchievements ? '展开' : '折叠' }}
+                            </button>
+                        </h2>
+                        
+                        <div v-if="!collapseAchievements">
+                            <!-- 成就筛选与批量添加区域 -->
+                            <div style="margin-bottom: 25px; display: flex; gap: 15px; align-items: center;">
+                                <div class="note-tabs" style="margin-bottom: 0; flex-grow: 1;">
+                                    <div class="note-tab" :class="{active: activeAchievementTab === 'all'}" @click="activeAchievementTab = 'all'">全部</div>
+                                    <div class="note-tab" :class="{active: activeAchievementTab === 'yixue'}" @click="activeAchievementTab = 'yixue'">易学</div>
+                                    <div class="note-tab" :class="{active: activeAchievementTab === 'english'}" @click="activeAchievementTab = 'english'">英语</div>
+                                    <div class="note-tab" :class="{active: activeAchievementTab === 'fitness'}" @click="activeAchievementTab = 'fitness'">健身</div>
+                                    <div class="note-tab" :class="{active: activeAchievementTab === 'custom'}" @click="activeAchievementTab = 'custom'">自定义</div>
+                                </div>
+                                <button class="btn-sm" @click="showBatchAdd = !showBatchAdd" style="background:linear-gradient(90deg, #ffd166, #ffb347); color:#5a4a42;">
+                                    📥 批量添加成就
+                                </button>
+                            </div>
+                            
+                            <!-- 批量添加成就面板 -->
+                            <div v-if="showBatchAdd" class="batch-add-panel">
+                                <h3 style="margin-bottom: 15px; color: #5a4a42;">📥 批量添加成就</h3>
+                                <p style="margin-bottom: 15px; color: #7a6a62; font-weight: bold;">
+                                    请按照JSON格式输入成就数据，每个成就包含以下字段：
+                                </p>
+                                <textarea 
+                                    v-model="batchAchievementInput" 
+                                    class="batch-textarea" 
+                                    placeholder='例如：
+[
+  {
+    "category": "custom",
+    "name": "早起达人",
+    "icon": "🌅",
+    "description": "连续30天早上6点前起床",
+    "requirement": 30,
+    "reward": 150
+  }
+]'>
+                                </textarea>
+                                <div class="batch-example">
+                                    <strong>字段说明：</strong><br>
+                                    • <code>category</code>: 分类（自定义分类会自动创建）<br>
+                                    • <code>name</code>: 成就名称<br>
+                                    • <code>icon</code>: 图标表情<br>
+                                    • <code>description</code>: 描述<br>
+                                    • <code>requirement</code>: 达成要求（数字）<br>
+                                    • <code>reward</code>: 奖励经验值
+                                </div>
+                                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                                    <button class="btn-sm" @click="addBatchAchievements" style="background:linear-gradient(90deg, #a3de83, #4ecdc4);">
+                                        ✅ 添加这些成就
+                                    </button>
+                                    <button class="btn-sm" @click="loadExampleAchievements" style="background:linear-gradient(90deg, #4a9fff, #2d73cc);">
+                                        📋 加载示例
+                                    </button>
+                                    <button class="btn-sm" @click="clearBatchInput" style="background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                                        清空
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="achievement-grid">
+                                <div v-for="achievement in filteredAchievements" :key="achievement.id" 
+                                     class="achievement-card" :class="{locked: !achievement.unlocked}">
+                                    <div class="achievement-icon">{{ achievement.icon }}</div>
+                                    <h3 style="margin-bottom:12px; color:#5a4a42; font-family:'Gochi Hand';">{{ achievement.name }}</h3>
+                                    <p style="font-size:0.95em; color:#7a6a62; margin-bottom:20px; min-height:45px; font-weight:bold;">{{ achievement.description }}</p>
+                                    
+                                    <div v-if="!achievement.unlocked">
+                                        <div class="achievement-progress">
+                                            <div class="achievement-progress-fill" 
+                                                 :style="{ width: Math.min(100, (achievement.current / achievement.requirement * 100)) + '%' }"></div>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; font-size:0.9em; color:#7a6a62; font-weight:bold;">
+                                            <span>进度: {{ achievement.current }} / {{ achievement.requirement }}</span>
+                                            <span>{{ Math.round(achievement.current / achievement.requirement * 100) }}%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-if="achievement.unlocked" 
+                                         style="text-align:center; padding:15px; background:rgba(163,222,131,0.2); border-radius:15px; margin-top:20px; border:2px dashed #4ecdc4;">
+                                        <span style="color:#2d5a27; font-weight:bold; font-family:'Gochi Hand';">🎉 已解锁</span>
+                                        <div style="font-size:0.95em; color:#2d5a27; margin-top:8px; font-weight:bold;">
+                                            {{ achievement.reward }} XP
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 删除成就按钮（仅自定义成就显示） -->
+                                    <div v-if="achievement.category === 'custom'" style="margin-top: 15px; text-align: right;">
+                                        <button class="btn-sm" @click="deleteAchievement(achievement.id)" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d); padding: 5px 15px; font-size: 0.8em;">
+                                            删除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 空状态提示 -->
+                            <div v-if="filteredAchievements.length === 0" style="text-align:center; padding:50px 20px; color:#c9b8a7; margin-top: 30px;">
+                                <div style="font-size:4em; margin-bottom:20px; transform:rotate(-5deg);">🏆</div>
+                                <p style="font-weight:bold; font-size:1.3em; margin-bottom:10px;">这个分类还没有成就</p>
+                                <p>点击"批量添加成就"按钮创建你的第一个成就吧！</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== 新增：读书笔记板块 ==================== -->
+                    <div class="card">
+                        <h2>
+                            📚 读书笔记
+                            <button class="collapse-btn" @click="collapseBookNotes = !collapseBookNotes">
+                                {{ collapseBookNotes ? '展开' : '折叠' }}
+                            </button>
+                        </h2>
+                        
+                        <div v-if="!collapseBookNotes">
+                            <!-- 搜索和统计 -->
+                            <div class="book-search-bar">
+                                <input 
+                                    type="text" 
+                                    v-model="bookSearchQuery" 
+                                    class="book-search-input" 
+                                    placeholder="🔍 搜索书名、作者、标签..."
+                                    @input="searchBooks"
+                                >
+                            </div>
+                            
+                            <!-- 读书笔记统计 -->
+                            <div class="book-stats">
+                                <div class="book-stat-item">
+                                    <div class="book-stat-value">{{ bookNotes.length }}</div>
+                                    <div class="book-stat-label">总书籍数</div>
+                                </div>
+                                <div class="book-stat-item">
+                                    <div class="book-stat-value">{{ averageBookRating.toFixed(1) }}</div>
+                                    <div class="book-stat-label">平均评分</div>
+                                </div>
+                                <div class="book-stat-item">
+                                    <div class="book-stat-value">{{ favoriteBooksCount }}</div>
+                                    <div class="book-stat-label">最爱书籍</div>
+                                </div>
+                                <div class="book-stat-item">
+                                    <div class="book-stat-value">{{ totalBookTags }}</div>
+                                    <div class="book-stat-label">标签数量</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 添加/编辑表单 -->
+                            <div class="book-form" v-if="showBookForm">
+                                <h3 style="margin-bottom:20px; color:#5a4a42; font-family:'Gochi Hand';">
+                                    {{ editingBookNote ? '✏️ 编辑读书笔记' : '📖 添加新读书笔记' }}
+                                </h3>
+                                
+                                <div class="book-form-row">
+                                    <div>
+                                        <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">书名</label>
+                                        <input type="text" v-model="newBookNote.title" class="note-input" placeholder="请输入书名">
+                                    </div>
+                                    <div>
+                                        <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">作者</label>
+                                        <input type="text" v-model="newBookNote.author" class="note-input" placeholder="请输入作者">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">笔记内容</label>
+                                    <textarea 
+                                        v-model="newBookNote.note" 
+                                        class="book-textarea" 
+                                        placeholder="记录读书时的重点、摘录、思考..."
+                                    ></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">读书感悟</label>
+                                    <textarea 
+                                        v-model="newBookNote.reflection" 
+                                        class="book-textarea" 
+                                        placeholder="写下读完这本书的感悟、收获、启示..."
+                                    ></textarea>
+                                </div>
+                                
+                                <div style="margin:20px 0;">
+                                    <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">评分</label>
+                                    <div class="rating-stars">
+                                        <span 
+                                            v-for="star in 5" 
+                                            :key="star" 
+                                            class="star" 
+                                            :class="{filled: star <= newBookNote.rating}"
+                                            @click="newBookNote.rating = star"
+                                        >
+                                            ★
+                                        </span>
+                                    </div>
+                                    <div class="rating-value">
+                                        当前评分: {{ newBookNote.rating }} 星
+                                    </div>
+                                </div>
+                                
+                                <div style="margin:20px 0;">
+                                    <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">标签</label>
+                                    <div class="book-tags">
+                                        <span 
+                                            v-for="tag in commonBookTags" 
+                                            :key="tag"
+                                            class="book-tag" 
+                                            :class="{active: newBookNote.tags.includes(tag)}"
+                                            @click="toggleBookTag(tag)"
+                                        >
+                                            {{ tag }}
+                                        </span>
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        v-model="newBookTagInput" 
+                                        class="note-input" 
+                                        placeholder="输入自定义标签，按回车添加"
+                                        @keyup.enter="addCustomBookTag"
+                                        style="margin-top:10px;"
+                                    >
+                                    <div style="font-size:0.9em; color:#7a6a62; margin-top:5px;">
+                                        已选标签: {{ newBookNote.tags.join(', ') || '无' }}
+                                    </div>
+                                </div>
+                                
+                                <div style="display:flex; gap:15px; margin-top:25px;">
+                                    <button class="btn" @click="saveBookNote" style="width:auto; padding:14px 45px;">
+                                        {{ editingBookNote ? '💾 更新笔记' : '📚 保存读书笔记' }}
+                                    </button>
+                                    <button class="btn" @click="cancelBookNote" style="width:auto; padding:14px 35px; background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                                        取消
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 读书笔记列表 -->
+                            <div v-if="filteredBookNotes.length > 0" class="note-list">
+                                <div v-for="book in filteredBookNotes" :key="book.id" class="book-note-card">
+                                    <div class="book-note-header">
+                                        <div class="book-icon">
+                                            📚
+                                        </div>
+                                        <div class="book-info">
+                                            <div class="book-title">{{ book.title }}</div>
+                                            <div class="book-author">作者: {{ book.author }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="rating-stars" style="justify-content:flex-start;">
+                                        <span 
+                                            v-for="star in 5" 
+                                            :key="star" 
+                                            class="star" 
+                                            :class="{filled: star <= book.rating}"
+                                        >
+                                            ★
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="book-note-content">
+                                        <strong style="color:#5a4a42; display:block; margin-bottom:10px;">📝 笔记摘要:</strong>
+                                        <div style="max-height:80px; overflow:hidden; text-overflow:ellipsis;">
+                                            {{ book.note.substring(0, 150) }}{{ book.note.length > 150 ? '...' : '' }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="book-reflection">
+                                        <strong style="color:#5a4a42; display:block; margin-bottom:10px;">💭 我的感悟:</strong>
+                                        <div style="max-height:80px; overflow:hidden; text-overflow:ellipsis;">
+                                            {{ book.reflection.substring(0, 120) }}{{ book.reflection.length > 120 ? '...' : '' }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="book-tags" v-if="book.tags && book.tags.length > 0">
+                                        <span 
+                                            v-for="tag in book.tags.slice(0, 3)" 
+                                            :key="tag"
+                                            class="book-tag"
+                                        >
+                                            {{ tag }}
+                                        </span>
+                                        <span v-if="book.tags.length > 3" class="book-tag">
+                                            +{{ book.tags.length - 3 }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="book-note-footer">
+                                        <div class="book-date">
+                                            📅 {{ formatDate(book.createdAt) }}
+                                        </div>
+                                        <div class="book-actions">
+                                            <button class="btn-sm" @click="editBookNote(book.id)" style="background:linear-gradient(90deg, #4a9fff, #2d73cc); padding:5px 15px;">
+                                                编辑
+                                            </button>
+                                            <button class="btn-sm" @click="deleteBookNote(book.id)" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d); padding:5px 15px;">
+                                                删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 空状态提示 -->
+                            <div v-if="filteredBookNotes.length === 0 && !showBookForm" class="book-empty-state">
+                                <div class="book-empty-icon">📚</div>
+                                <p style="font-weight:bold; font-size:1.3em; margin-bottom:10px;">还没有读书笔记</p>
+                                <p>开始记录你的阅读旅程吧！</p>
+                                <button class="btn" @click="showBookForm = true" style="margin-top:20px; background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                                    📖 添加第一本读书笔记
+                                </button>
+                            </div>
+                            
+                            <!-- 显示/隐藏表单按钮 -->
+                            <div v-if="!showBookForm" style="text-align:center; margin-top:30px;">
+                                <button class="btn" @click="showBookForm = true" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                                    📖 添加读书笔记
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 智能笔记系统（简化版） -->
+                <div class="note-section">
+                    <div class="card">
+                        <h2>
+                            📝 笔记系统
+                            <button class="collapse-btn" @click="collapseNotes = !collapseNotes">
+                                {{ collapseNotes ? '展开' : '折叠' }}
+                            </button>
+                        </h2>
+                        
+                        <div v-if="!collapseNotes">
+                            <!-- 笔记筛选器（简化版） -->
+                            <div class="note-filters" v-if="activeNoteTab !== 'editor' && notes.length > 0">
+                                <div class="filter-group">
+                                    <label>📅 时间范围</label>
+                                    <select v-model="noteFilter.timeRange">
+                                        <option value="all">全部时间</option>
+                                        <option value="today">今天</option>
+                                        <option value="week">本周</option>
+                                        <option value="month">本月</option>
+                                        <option value="year">今年</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>🏷️ 标签筛选</label>
+                                    <select v-model="noteFilter.selectedTag">
+                                        <option value="">所有标签</option>
+                                        <option v-for="tag in allNoteTags" :value="tag">{{ tag }}</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>📁 分类筛选</label>
+                                    <select v-model="noteFilter.selectedCategory">
+                                        <option value="">所有分类</option>
+                                        <option v-for="cat in noteCategories.filter(c => c !== 'all' && c !== 'editor')" :value="cat">
+                                            {{ getCategoryDisplayName(cat) }}
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label>🔍 关键词搜索</label>
+                                    <input type="text" v-model="noteFilter.keyword" placeholder="搜索标题或内容...">
+                                </div>
+                                
+                                <button class="btn-sm" @click="resetNoteFilters" style="align-self: flex-end; background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                                    重置筛选
+                                </button>
+                            </div>
+                            
+                            <!-- 笔记分类标签页（简化版） -->
+                            <div class="note-tabs">
+                                <div class="note-tab" :class="{active: activeNoteTab === 'all'}" @click="activeNoteTab = 'all'">📚 全部笔记</div>
+                                <div class="note-tab" :class="{active: activeNoteTab === 'editor'}" @click="activeNoteTab = 'editor'">✍️ 新建笔记</div>
+                                <div v-for="cat in noteCategories.filter(c => c !== 'all' && c !== 'editor')" :key="cat" 
+                                     class="note-tab" 
+                                     :class="{active: activeNoteTab === cat}" 
+                                     @click="activeNoteTab = cat">
+                                    {{ getCategoryDisplayName(cat) }}
+                                </div>
+                            </div>
+                            
+                            <!-- 普通文本编辑器 -->
+                            <div v-if="activeNoteTab === 'editor'" class="note-editor">
+                                <input type="text" class="note-input" v-model="newNote.title" placeholder="笔记标题...">
+                                
+                                <textarea 
+                                    class="note-textarea" 
+                                    v-model="newNote.content" 
+                                    placeholder="笔记内容..."
+                                    rows="15"
+                                ></textarea>
+                                
+                                <input type="text" class="tag-input" v-model="newNote.tagsInput" placeholder="添加标签，用逗号分隔 (例如: 学习, 复盘, 灵感)">
+                                
+                                <!-- 图片上传区域 -->
+                                <div class="image-upload-area">
+                                    <label style="display: block; margin-bottom: 12px; font-weight: bold; font-size:1.1em;">📸 添加图片</label>
+                                    <input type="file" accept="image/*" @change="handleImageUpload" style="display: block; margin: 0 auto 15px; padding:10px; border:2px dashed #ff9a8b; border-radius:10px; background:#fffaf9; cursor:pointer;">
+                                    <p style="font-size: 0.95em; color: #7a6a62; margin-bottom: 10px; font-weight:bold;">支持 JPG, PNG, GIF 格式，最大 2MB</p>
+                                    
+                                    <div v-if="newNote.imageData" class="image-preview">
+                                        <p style="font-weight:bold; margin-bottom:10px;">图片预览：</p>
+                                        <img :src="newNote.imageData" alt="预览">
+                                        <button class="btn-sm" @click="clearUploadedImage" style="background: #ffd6cc; color: #5a4a42; margin-top: 15px; border:2px solid #ff9a8b;">
+                                            清除图片
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div style="display:flex; gap:15px; margin-top:25px;">
+                                    <button class="btn" @click="saveNote" style="width:auto; padding:14px 45px; border-radius:50px 15px 50px 15px;">
+                                        💾 保存笔记
+                                    </button>
+                                    <button class="btn" @click="clearNoteEditor" 
+                                            style="width:auto; padding:14px 35px; background:linear-gradient(90deg, #a3a3a3, #7a7a7a); border-radius:50px 15px 50px 15px;">
+                                        清空重写
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 笔记列表：其他标签页时显示 -->
+                            <div v-if="activeNoteTab !== 'editor'" class="note-list">
+                                <div v-for="note in filteredAndSortedNotes" :key="note.id" class="note-card">
+                                    <h3 style="margin-bottom:18px; color:#5a4a42; font-family:'Gochi Hand'; font-size:1.6em;">{{ note.title }}</h3>
+                                    <div class="note-tags">
+                                        <span class="note-tag" v-for="tag in note.tags" :key="tag">{{ tag }}</span>
+                                    </div>
+                                    
+                                    <!-- 普通文本内容显示 -->
+                                    <div class="note-content-plain">
+                                        {{ note.content }}
+                                    </div>
+                                    
+                                    <!-- 显示图片 -->
+                                    <div v-if="note.imageData || note.imageUrl" style="margin-top:25px;">
+                                        <img :src="note.imageData || note.imageUrl" alt="笔记图片" class="note-image" @error="handleImageError">
+                                    </div>
+                                    
+                                    <!-- 笔记操作区 -->
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px; padding-top:25px; border-top:3px dotted #e0c9b8;">
+                                        <div style="font-size:0.95em; color:#7a6a62; font-weight:bold;">
+                                            📅 {{ formatDate(note.createdAt) }}
+                                            <span style="margin-left:15px; background:#ffd6cc; padding:3px 10px; border-radius:10px; border:1px dashed #ff9a8b;">
+                                                {{ getCategoryDisplayName(note.category) }}
+                                            </span>
+                                        </div>
+                                        <div style="display:flex; gap:10px;">
+                                            <button class="btn-sm" @click="editNote(note.id)" style="background:linear-gradient(90deg, #4a9fff, #2d73cc);">
+                                                编辑
+                                            </button>
+                                            <button class="btn-sm" @click="deleteNote(note.id)" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d);">
+                                                删除
+                                            </button>
+                                        </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 空状态提示 -->
+                            <div v-if="filteredAndSortedNotes.length === 0" style="text-align:center; padding:50px 20px; color:#c9b8a7; grid-column: 1 / -1;">
+                                <div style="font-size:4em; margin-bottom:20px; transform:rotate(-5deg);">📝</div>
+                                <p style="font-weight:bold; font-size:1.3em; margin-bottom:10px;">没有找到符合条件的笔记</p>
+                                <p>尝试调整筛选条件或切换到其他标签开始记录吧！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成长概览 -->
+            <div class="card" style="margin-top: 50px;">
+                <h2>📈 成长概览</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">{{ totalXpEarned }}</div>
+                        <div class="stat-label">累计获得经验</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ totalSkills }}</div>
+                        <div class="stat-label">技能数量</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ totalNotes }}</div>
+                        <div class="stat-label">笔记数量</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ completedAchievementsCount }}</div>
+                        <div class="stat-label">成就达成</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ bookNotes.length }}</div>
+                        <div class="stat-label">读书笔记</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">{{ knowledgeDocs.length }}</div>
+                        <div class="stat-label">知识文档</div>
+                    </div>
+                </div>
+                <p style="text-align:center; margin-top:35px; padding-top:30px; border-top:3px dotted #ffc8a3; color:#7a6a62; font-size:1em; font-weight:bold;">
+                    所有数据通过Supabase同步至云端数据库。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 知识库页面 ==================== -->
+    <div v-if="activeView === 'knowledge' && user" class="knowledge-container">
+        <div style="margin-bottom: 40px;">
+            <button class="btn-sm" @click="activeView = 'main'" style="background:linear-gradient(90deg, #a3a3a3, #7a7a7a); margin-bottom: 20px;">
+                ← 返回首页
+            </button>
+            
+            <div class="knowledge-stats">
+                <div class="knowledge-stat-item">
+                    <div class="knowledge-stat-value">{{ knowledgeDocs.length }}</div>
+                    <div class="knowledge-stat-label">总文档数</div>
+                </div>
+                <div class="knowledge-stat-item">
+                    <div class="knowledge-stat-value">{{ knowledgeCategories.length }}</div>
+                    <div class="knowledge-stat-label">分类数量</div>
+                </div>
+                <div class="knowledge-stat-item">
+                    <div class="knowledge-stat-value">{{ recentKnowledgeDocsCount }}</div>
+                    <div class="knowledge-stat-label">最近更新</div>
+                </div>
+                <div class="knowledge-stat-item">
+                    <div class="knowledge-stat-value">{{ popularCategoryName }}</div>
+                    <div class="knowledge-stat-label">最热分类</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 知识库主界面 -->
+        <div v-if="!showKnowledgeEditor && !showKnowledgeViewer">
+            <!-- 侧边栏 -->
+            <div class="knowledge-sidebar">
+                <h2 style="margin-bottom: 20px; color: #5a4a42; font-family:'Gochi Hand';">📂 分类</h2>
+                
+                <button class="btn" @click="showNewCategoryForm = true" style="margin-bottom: 20px; background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                    ＋ 新建分类
+                </button>
+                
+                <!-- 新建分类表单 -->
+                <div v-if="showNewCategoryForm" class="card" style="margin-bottom: 20px; padding: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #5a4a42;">新建分类</h3>
+                    <input type="text" v-model="newKnowledgeCategory.name" class="note-input" placeholder="分类名称">
+                    <input type="text" v-model="newKnowledgeCategory.description" class="note-input" placeholder="分类描述">
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn-sm" @click="saveKnowledgeCategory" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                            保存
+                        </button>
+                        <button class="btn-sm" @click="showNewCategoryForm = false" style="background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                            取消
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 分类列表 -->
+                <ul class="knowledge-category-list">
+                    <li class="knowledge-category-item" :class="{active: activeKnowledgeCategory === null}" @click="setActiveKnowledgeCategory(null)">
+                        <div class="knowledge-category-icon">📁</div>
+                        <div>全部文档</div>
+                    </li>
+                    <li v-for="category in knowledgeCategories" :key="category.id" 
+                        class="knowledge-category-item" 
+                        :class="{active: activeKnowledgeCategory && activeKnowledgeCategory.id === category.id}"
+                        @click="setActiveKnowledgeCategory(category)">
+                        <div class="knowledge-category-icon">{{ category.icon || '📁' }}</div>
+                        <div>{{ category.name }}</div>
+                        <div style="margin-left: auto; font-size: 0.8em; color: #7a6a62;">
+                            ({{ getDocsCountByCategory(category.id) }})
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 主内容区 -->
+            <div class="knowledge-main">
+                <!-- 搜索栏 -->
+                <div class="knowledge-search-bar">
+                    <input 
+                        type="text" 
+                        v-model="knowledgeSearchQuery" 
+                        class="knowledge-search-input" 
+                        placeholder="🔍 搜索知识文档..."
+                        @input="searchKnowledgeDocs"
+                    >
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                    <button class="btn" @click="createNewKnowledgeDoc" style="background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                        ＋ 新建文档
+                    </button>
+                    <button class="btn" @click="importKnowledgeDocs" style="background:linear-gradient(90deg, #ff9a8b, #ff6b6b);">
+                        📥 导入文档
+                    </button>
+                </div>
+                
+                <!-- 文档列表 -->
+                <div v-if="filteredKnowledgeDocs.length > 0" class="knowledge-doc-list">
+                    <div v-for="doc in filteredKnowledgeDocs" :key="doc.id" class="knowledge-doc-card" @click="viewKnowledgeDoc(doc)">
+                        <div class="knowledge-doc-icon">
+                            {{ doc.icon || '📄' }}
+                        </div>
+                        <div class="knowledge-doc-title">{{ doc.title }}</div>
+                        <div class="knowledge-doc-excerpt">
+                            {{ getExcerpt(doc.content, 120) }}
+                        </div>
+                        <div class="knowledge-doc-footer">
+                            <div class="knowledge-doc-date">
+                                📅 {{ formatDate(doc.updated_at || doc.created_at) }}
+                            </div>
+                            <div class="knowledge-doc-actions">
+                                <button class="btn-sm" @click.stop="editKnowledgeDoc(doc)" style="background:linear-gradient(90deg, #4a9fff, #2d73cc); padding: 3px 10px; font-size: 0.8em;">
+                                    编辑
+                                </button>
+                                <button class="btn-sm" @click.stop="deleteKnowledgeDoc(doc.id)" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d); padding: 3px 10px; font-size: 0.8em;">
+                                    删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 空状态提示 -->
+                <div v-if="filteredKnowledgeDocs.length === 0" class="knowledge-empty-state">
+                    <div class="knowledge-empty-icon">📚</div>
+                    <p style="font-weight:bold; font-size:1.3em; margin-bottom:10px;">还没有知识文档</p>
+                    <p>开始创建你的知识库吧！</p>
+                    <button class="btn" @click="createNewKnowledgeDoc" style="margin-top:20px; background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
+                        ＋ 创建第一个文档
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 知识文档编辑器 -->
+        <div v-if="showKnowledgeEditor" class="knowledge-editor">
+            <h2 style="margin-bottom: 25px; color: #5a4a42; font-family:'Gochi Hand';">
+                {{ editingKnowledgeDoc ? '✏️ 编辑文档' : '📝 新建文档' }}
+            </h2>
+            
+            <input 
+                type="text" 
+                v-model="currentKnowledgeDoc.title" 
+                class="knowledge-editor-title" 
+                placeholder="文档标题"
+            >
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">分类</label>
+                <select v-model="currentKnowledgeDoc.category_id" class="note-input" style="width: 100%;">
+                    <option value="">选择分类</option>
+                    <option v-for="category in knowledgeCategories" :value="category.id">
+                        {{ category.name }}
+                    </option>
+                </select>
+            </div>
+            
+            <textarea 
+                v-model="currentKnowledgeDoc.content" 
+                class="knowledge-editor-content" 
+                placeholder="在这里编写你的知识文档...支持Markdown格式"
+            ></textarea>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display:block; margin-bottom:8px; font-weight:bold; color:#5a4a42;">标签</label>
+                <input 
+                    type="text" 
+                    v-model="knowledgeTagInput" 
+                    class="note-input" 
+                    placeholder="输入标签，用逗号分隔"
+                    @keyup.enter="addKnowledgeTag"
+                >
+                <div class="book-tags" style="margin-top: 10px;">
+                    <span 
+                        v-for="tag in currentKnowledgeDoc.tags" 
+                        :key="tag"
+                        class="book-tag"
+                        @click="removeKnowledgeTag(tag)"
+                    >
+                        {{ tag }} ×
+                    </span>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:15px; margin-top:25px;">
+                <button class="btn" @click="saveKnowledgeDoc" style="width:auto; padding:14px 45px;">
+                    💾 保存文档
+                </button>
+                <button class="btn" @click="cancelKnowledgeEdit" style="width:auto; padding:14px 35px; background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                    取消
+                </button>
+                <button v-if="editingKnowledgeDoc" class="btn" @click="previewKnowledgeDoc" style="width:auto; padding:14px 35px; background:linear-gradient(90deg, #ffd166, #ffb347);">
+                    👁️ 预览
+                </button>
+            </div>
+        </div>
+        
+        <!-- 知识文档查看器 -->
+        <div v-if="showKnowledgeViewer" class="knowledge-viewer">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="knowledge-viewer-title">{{ viewedKnowledgeDoc.title }}</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-sm" @click="editViewedKnowledgeDoc" style="background:linear-gradient(90deg, #4a9fff, #2d73cc);">
+                        编辑
+                    </button>
+                    <button class="btn-sm" @click="showKnowledgeViewer = false" style="background:linear-gradient(90deg, #a3a3a3, #7a7a7a);">
+                        返回列表
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px; color: #7a6a62; font-size: 0.9em;">
+                <span v-if="viewedKnowledgeDoc.category">
+                    分类: {{ getCategoryName(viewedKnowledgeDoc.category_id) }}
+                </span>
+                <span v-if="viewedKnowledgeDoc.tags && viewedKnowledgeDoc.tags.length > 0" style="margin-left: 20px;">
+                    标签: {{ viewedKnowledgeDoc.tags.join(', ') }}
+                </span>
+            </div>
+            
+            <div class="knowledge-viewer-content" v-html="renderMarkdown(viewedKnowledgeDoc.content)"></div>
+            
+            <div class="knowledge-viewer-footer">
+                <div class="knowledge-viewer-date">
+                    创建: {{ formatDate(viewedKnowledgeDoc.created_at) }} | 
+                    更新: {{ formatDate(viewedKnowledgeDoc.updated_at || viewedKnowledgeDoc.created_at) }}
+                </div>
+                <div class="knowledge-doc-actions">
+                    <button class="btn-sm" @click="shareKnowledgeDoc" style="background:linear-gradient(90deg, #a3de83, #4ecdc4);">
+                        分享
+                    </button>
+                    <button class="btn-sm" @click="exportKnowledgeDoc" style="background:linear-gradient(90deg, #ff9a8b, #ff6b6b);">
+                        导出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    // Vue 3 应用 - 智能成长手账系统（Supabase版 + 知识库）
+    const { createApp, ref, computed, onMounted } = Vue;
+    
+    // 初始化Supabase客户端
+    const supabaseUrl = window.SUPABASE_URL;
+    const supabaseAnonKey = window.SUPABASE_ANON_KEY;
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    console.log('Supabase客户端就绪');
+    
+    // 创建 Vue 应用
+    const app = createApp({
+        setup() {
+            // ==================== 状态与配置 ====================
+            const user = ref(null);
+            const loginEmail = ref('');
+            const loginPassword = ref('');
+            const isLoading = ref(false);
+            const isSaving = ref(false);
+            const statusMessage = ref(null);
+            const activeView = ref('main'); // 'main' 或 'knowledge'
+            
+            // 核心游戏数据
+            const player = ref({ level: 1, xp: 0, nextLevelXp: 100, streak: 1 });
+            const skills = ref([]);
+            const notes = ref([]);
+            const achievements = ref([
+                { id: 1, category: 'yixue', name: '八字入门', icon: '🌌', description: '完成10次八字学习', requirement: 10, current: 0, unlocked: false, reward: 100 },
+                { id: 2, category: 'yixue', name: '六爻初探', icon: '☯️', description: '完成10次六爻学习', requirement: 10, current: 0, unlocked: false, reward: 100 },
+                { id: 3, category: 'yixue', name: '风水基础', icon: '🏞️', description: '完成10次风水学习', requirement: 10, current: 0, unlocked: false, reward: 100 },
+                { id: 4, category: 'yixue', name: '奇门入门', icon: '🌀', description: '完成10次奇门学习', requirement: 10, current: 0, unlocked: false, reward: 100 },
+                { id: 5, category: 'yixue', name: '择日初学', icon: '📅', description: '完成10次择日学习', requirement: 10, current: 0, unlocked: false, reward: 100 },
+                { id: 6, category: 'english', name: '高中水平', icon: '🎓', description: '掌握3000个英语单词', requirement: 3000, current: 0, unlocked: false, reward: 150 },
+                { id: 7, category: 'english', name: '四级水平', icon: '📘', description: '掌握5000个英语单词', requirement: 5000, current: 0, unlocked: false, reward: 250 },
+                { id: 8, category: 'english', name: '六级水平', icon: '📗', description: '掌握6500个英语单词', requirement: 6500, current: 0, unlocked: false, reward: 400 },
+                { id: 9, category: 'fitness', name: '运动新手', icon: '💪', description: '完成30次健身运动', requirement: 30, current: 0, unlocked: false, reward: 120 },
+                { id: 10, category: 'fitness', name: '健身达人', icon: '🏋️', description: '完成100次健身运动', requirement: 100, current: 0, unlocked: false, reward: 300 },
+                { id: 11, category: 'meditation', name: '冥想初体验', icon: '🧘', description: '完成20次冥想练习', requirement: 20, current: 0, unlocked: false, reward: 80 },
+                { id: 12, category: 'meditation', name: '心灵平静', icon: '🌿', description: '完成50次冥想练习', requirement: 50, current: 0, unlocked: false, reward: 200 },
+                { id: 13, category: 'skill', name: '多面手', icon: '🔧', description: '拥有5个不同技能', requirement: 5, current: 0, unlocked: false, reward: 150 },
+                { id: 14, category: 'skill', name: '技能大师', icon: '👑', description: '拥有3个达到5级的技能', requirement: 3, current: 0, unlocked: false, reward: 500 }
+            ]);
+            
+            const activeAchievementTab = ref('all');
+            const activeNoteTab = ref('editor');
+            const noteCategories = ref(['all', 'editor']);
+            const newNote = ref({ 
+                title: '', 
+                content: '', 
+                tagsInput: '', 
+                imageData: null,
+                category: 'general' 
+            });
+            
+            // 折叠状态
+            const collapseStatus = ref(false);
+            const collapseSkills = ref(false);
+            const collapseAchievements = ref(false);
+            const collapseNotes = ref(false);
+            const collapseBookNotes = ref(false);
+            const showBatchAdd = ref(false);
+            const batchAchievementInput = ref('');
+            
+            // 读书笔记状态
+            const bookNotes = ref([]);
+            const showBookForm = ref(false);
+            const editingBookNote = ref(null);
+            const newBookNote = ref({
+                title: '',
+                author: '',
+                note: '',
+                reflection: '',
+                rating: 3,
+                tags: [],
+                createdAt: new Date().toISOString()
+            });
+            const newBookTagInput = ref('');
+            const bookSearchQuery = ref('');
+            const filteredBookNotes = ref([]);
+            
+            // 常用读书标签
+            const commonBookTags = ref([
+                '小说', '文学', '心理学', '哲学', '历史', '传记', 
+                '科幻', '悬疑', '成长', '教育', '技术', '管理',
+                '理财', '健康', '艺术', '科普', '经典', '畅销',
+                '已完成', '在读中', '待阅读', '五星推荐', '值得重读'
+            ]);
+            
+            // 笔记筛选器
+            const noteFilter = ref({
+                timeRange: 'all',
+                selectedTag: '',
+                selectedCategory: '',
+                keyword: ''
+            });
+            
+            // ==================== 知识库状态 ====================
+            const knowledgeCategories = ref([]);
+            const knowledgeDocs = ref([]);
+            const filteredKnowledgeDocs = ref([]);
+            const activeKnowledgeCategory = ref(null);
+            const currentKnowledgeDoc = ref({
+                id: null,
+                title: '',
+                content: '',
+                category_id: null,
+                tags: [],
+                icon: '📄'
+            });
+            const viewedKnowledgeDoc = ref(null);
+            const editingKnowledgeDoc = ref(null);
+            const showKnowledgeEditor = ref(false);
+            const showKnowledgeViewer = ref(false);
+            const showNewCategoryForm = ref(false);
+            const newKnowledgeCategory = ref({
+                name: '',
+                description: '',
+                icon: '📁'
+            });
+            const knowledgeSearchQuery = ref('');
+            const knowledgeTagInput = ref('');
+            
+            // ==================== 计算属性 ====================
+            const totalXpEarned = computed(() => {
+                let total = player.value.xp;
+                skills.value.forEach(skill => total += skill.xp);
+                achievements.value.forEach(ach => {
+                    if (ach.unlocked) total += ach.reward;
+                });
+                return total;
+            });
+
+            const totalSkills = computed(() => skills.value.length);
+            const totalNotes = computed(() => notes.value.length);
+            const completedAchievementsCount = computed(() => 
+                achievements.value.filter(a => a.unlocked).length
+            );
+
+            // 所有笔记标签
+            const allNoteTags = computed(() => {
+                const tags = new Set();
+                notes.value.forEach(note => {
+                    if (note.tags && Array.isArray(note.tags)) {
+                        note.tags.forEach(tag => tags.add(tag));
+                    }
+                });
+                return Array.from(tags).sort();
+            });
+
+            // 过滤后的成就
+            const filteredAchievements = computed(() => {
+                if (activeAchievementTab.value === 'all') return achievements.value;
+                return achievements.value.filter(a => a.category === activeAchievementTab.value);
+            });
+
+            // 过滤和排序后的笔记
+            const filteredAndSortedNotes = computed(() => {
+                let filtered = notes.value;
+                
+                if (activeNoteTab.value !== 'all' && activeNoteTab.value !== 'editor') {
+                    filtered = filtered.filter(note => {
+                        if (note.category === activeNoteTab.value) return true;
+                        const keywords = categoryRules[activeNoteTab.value];
+                        if (keywords && note.tags) {
+                            return note.tags.some(tag => 
+                                keywords.some(keyword => tag.toLowerCase().includes(keyword.toLowerCase()))
+                            );
+                        }
+                        return false;
+                    });
+                }
+                
+                const filter = noteFilter.value;
+                
+                if (filter.timeRange !== 'all') {
+                    const now = new Date();
+                    filtered = filtered.filter(note => {
+                        const noteDate = new Date(note.createdAt);
+                        switch(filter.timeRange) {
+                            case 'today':
+                                return noteDate.toDateString() === now.toDateString();
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                return noteDate >= weekAgo;
+                            case 'month':
+                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                return noteDate >= monthAgo;
+                            case 'year':
+                                const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                                return noteDate >= yearAgo;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+                
+                if (filter.selectedTag) {
+                    filtered = filtered.filter(note => 
+                        note.tags && note.tags.includes(filter.selectedTag)
+                    );
+                }
+                
+                if (filter.selectedCategory) {
+                    filtered = filtered.filter(note => note.category === filter.selectedCategory);
+                }
+                
+                if (filter.keyword) {
+                    const keyword = filter.keyword.toLowerCase();
+                    filtered = filtered.filter(note => 
+                        note.title.toLowerCase().includes(keyword) || 
+                        note.content.toLowerCase().includes(keyword) ||
+                        (note.tags && note.tags.some(tag => tag.toLowerCase().includes(keyword)))
+                    );
+                }
+                
+                return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            });
+
+            // 读书笔记相关计算属性
+            const averageBookRating = computed(() => {
+                if (bookNotes.value.length === 0) return 0;
+                const total = bookNotes.value.reduce((sum, book) => sum + book.rating, 0);
+                return total / bookNotes.value.length;
+            });
+
+            const favoriteBooksCount = computed(() => {
+                return bookNotes.value.filter(book => book.rating >= 4).length;
+            });
+
+            const totalBookTags = computed(() => {
+                const allTags = new Set();
+                bookNotes.value.forEach(book => {
+                    if (book.tags && Array.isArray(book.tags)) {
+                        book.tags.forEach(tag => allTags.add(tag));
+                    }
+                });
+                return allTags.size;
+            });
+            
+            // 知识库相关计算属性
+            const recentKnowledgeDocsCount = computed(() => {
+                const now = new Date();
+                const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return knowledgeDocs.value.filter(doc => {
+                    const updated = new Date(doc.updated_at || doc.created_at);
+                    return updated >= sevenDaysAgo;
+                }).length;
+            });
+            
+            const popularCategoryName = computed(() => {
+                if (knowledgeCategories.value.length === 0) return '无';
+                
+                const categoryCounts = {};
+                knowledgeDocs.value.forEach(doc => {
+                    if (doc.category_id) {
+                        categoryCounts[doc.category_id] = (categoryCounts[doc.category_id] || 0) + 1;
+                    }
+                });
+                
+                let maxCount = 0;
+                let popularCategoryId = null;
+                
+                for (const [categoryId, count] of Object.entries(categoryCounts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        popularCategoryId = categoryId;
+                    }
+                }
+                
+                if (popularCategoryId) {
+                    const category = knowledgeCategories.value.find(c => c.id == popularCategoryId);
+                    return category ? category.name : '其他';
+                }
+                
+                return '无';
+            });
+
+            // ==================== 智能分类配置 ====================
+            const categoryRules = {
+                'bazi': ['八字', '命理', '十神', '干支', '五行'],
+                'stock': ['股票', 'k线', '炒股', '大盘', 'A股'],
+                'fitness': ['健身', '运动', '跑步', '撸铁', '增肌', '减脂'],
+                'daily': ['每日', '日记', '总结', '反思', '计划', '日常'],
+                'work': ['工作', '项目', '任务', '汇报', '会议', '职场'],
+                'study': ['学习', '读书', '课程', '考试', '论文', '知识'],
+                'book': ['读书', '阅读', '书籍', '书评', '读后感']
+            };
+
+            const categoryDisplayNames = {
+                'all': '全部',
+                'editor': '新建笔记',
+                'bazi': '八字复盘',
+                'stock': '股票复盘',
+                'fitness': '健身记录',
+                'english': '英语学习',
+                'daily': '每日复盘',
+                'work': '工作笔记',
+                'study': '学习笔记',
+                'general': '一般笔记',
+                'custom': '自定义成就',
+                'book': '读书笔记'
+            };
+
+            // ==================== 辅助函数 ====================
+            const showStatusMessage = (text, type = 'info', duration = 5000) => {
+                statusMessage.value = { text, type };
+                if (duration > 0) {
+                    setTimeout(() => {
+                        statusMessage.value = null;
+                    }, duration);
+                }
+            };
+
+            const getCategoryDisplayName = (cat) => {
+                return categoryDisplayNames[cat] || cat;
+            };
+
+            const getNoteById = (id) => {
+                return notes.value.find(note => note.id == id) || {};
+            };
+
+            const updateNoteCategoriesFromNotes = () => {
+                const categories = new Set(['all', 'editor']);
+                notes.value.forEach(note => {
+                    if (note.category && note.category !== 'general') {
+                        categories.add(note.category);
+                    }
+                });
+                Object.keys(categoryRules).forEach(cat => {
+                    if (notes.value.some(n => n.category === cat) || 
+                        notes.value.some(n => n.tags && n.tags.some(t => categoryRules[cat].some(k => t.includes(k))))) {
+                        categories.add(cat);
+                    }
+                });
+                noteCategories.value = Array.from(categories);
+            };
+
+            const determineCategoryFromTags = (tags) => {
+                const tagSet = new Set(tags.map(tag => tag.toLowerCase().trim()));
+                
+                for (const [category, keywords] of Object.entries(categoryRules)) {
+                    const keywordSet = keywords.map(k => k.toLowerCase());
+                    if (keywordSet.some(keyword => tagSet.has(keyword))) {
+                        return category;
+                    }
+                }
+                
+                for (const tag of tags) {
+                    const lowerTag = tag.toLowerCase();
+                    for (const [category, keywords] of Object.entries(categoryRules)) {
+                        if (keywords.some(keyword => 
+                            lowerTag === keyword.toLowerCase() ||
+                            lowerTag.startsWith(keyword.toLowerCase()) ||
+                            lowerTag.endsWith(keyword.toLowerCase())
+                        )) {
+                            return category;
+                        }
+                    }
+                }
+                
+                return 'general';
+            };
+
+            const resetNoteFilters = () => {
+                noteFilter.value = {
+                    timeRange: 'all',
+                    selectedTag: '',
+                    selectedCategory: '',
+                    keyword: ''
+                };
+            };
+            
+            // Markdown渲染函数
+            const renderMarkdown = (text) => {
+                if (!text) return '';
+                
+                // 简单Markdown转换
+                let html = text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"(?=[^>]*<)/g, '&quot;');
+                
+                // 标题
+                html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+                html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+                html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+                
+                // 粗体
+                html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+                
+                // 斜体
+                html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+                
+                // 代码块
+                html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+                
+                // 引用
+                html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+                
+                // 列表
+                html = html.replace(/^\s*\* (.*$)/gm, '<li>$1</li>');
+                html = html.replace(/^\s*\- (.*$)/gm, '<li>$1</li>');
+                html = html.replace(/^\s*\+ (.*$)/gm, '<li>$1</li>');
+                
+                // 数字列表
+                html = html.replace(/^\s*\d+\. (.*$)/gm, '<li>$1</li>');
+                
+                // 段落
+                html = html.replace(/\n\n/g, '</p><p>');
+                html = html.replace(/\n/g, '<br>');
+                
+                // 链接
+                html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+                
+                return '<p>' + html + '</p>';
+            };
+            
+            // 获取摘要
+            const getExcerpt = (text, length = 100) => {
+                if (!text) return '';
+                if (text.length <= length) return text;
+                return text.substring(0, length) + '...';
+            };
+            
+            // 获取分类名称
+            const getCategoryName = (categoryId) => {
+                if (!categoryId) return '未分类';
+                const category = knowledgeCategories.value.find(c => c.id == categoryId);
+                return category ? category.name : '未分类';
+            };
+            
+            // 获取分类下的文档数量
+            const getDocsCountByCategory = (categoryId) => {
+                if (!categoryId) return knowledgeDocs.value.length;
+                return knowledgeDocs.value.filter(doc => doc.category_id == categoryId).length;
+            };
+
+            // ==================== 登录注册功能 ====================
+            async function handleLogin() {
+                if (!loginEmail.value || !loginPassword.value) {
+                    showStatusMessage('请输入邮箱和密码', 'error');
+                    return;
+                }
+                
+                isLoading.value = true;
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: loginEmail.value,
+                        password: loginPassword.value,
+                    });
+                    
+                    if (error) {
+                        showStatusMessage('登录失败: ' + error.message, 'error');
+                    } else {
+                        user.value = data.user;
+                        showStatusMessage('登录成功！', 'success');
+                        await loadFromSupabase();
+                    }
+                } catch (error) {
+                    showStatusMessage('登录失败: ' + error.message, 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            }
+            
+            async function handleSignUp() {
+                if (!loginEmail.value || !loginPassword.value) {
+                    showStatusMessage('请输入邮箱和密码', 'error');
+                    return;
+                }
+                
+                isLoading.value = true;
+                try {
+                    const { data, error } = await supabase.auth.signUp({
+                        email: loginEmail.value,
+                        password: loginPassword.value,
+                    });
+                    
+                    if (error) {
+                        showStatusMessage('注册失败: ' + error.message, 'error');
+                    } else {
+                        showStatusMessage('注册成功！请使用相同信息登录。', 'success');
+                        loginEmail.value = '';
+                        loginPassword.value = '';
+                    }
+                } catch (error) {
+                    showStatusMessage('注册失败: ' + error.message, 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            }
+            
+            async function handleLogout() {
+                const { error } = await supabase.auth.signOut();
+                if (error) {
+                    showStatusMessage('退出失败: ' + error.message, 'error');
+                } else {
+                    user.value = null;
+                    showStatusMessage('已退出登录', 'success');
+                }
+            }
+
+            // ==================== Supabase数据存储 ====================
+            async function loadFromSupabase() {
+                if (!user.value) {
+                    showStatusMessage('请先登录', 'error');
+                    return;
+                }
+                
+                isLoading.value = true;
+                try {
+                    // 从Supabase加载玩家数据
+                    const { data: playerData, error: playerError } = await supabase
+                        .from('players')
+                        .select('*')
+                        .eq('user_id', user.value.id)
+                        .single();
+                    
+                    if (!playerError && playerData) {
+                        player.value = playerData.data || { level: 1, xp: 0, nextLevelXp: 100, streak: 1 };
+                    }
+                    
+                    // 加载技能数据
+                    const { data: skillsData, error: skillsError } = await supabase
+                        .from('skills')
+                        .select('*')
+                        .eq('user_id', user.value.id);
+                    
+                    if (!skillsError && skillsData) {
+                        skills.value = skillsData.map(skill => skill.data);
+                    }
+                    
+                    // 加载成就数据
+                    const { data: achievementsData, error: achievementsError } = await supabase
+                        .from('achievements')
+                        .select('*')
+                        .eq('user_id', user.value.id);
+                    
+                    if (!achievementsError && achievementsData) {
+                        achievements.value = achievementsData.map(ach => ach.data);
+                    }
+                    
+                    // 加载笔记数据
+                    const { data: notesData, error: notesError } = await supabase
+                        .from('notes')
+                        .select('*')
+                        .eq('user_id', user.value.id);
+                    
+                    if (!notesError && notesData) {
+                        notes.value = notesData.map(note => note.data);
+                        updateNoteCategoriesFromNotes();
+                    }
+                    
+                    // 加载知识库分类
+                    const { data: categoriesData, error: categoriesError } = await supabase
+                        .from('knowledge_categories')
+                        .select('*')
+                        .eq('user_id', user.value.id);
+                    
+                    if (!categoriesError && categoriesData) {
+                        knowledgeCategories.value = categoriesData;
+                    }
+                    
+                    // 加载知识文档
+                    const { data: docsData, error: docsError } = await supabase
+                        .from('knowledge_docs')
+                        .select('*')
+                        .eq('user_id', user.value.id);
+                    
+                    if (!docsError && docsData) {
+                        knowledgeDocs.value = docsData;
+                        filteredKnowledgeDocs.value = [...docsData];
+                    }
+                    
+                    // 初始化过滤的读书笔记
+                    filteredBookNotes.value = [...bookNotes.value];
+                    
+                    showStatusMessage('数据加载成功！', 'success');
+                } catch (error) {
+                    console.error('加载数据失败:', error);
+                    showStatusMessage('加载失败: ' + error.message, 'error');
+                } finally {
+                    isLoading.value = false;
+                }
+            }
+            
+            async function saveToSupabase() {
+                if (!user.value) {
+                    showStatusMessage('请先登录', 'error');
+                    return false;
+                }
+                
+                isSaving.value = true;
+                try {
+                    // 保存玩家数据
+                    const { error: playerError } = await supabase
+                        .from('players')
+                        .upsert({
+                            user_id: user.value.id,
+                            data: player.value,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'user_id' });
+                    
+                    if (playerError) throw playerError;
+                    
+                    // 保存技能数据
+                    for (const skill of skills.value) {
+                        const { error: skillError } = await supabase
+                            .from('skills')
+                            .upsert({
+                                user_id: user.value.id,
+                                skill_id: skill.id,
+                                data: skill,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'user_id,skill_id' });
+                        
+                        if (skillError) throw skillError;
+                    }
+                    
+                    // 保存成就数据
+                    for (const achievement of achievements.value) {
+                        const { error: achievementError } = await supabase
+                            .from('achievements')
+                            .upsert({
+                                user_id: user.value.id,
+                                achievement_id: achievement.id,
+                                data: achievement,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'user_id,achievement_id' });
+                        
+                        if (achievementError) throw achievementError;
+                    }
+                    
+                    // 保存笔记数据
+                    for (const note of notes.value) {
+                        const { error: noteError } = await supabase
+                            .from('notes')
+                            .upsert({
+                                user_id: user.value.id,
+                                note_id: note.id,
+                                data: note,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'user_id,note_id' });
+                        
+                        if (noteError) throw noteError;
+                    }
+                    
+                    showStatusMessage('💾 数据已保存至云端！', 'success', 4000);
+                    return true;
+                } catch (error) {
+                    console.error('保存数据失败:', error);
+                    showStatusMessage('保存失败: ' + error.message, 'error', 6000);
+                    return false;
+                } finally {
+                    isSaving.value = false;
+                }
+            }
+            
+            // ==================== 知识库功能 ====================
+            // 搜索知识文档
+            const searchKnowledgeDocs = () => {
+                if (!knowledgeSearchQuery.value.trim()) {
+                    // 如果没有搜索词，显示当前分类的文档
+                    if (activeKnowledgeCategory.value) {
+                        filteredKnowledgeDocs.value = knowledgeDocs.value.filter(
+                            doc => doc.category_id == activeKnowledgeCategory.value.id
+                        );
+                    } else {
+                        filteredKnowledgeDocs.value = [...knowledgeDocs.value];
+                    }
+                    return;
+                }
+                
+                const query = knowledgeSearchQuery.value.toLowerCase().trim();
+                filteredKnowledgeDocs.value = knowledgeDocs.value.filter(doc => {
+                    const matchesSearch = 
+                        doc.title.toLowerCase().includes(query) ||
+                        doc.content.toLowerCase().includes(query) ||
+                        (doc.tags && doc.tags.some(tag => tag.toLowerCase().includes(query)));
+                    
+                    // 如果选择了分类，还要匹配分类
+                    if (activeKnowledgeCategory.value) {
+                        return matchesSearch && doc.category_id == activeKnowledgeCategory.value.id;
+                    }
+                    
+                    return matchesSearch;
+                });
+            };
+            
+            // 设置活动分类
+            const setActiveKnowledgeCategory = (category) => {
+                activeKnowledgeCategory.value = category;
+                searchKnowledgeDocs(); // 重新搜索以更新文档列表
+            };
+            
+            // 创建新文档
+            const createNewKnowledgeDoc = () => {
+                currentKnowledgeDoc.value = {
+                    id: null,
+                    title: '',
+                    content: '',
+                    category_id: activeKnowledgeCategory.value ? activeKnowledgeCategory.value.id : null,
+                    tags: [],
+                    icon: '📄'
+                };
+                editingKnowledgeDoc.value = null;
+                showKnowledgeEditor.value = true;
+                showKnowledgeViewer.value = false;
+            };
+            
+            // 查看文档
+            const viewKnowledgeDoc = (doc) => {
+                viewedKnowledgeDoc.value = doc;
+                showKnowledgeViewer.value = true;
+                showKnowledgeEditor.value = false;
+            };
+            
+            // 编辑文档
+            const editKnowledgeDoc = (doc) => {
+                currentKnowledgeDoc.value = {
+                    id: doc.id,
+                    title: doc.title,
+                    content: doc.content,
+                    category_id: doc.category_id,
+                    tags: doc.tags || [],
+                    icon: doc.icon || '📄'
+                };
+                editingKnowledgeDoc.value = doc.id;
+                showKnowledgeEditor.value = true;
+                showKnowledgeViewer.value = false;
+            };
+            
+            // 编辑正在查看的文档
+            const editViewedKnowledgeDoc = () => {
+                if (viewedKnowledgeDoc.value) {
+                    editKnowledgeDoc(viewedKnowledgeDoc.value);
+                }
+            };
+            
+            // 预览文档
+            const previewKnowledgeDoc = () => {
+                viewedKnowledgeDoc.value = currentKnowledgeDoc.value;
+                showKnowledgeViewer.value = true;
+                showKnowledgeEditor.value = false;
+            };
+            
+            // 保存知识文档
+            const saveKnowledgeDoc = async () => {
+                if (!currentKnowledgeDoc.value.title.trim()) {
+                    showStatusMessage('请输入文档标题', 'error');
+                    return;
+                }
+                
+                if (!currentKnowledgeDoc.value.content.trim()) {
+                    showStatusMessage('请输入文档内容', 'error');
+                    return;
+                }
+                
+                isSaving.value = true;
+                try {
+                    const docData = {
+                        user_id: user.value.id,
+                        title: currentKnowledgeDoc.value.title,
+                        content: currentKnowledgeDoc.value.content,
+                        category_id: currentKnowledgeDoc.value.category_id,
+                        tags: currentKnowledgeDoc.value.tags,
+                        icon: currentKnowledgeDoc.value.icon,
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    let result;
+                    
+                    if (editingKnowledgeDoc.value) {
+                        // 更新现有文档
+                        result = await supabase
+                            .from('knowledge_docs')
+                            .update(docData)
+                            .eq('id', editingKnowledgeDoc.value);
+                        
+                        // 更新本地数据
+                        const index = knowledgeDocs.value.findIndex(d => d.id === editingKnowledgeDoc.value);
+                        if (index !== -1) {
+                            knowledgeDocs.value[index] = {
+                                ...knowledgeDocs.value[index],
+                                ...docData
+                            };
+                        }
+                    } else {
+                        // 创建新文档
+                        docData.created_at = new Date().toISOString();
+                        result = await supabase
+                            .from('knowledge_docs')
+                            .insert(docData)
+                            .select();
+                        
+                        if (result.data && result.data[0]) {
+                            knowledgeDocs.value.unshift(result.data[0]);
+                        }
+                    }
+                    
+                    if (result.error) throw result.error;
+                    
+                    // 更新过滤列表
+                    searchKnowledgeDocs();
+                    
+                    showStatusMessage('文档保存成功！', 'success');
+                    cancelKnowledgeEdit();
+                } catch (error) {
+                    console.error('保存文档失败:', error);
+                    showStatusMessage('保存失败: ' + error.message, 'error');
+                } finally {
+                    isSaving.value = false;
+                }
+            };
+            
+            // 取消知识编辑
+            const cancelKnowledgeEdit = () => {
+                currentKnowledgeDoc.value = {
+                    id: null,
+                    title: '',
+                    content: '',
+                    category_id: null,
+                    tags: [],
+                    icon: '📄'
+                };
+                editingKnowledgeDoc.value = null;
+                showKnowledgeEditor.value = false;
+                showKnowledgeViewer.value = false;
+            };
+            
+            // 添加知识标签
+            const addKnowledgeTag = () => {
+                const tag = knowledgeTagInput.value.trim();
+                if (tag && !currentKnowledgeDoc.value.tags.includes(tag)) {
+                    currentKnowledgeDoc.value.tags.push(tag);
+                    knowledgeTagInput.value = '';
+                }
+            };
+            
+            // 移除知识标签
+            const removeKnowledgeTag = (tag) => {
+                const index = currentKnowledgeDoc.value.tags.indexOf(tag);
+                if (index !== -1) {
+                    currentKnowledgeDoc.value.tags.splice(index, 1);
+                }
+            };
+            
+            // 保存知识分类
+            const saveKnowledgeCategory = async () => {
+                if (!newKnowledgeCategory.value.name.trim()) {
+                    showStatusMessage('请输入分类名称', 'error');
+                    return;
+                }
+                
+                isSaving.value = true;
+                try {
+                    const categoryData = {
+                        user_id: user.value.id,
+                        name: newKnowledgeCategory.value.name,
+                        description: newKnowledgeCategory.value.description,
+                        icon: newKnowledgeCategory.value.icon,
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    const result = await supabase
+                        .from('knowledge_categories')
+                        .insert(categoryData)
+                        .select();
+                    
+                    if (result.error) throw result.error;
+                    
+                    if (result.data && result.data[0]) {
+                        knowledgeCategories.value.push(result.data[0]);
+                    }
+                    
+                    showStatusMessage('分类创建成功！', 'success');
+                    showNewCategoryForm.value = false;
+                    newKnowledgeCategory.value = {
+                        name: '',
+                        description: '',
+                        icon: '📁'
+                    };
+                } catch (error) {
+                    console.error('创建分类失败:', error);
+                    showStatusMessage('创建失败: ' + error.message, 'error');
+                } finally {
+                    isSaving.value = false;
+                }
+            };
+            
+            // 删除知识文档
+            const deleteKnowledgeDoc = async (docId) => {
+                if (!confirm('确定要删除这个文档吗？此操作不可撤销！')) return;
+                
+                isSaving.value = true;
+                try {
+                    const { error } = await supabase
+                        .from('knowledge_docs')
+                        .delete()
+                        .eq('id', docId);
+                    
+                    if (error) throw error;
+                    
+                    // 从本地数据中移除
+                    const index = knowledgeDocs.value.findIndex(d => d.id === docId);
+                    if (index !== -1) {
+                        knowledgeDocs.value.splice(index, 1);
+                    }
+                    
+                    // 更新过滤列表
+                    searchKnowledgeDocs();
+                    
+                    showStatusMessage('文档删除成功！', 'success');
+                } catch (error) {
+                    console.error('删除文档失败:', error);
+                    showStatusMessage('删除失败: ' + error.message, 'error');
+                } finally {
+                    isSaving.value = false;
+                }
+            };
+            
+            // 导入知识文档
+            const importKnowledgeDocs = () => {
+                // 这里可以实现导入功能
+                showStatusMessage('导入功能开发中...', 'info');
+            };
+            
+            // 分享知识文档
+            const shareKnowledgeDoc = () => {
+                if (viewedKnowledgeDoc.value) {
+                    // 创建分享链接
+                    const docUrl = `${window.location.origin}?knowledge_doc=${viewedKnowledgeDoc.value.id}`;
+                    navigator.clipboard.writeText(docUrl)
+                        .then(() => {
+                            showStatusMessage('文档链接已复制到剪贴板！', 'success');
+                        })
+                        .catch(() => {
+                            showStatusMessage('复制失败，请手动复制', 'error');
+                        });
+                }
+            };
+            
+            // 导出知识文档
+            const exportKnowledgeDoc = () => {
+                if (viewedKnowledgeDoc.value) {
+                    const docData = {
+                        title: viewedKnowledgeDoc.value.title,
+                        content: viewedKnowledgeDoc.value.content,
+                        category: getCategoryName(viewedKnowledgeDoc.value.category_id),
+                        tags: viewedKnowledgeDoc.value.tags,
+                        exported_at: new Date().toISOString()
+                    };
+                    
+                    const dataStr = JSON.stringify(docData, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileName = `知识文档_${viewedKnowledgeDoc.value.title}_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileName);
+                    linkElement.click();
+                    
+                    showStatusMessage('文档导出成功！', 'success');
+                }
+            };
+
+            // ==================== 读书笔记功能 ====================
+            const searchBooks = () => {
+                if (!bookSearchQuery.value.trim()) {
+                    filteredBookNotes.value = [...bookNotes.value];
+                    return;
+                }
+                
+                const query = bookSearchQuery.value.toLowerCase().trim();
+                filteredBookNotes.value = bookNotes.value.filter(book => {
+                    return (
+                        book.title.toLowerCase().includes(query) ||
+                        book.author.toLowerCase().includes(query) ||
+                        book.note.toLowerCase().includes(query) ||
+                        book.reflection.toLowerCase().includes(query) ||
+                        (book.tags && book.tags.some(tag => tag.toLowerCase().includes(query)))
+                    );
+                });
+            };
+
+            const toggleBookTag = (tag) => {
+                const index = newBookNote.value.tags.indexOf(tag);
+                if (index === -1) {
+                    newBookNote.value.tags.push(tag);
+                } else {
+                    newBookNote.value.tags.splice(index, 1);
+                }
+            };
+
+            const addCustomBookTag = () => {
+                const tag = newBookTagInput.value.trim();
+                if (tag && !newBookNote.value.tags.includes(tag)) {
+                    newBookNote.value.tags.push(tag);
+                    newBookTagInput.value = '';
+                    
+                    if (!commonBookTags.value.includes(tag)) {
+                        commonBookTags.value.push(tag);
+                    }
+                }
+            };
+
+            const saveBookNote = async () => {
+                if (!newBookNote.value.title.trim()) {
+                    showStatusMessage('请输入书名', 'error');
+                    return;
+                }
+                
+                if (!newBookNote.value.author.trim()) {
+                    showStatusMessage('请输入作者', 'error');
+                    return;
+                }
+                
+                const bookToSave = {
+                    ...newBookNote.value,
+                    id: editingBookNote.value || Date.now(),
+                    createdAt: editingBookNote.value ? newBookNote.value.createdAt : new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                if (editingBookNote.value) {
+                    const index = bookNotes.value.findIndex(b => b.id === editingBookNote.value);
+                    if (index !== -1) {
+                        bookNotes.value[index] = bookToSave;
+                    }
+                } else {
+                    bookNotes.value.unshift(bookToSave);
+                }
+                
+                cancelBookNote();
+                searchBooks();
+                
+                const saveSuccess = await saveToSupabase();
+                if (saveSuccess) {
+                    showStatusMessage(
+                        editingBookNote.value ? '读书笔记更新成功！' : '读书笔记添加成功！',
+                        'success'
+                    );
+                }
+            };
+
+            const editBookNote = (id) => {
+                const book = bookNotes.value.find(b => b.id === id);
+                if (!book) return;
+                
+                editingBookNote.value = id;
+                newBookNote.value = { ...book };
+                showBookForm.value = true;
+            };
+
+            const deleteBookNote = async (id) => {
+                if (!confirm('确定要删除这条读书笔记吗？')) return;
+                
+                const index = bookNotes.value.findIndex(b => b.id === id);
+                if (index !== -1) return;
+                
+                const deletedBook = bookNotes.value[index];
+                bookNotes.value.splice(index, 1);
+                
+                searchBooks();
+                
+                const saveSuccess = await saveToSupabase();
+                if (saveSuccess) {
+                    showStatusMessage(`已删除读书笔记"${deletedBook.title}"`, 'success');
+                }
+            };
+
+            const cancelBookNote = () => {
+                newBookNote.value = {
+                    title: '',
+                    author: '',
+                    note: '',
+                    reflection: '',
+                    rating: 3,
+                    tags: [],
+                    createdAt: new Date().toISOString()
+                };
+                newBookTagInput.value = '';
+                editingBookNote.value = null;
+                showBookForm.value = false;
+            };
+
+            // ==================== 笔记系统 ====================
+            const handleImageUpload = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    showStatusMessage('请选择图片文件！', 'error');
+                    return;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    showStatusMessage('图片大小不能超过2MB', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    newNote.value.imageData = e.target.result;
+                    showStatusMessage('图片已加载', 'success');
+                };
+                reader.readAsDataURL(file);
+            };
+
+            const clearUploadedImage = () => {
+                newNote.value.imageData = null;
+            };
+
+            const handleImageError = (event) => {
+                event.target.style.display = 'none';
+            };
+
+            const saveNote = async () => {
+                if (!newNote.value.title.trim() || !newNote.value.content.trim()) {
+                    showStatusMessage("请填写标题和内容", "error");
+                    return;
+                }
+
+                const tags = newNote.value.tagsInput
+                    .split(',')
+                    .map(tag => tag.trim())
+                    .filter(tag => tag.length > 0);
+
+                let finalCategory = 'general';
+                if (tags.length > 0) {
+                    finalCategory = determineCategoryFromTags(tags);
+                }
+
+                const noteToSave = {
+                    id: Date.now(),
+                    title: newNote.value.title,
+                    content: newNote.value.content,
+                    tags: tags,
+                    category: finalCategory,
+                    createdAt: new Date().toISOString()
+                };
+
+                if (newNote.value.imageData) {
+                    noteToSave.imageData = newNote.value.imageData;
+                }
+
+                notes.value.unshift(noteToSave);
+                
+                if (!noteCategories.value.includes(finalCategory) && finalCategory !== 'general') {
+                    noteCategories.value.push(finalCategory);
+                    showStatusMessage(`📁 已创建新分类: ${getCategoryDisplayName(finalCategory)}`, 'success');
+                }
+
+                const saveSuccess = await saveToSupabase();
+                if (saveSuccess) {
+                    clearNoteEditor();
+                    showStatusMessage(`📒 笔记"${noteToSave.title}"保存成功！`, "success", 5000);
+                }
+            };
+
+            const clearNoteEditor = () => {
+                newNote.value = {
+                    title: '', 
+                    content: '', 
+                    tagsInput: '', 
+                    imageData: null,
+                    category: 'general'
+                };
+            };
+
+            const editNote = (noteId) => {
+                const note = getNoteById(noteId);
+                if (!note) return;
+                
+                activeNoteTab.value = 'editor';
+                setTimeout(() => {
+                    newNote.value = {
+                        title: note.title,
+                        content: note.content || '',
+                        tagsInput: note.tags ? note.tags.join(', ') : '',
+                        imageData: note.imageData || null,
+                        category: note.category
+                    };
+                    
+                    const noteIndex = notes.value.findIndex(n => n.id === noteId);
+                    if (noteIndex !== -1) {
+                        notes.value.splice(noteIndex, 1);
+                    }
+                }, 100);
+            };
+
+            const deleteNote = async (noteId) => {
+                if (!confirm("确定要删除这条笔记吗？")) return;
+                const noteIndex = notes.value.findIndex(n => n.id === noteId);
+                if (noteIndex === -1) return;
+                
+                const deletedNote = notes.value[noteIndex];
+                notes.value.splice(noteIndex, 1);
+                
+                updateNoteCategoriesFromNotes();
+                await saveToSupabase();
+                showStatusMessage(`已删除笔记"${deletedNote.title}"`, 'success');
+            };
+
+            const formatDate = (dateString) => {
+                const date = new Date(dateString);
+                return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            };
+
+            // ==================== 技能系统 ====================
+            const getSkillXpPerPractice = (skill) => {
+                return skill.xpPerPractice || 10;
+            };
+
+            const addNewSkill = async () => {
+                const name = prompt("请输入新技能名称：", "例如：Python编程");
+                if (!name || !name.trim()) return;
+                
+                const category = prompt("选择技能类别 (易学/英语/健身/冥想/其他)：", "其他");
+                const icon = prompt("选一个表情图标：", "🌟");
+                const xpPerPractice = parseInt(prompt("每次练习可获得多少经验值？", "10")) || 10;
+                
+                skills.value.push({
+                    id: Date.now(),
+                    name: name.trim(),
+                    category: category || "其他",
+                    icon: icon || "🌟",
+                    level: 1,
+                    xp: 0,
+                    maxXp: 100,
+                    xpPerPractice: xpPerPractice,
+                    practiceCount: 0,
+                    createdAt: new Date().toISOString()
+                });
+                
+                const saveSuccess = await saveToSupabase();
+                if (saveSuccess) {
+                    showStatusMessage(`技能"${name.trim()}"添加成功！`, 'success');
+                }
+            };
+
+            const practiceSkill = async (skillId) => {
+                const skill = skills.value.find(s => s.id === skillId);
+                if (!skill) return;
+                
+                skill.xp += getSkillXpPerPractice(skill);
+                skill.practiceCount++;
+                player.value.xp += Math.floor(getSkillXpPerPractice(skill) * 0.5);
+                
+                if (skill.xp >= skill.maxXp) {
+                    skill.level++;
+                    skill.xp = 0;
+                    skill.maxXp = Math.floor(skill.maxXp * 1.8);
+                    showStatusMessage(`🎯 【${skill.name}】提升到 ${skill.level} 级！`, 'success');
+                }
+                
+                checkLevelUp();
+                await saveToSupabase();
+            };
+
+            const deleteSkill = async (skillId) => {
+                if (!confirm("确定要删除这个技能吗？")) return;
+                const skillIndex = skills.value.findIndex(s => s.id === skillId);
+                if (skillIndex === -1) return;
+                
+                const deletedSkill = skills.value[skillIndex];
+                skills.value.splice(skillIndex, 1);
+                
+                await saveToSupabase();
+                showStatusMessage(`已删除技能"${deletedSkill.name}"`, 'success');
+            };
+
+            // ==================== 成就系统 ====================
+            const loadExampleAchievements = () => {
+                batchAchievementInput.value = `[
+  {
+    "category": "custom",
+    "name": "早起达人",
+    "icon": "🌅",
+    "description": "连续30天早上6点前起床",
+    "requirement": 30,
+    "reward": 150
+  },
+  {
+    "category": "reading",
+    "name": "读书破万卷",
+    "icon": "📚",
+    "description": "阅读100本书",
+    "requirement": 100,
+    "reward": 300
+  }
+]`;
+                showStatusMessage('已加载示例成就数据，请检查并修改后添加', 'info');
+            };
+
+            const clearBatchInput = () => {
+                batchAchievementInput.value = '';
+            };
+
+            const addBatchAchievements = async () => {
+                if (!batchAchievementInput.value.trim()) {
+                    showStatusMessage('请输入成就数据', 'error');
+                    return;
+                }
+                
+                try {
+                    const newAchievements = JSON.parse(batchAchievementInput.value);
+                    if (!Array.isArray(newAchievements)) {
+                        throw new Error('成就数据必须是数组格式');
+                    }
+                    
+                    let maxId = achievements.value.reduce((max, ach) => Math.max(max, ach.id), 0);
+                    
+                    const addedCount = newAchievements.length;
+                    newAchievements.forEach(ach => {
+                        maxId++;
+                        
+                        const exists = achievements.value.some(a => a.name === ach.name);
+                        if (exists) {
+                            showStatusMessage(`成就"${ach.name}"已存在，跳过添加`, 'warning');
+                            return;
+                        }
+                        
+                        achievements.value.push({
+                            id: maxId,
+                            category: ach.category || 'custom',
+                            name: ach.name || '新成就',
+                            icon: ach.icon || '🏆',
+                            description: ach.description || '',
+                            requirement: ach.requirement || 1,
+                            current: ach.current || 0,
+                            unlocked: ach.unlocked || false,
+                            reward: ach.reward || 0
+                        });
+                    });
+                    
+                    const saveSuccess = await saveToSupabase();
+                    if (saveSuccess) {
+                        batchAchievementInput.value = '';
+                        showBatchAdd.value = false;
+                        showStatusMessage(`成功添加${addedCount}个新成就！`, 'success');
+                    }
+                } catch (error) {
+                    console.error('添加成就失败:', error);
+                    showStatusMessage(`添加失败: ${error.message}，请检查JSON格式`, 'error');
+                }
+            };
+
+            const deleteAchievement = async (achievementId) => {
+                if (!confirm("确定要删除这个成就吗？此操作不可撤销！")) return;
+                
+                const index = achievements.value.findIndex(a => a.id === achievementId);
+                if (index !== -1) {
+                    const deletedName = achievements.value[index].name;
+                    achievements.value.splice(index, 1);
+                    
+                    await saveToSupabase();
+                    showStatusMessage(`已删除成就"${deletedName}"`, 'success');
+                }
+            };
+
+            // ==================== 游戏逻辑 ====================
+            const calculateNextLevelXp = (level) => {
+                return Math.floor(100 * Math.pow(1.5, level - 1));
+            };
+
+            const checkLevelUp = () => {
+                while (player.value.xp >= player.value.nextLevelXp) {
+                    player.value.level++;
+                    player.value.xp -= player.value.nextLevelXp;
+                    player.value.nextLevelXp = calculateNextLevelXp(player.value.level);
+                    showStatusMessage(`🎉 恭喜升级！现在是 ${player.value.level} 级！`, 'success');
+                }
+            };
+
+            const resetData = async () => {
+                if (!confirm("⚠️ 警告：重置将永久清除所有技能、笔记、读书笔记和成就数据，此操作不可撤销！确定继续吗？")) return;
+                
+                player.value = { level: 1, xp: 0, nextLevelXp: calculateNextLevelXp(1), streak: 1 };
+                skills.value = [];
+                notes.value = [];
+                bookNotes.value = [];
+                filteredBookNotes.value = [];
+                noteCategories.value = ['all', 'editor'];
+                achievements.value.forEach(ach => {
+                    ach.current = 0;
+                    ach.unlocked = false;
+                });
+                
+                const saveSuccess = await saveToSupabase();
+                if (saveSuccess) {
+                    showStatusMessage('数据已重置并同步到云端', 'success');
+                }
+            };
+
+            // ==================== 初始化 ====================
+            onMounted(() => {
+                // 检查当前登录状态
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    user.value = session?.user || null;
+                    if (user.value) {
+                        loadFromSupabase();
+                    }
+                });
+                
+                // 监听认证状态变化
+                supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('认证状态变化:', event, session?.user?.email);
+                    user.value = session?.user || null;
+                    if (user.value) {
+                        loadFromSupabase();
+                    }
+                });
+                
+                player.value.nextLevelXp = calculateNextLevelXp(player.value.level);
+                console.log('✏️ 智能成长手账系统已启动！');
+                
+                // 初始化知识库搜索
+                searchKnowledgeDocs();
+            });
+
+            // ==================== 暴露给模板 ====================
+            return {
+                // 状态
+                user, loginEmail, loginPassword, isLoading, isSaving, statusMessage, activeView,
+                player, skills, achievements, notes, newNote,
+                activeAchievementTab, activeNoteTab, noteCategories,
+                
+                // 折叠状态和批量添加
+                collapseStatus, collapseSkills, collapseAchievements, collapseNotes, collapseBookNotes,
+                showBatchAdd, batchAchievementInput, noteFilter,
+                
+                // 读书笔记相关
+                bookNotes, showBookForm, editingBookNote, newBookNote, newBookTagInput,
+                bookSearchQuery, filteredBookNotes, commonBookTags,
+                
+                // 知识库相关
+                knowledgeCategories, knowledgeDocs, filteredKnowledgeDocs,
+                activeKnowledgeCategory, currentKnowledgeDoc, viewedKnowledgeDoc,
+                editingKnowledgeDoc, showKnowledgeEditor, showKnowledgeViewer,
+                showNewCategoryForm, newKnowledgeCategory, knowledgeSearchQuery, knowledgeTagInput,
+                
+                // 计算属性
+                totalXpEarned, totalSkills, totalNotes, completedAchievementsCount,
+                filteredAchievements, filteredAndSortedNotes, allNoteTags,
+                averageBookRating, favoriteBooksCount, totalBookTags,
+                recentKnowledgeDocsCount, popularCategoryName,
+                
+                // 登录注册
+                handleLogin, handleSignUp, handleLogout,
+                
+                // 数据存储
+                loadFromSupabase, saveToSupabase,
+                
+                // 读书笔记功能
+                toggleBookTag, addCustomBookTag, saveBookNote, editBookNote,
+                deleteBookNote, cancelBookNote, searchBooks,
+                
+                // 笔记系统
+                handleImageUpload, clearUploadedImage, handleImageError,
+                getCategoryDisplayName, resetNoteFilters, getNoteById,
+                
+                // 技能系统
+                getSkillXpPerPractice, addNewSkill, practiceSkill, deleteSkill,
+                
+                // 笔记系统
+                saveNote, clearNoteEditor, editNote, deleteNote, formatDate,
+                
+                // 成就系统
+                loadExampleAchievements, clearBatchInput, addBatchAchievements, deleteAchievement,
+                
+                // 知识库功能
+                searchKnowledgeDocs, setActiveKnowledgeCategory, createNewKnowledgeDoc,
+                viewKnowledgeDoc, editKnowledgeDoc, editViewedKnowledgeDoc, previewKnowledgeDoc,
+                saveKnowledgeDoc, cancelKnowledgeEdit, addKnowledgeTag, removeKnowledgeTag,
+                saveKnowledgeCategory, deleteKnowledgeDoc, importKnowledgeDocs,
+                shareKnowledgeDoc, exportKnowledgeDoc, getExcerpt, getCategoryName,
+                getDocsCountByCategory, renderMarkdown,
+                
+                // 其他
+                resetData
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
