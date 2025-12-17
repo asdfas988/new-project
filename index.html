@@ -285,11 +285,273 @@
             .action-buttons { position: static; justify-content: center; margin-top: 20px; }
             .header h1 { font-size: 2em; }
         }
+        /* 新增样式 */
+        .single-row-card {
+            grid-column: 1 / -1;
+        }
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            background: #fffaf5;
+            border: 2px solid #4ecdc4;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Comic Neue', cursive;
+            color: #5a4a42;
+            transition: all 0.3s;
+        }
+        .filter-btn.active {
+            background: linear-gradient(90deg, #4ecdc4, #2ba69b);
+            color: white;
+            box-shadow: 2px 2px 0px #2ba69b;
+        }
+        .filter-btn:hover:not(.active) {
+            background: #e8f4f3;
+        }
+        .btn-danger {
+            background: linear-gradient(90deg, #ff6b6b, #d45d5d) !important;
+            box-shadow: 3px 3px 0px #d45d5d !important;
+        }
+        .achievement-manage-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            font-size: 0.8em;
+            background: #fffaf5;
+            border: 1px solid #ff9a8b;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #ff6b6b;
+        }
+        .achievement-form {
+            background: #fffaf5;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px dashed #4ecdc4;
+        }
+        .achievement-form h3 {
+            margin-bottom: 15px;
+            color: #5a4a42;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #7a6a62;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0c9b8;
+            border-radius: 8px;
+            font-family: 'Comic Neue', cursive;
+            background: #fffefc;
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .custom-achievement-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(78, 205, 196, 0.2);
+            color: #2ba69b;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        /* 笔记筛选相关样式 */
+        .note-filters {
+            background: #fffaf5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 2px solid #e0c9b8;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e0c9b8;
+            border-radius: 30px;
+            font-family: 'Comic Neue', cursive;
+            font-size: 16px;
+            background: #fffefc;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 2px 2px 0px #2ba69b;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #7a6a62;
+        }
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .filter-section {
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-section h4 {
+            margin-bottom: 10px;
+            color: #5a4a42;
+            font-family: 'Gochi Hand', cursive;
+            font-size: 1.2em;
+        }
+        .tags-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .tag-filter-btn {
+            padding: 6px 12px;
+            background: rgba(255, 154, 139, 0.1);
+            border: 1px solid #ff9a8b;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #d45d5d;
+            transition: all 0.3s;
+        }
+        .tag-filter-btn:hover {
+            background: rgba(255, 154, 139, 0.2);
+        }
+        .tag-filter-btn.active {
+            background: rgba(255, 154, 139, 0.3);
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .sort-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .sort-btn {
+            padding: 8px 15px;
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid #4ecdc4;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #2ba69b;
+            transition: all 0.3s;
+        }
+        .sort-btn:hover {
+            background: rgba(78, 205, 196, 0.2);
+        }
+        .sort-btn.active {
+            background: rgba(78, 205, 196, 0.3);
+            border-color: #2ba69b;
+            color: #2ba69b;
+            font-weight: bold;
+        }
+        .filter-results {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #e0c9b8;
+        }
+        .filter-results span {
+            color: #7a6a62;
+            font-size: 0.9em;
+        }
+        .clear-filters-btn {
+            padding: 6px 12px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #ff6b6b;
+            transition: all 0.3s;
+        }
+        .clear-filters-btn:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+        .no-notes-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #c9b8a7;
+        }
+        .no-notes-message div:first-child {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+        .no-notes-message div:last-child {
+            font-size: 1.2em;
+            color: #a39687;
+        }
+        .note-preview {
+            margin: 15px 0;
+            color: #5a4a42;
+            line-height: 1.6;
+            max-height: 120px;
+            overflow: hidden;
+            position: relative;
+        }
+        .note-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, #fffefc 80%);
+        }
+        .note-date {
+            color: #7a6a62;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+        .filter-active-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
     <div id="app">
-<div class="container">
+        <div class="container">
             <!-- 登录界面 -->
             <div v-if="!isLoggedIn" class="login-panel">
                 <div class="card">
@@ -339,7 +601,7 @@
                 
                 <div class="grid">
                     <!-- 成长状态 -->
-                    <div class="card">
+                    <div class="card single-row-card">
                         <h2>
                             成长状态
                             <button class="collapse-btn" @click="collapsed.status = !collapsed.status">
@@ -362,7 +624,7 @@
                     </div>
                     
                     <!-- 技能树 -->
-                    <div class="card">
+                    <div class="card single-row-card">
                         <h2>
                             技能树
                             <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">
@@ -400,48 +662,121 @@
                     </div>
                     
                     <!-- 成就系统 -->
-                    <div class="card" style="grid-column: 1 / -1;">
+                    <div class="card single-row-card">
                         <h2>
                             成就系统
                             <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">
                                 {{ collapsed.achievements ? '展开' : '折叠' }}
                             </button>
+                            <button class="btn-sm" @click="toggleAchievementForm" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b);">
+                                {{ showAchievementForm ? '取消添加' : '添加成就' }}
+                            </button>
                         </h2>
+                        
+                        <!-- 添加成就表单 -->
+                        <div v-if="showAchievementForm" class="achievement-form">
+                            <h3>添加新成就</h3>
+                            <div class="form-group">
+                                <label for="achievement-name">成就名称</label>
+                                <input type="text" id="achievement-name" v-model="newAchievement.name" placeholder="例如: 早起达人">
+                            </div>
+                            <div class="form-group">
+                                <label for="achievement-description">成就描述</label>
+                                <textarea id="achievement-description" v-model="newAchievement.description" placeholder="例如: 连续7天早起"></textarea>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label for="achievement-requirement">解锁要求</label>
+                                    <input type="number" id="achievement-requirement" v-model.number="newAchievement.requirement" min="1" placeholder="例如: 7">
+                                </div>
+                                <div class="form-group">
+                                    <label for="achievement-reward">经验奖励</label>
+                                    <input type="number" id="achievement-reward" v-model.number="newAchievement.reward" min="0" placeholder="例如: 50">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="achievement-icon">选择图标</label>
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                                    <span v-for="icon in achievementIcons" :key="icon" 
+                                          class="achievement-icon-preview"
+                                          :style="{ 
+                                              cursor: 'pointer',
+                                              fontSize: '1.5em',
+                                              padding: '5px',
+                                              borderRadius: '5px',
+                                              backgroundColor: newAchievement.icon === icon ? '#e8f4f3' : 'transparent',
+                                              border: newAchievement.icon === icon ? '2px solid #4ecdc4' : '1px solid #e0c9b8'
+                                          }"
+                                          @click="newAchievement.icon = icon">
+                                        {{ icon }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-sm" @click="addNewAchievement" style="flex: 1;">保存成就</button>
+                                <button class="btn-sm btn-danger" @click="cancelNewAchievement" style="flex: 1;">取消</button>
+                            </div>
+                        </div>
+                        
                         <div v-show="!collapsed.achievements" class="achievement-grid">
-                            <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
+                            <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}" :style="{position: 'relative'}">
+                                <!-- 自定义成就标记 -->
+                                <div v-if="ach.isCustom" class="custom-achievement-badge">自定义</div>
+                                
                                 <div class="achievement-icon">{{ ach.icon }}</div>
                                 <h3 style="margin-bottom: 8px;">{{ ach.name }}</h3>
                                 <p style="color: #7a6a62; margin-bottom: 12px; font-size: 0.9em;">{{ ach.description }}</p>
                                 
                                 <div v-if="!ach.unlocked">
                                     <div class="achievement-progress">
-                                        <div class="achievement-progress-fill" :style="{ width: (ach.current / ach.requirement * 100) + '%' }"></div>
+                                        <div class="achievement-progress-fill" :style="{ width: Math.min(100, (ach.current / ach.requirement * 100)) + '%' }"></div>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #7a6a62;">
                                         <span>{{ ach.current }} / {{ ach.requirement }}</span>
-                                        <span>{{ Math.round(ach.current / ach.requirement * 100) }}%</span>
+                                        <span>{{ Math.round(Math.min(100, ach.current / ach.requirement * 100)) }}%</span>
                                     </div>
                                 </div>
                                 
                                 <div v-else style="text-align: center; padding: 12px; background: rgba(163,222,131,0.2); border-radius: 8px; margin-top: 12px;">
                                     <span style="color: #2d5a27; font-weight: bold;">已解锁</span>
                                 </div>
+                                
+                                <!-- 自定义成就管理按钮 -->
+                                <div v-if="ach.isCustom" style="margin-top: 15px; display: flex; gap: 8px;">
+                                    <button class="btn-sm" @click="editAchievement(ach.id)" style="font-size: 0.8em; padding: 5px 10px;">编辑</button>
+                                    <button class="btn-sm btn-danger" @click="deleteAchievement(ach.id)" style="font-size: 0.8em; padding: 5px 10px;">删除</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 添加新成就卡片 -->
+                            <div class="achievement-card" style="border: 2px dashed #4ecdc4; background-color: rgba(78, 205, 196, 0.05); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                <div class="achievement-icon">➕</div>
+                                <h3 style="margin-bottom: 8px; text-align: center;">添加新成就</h3>
+                                <p style="color: #7a6a62; margin-bottom: 12px; font-size: 0.9em; text-align: center;">创建自定义成就</p>
+                                <button class="btn-sm" @click="toggleAchievementForm" style="width: 80%; margin-top: 10px;">
+                                    添加成就
+                                </button>
                             </div>
                         </div>
                     </div>
                     
                     <!-- 笔记系统 -->
-                    <div class="card" style="grid-column: 1 / -1;">
+                    <div class="card single-row-card">
                         <h2>
                             笔记系统
                             <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">
                                 {{ collapsed.notes ? '展开' : '折叠' }}
                             </button>
+                            <span v-if="isFilterActive" class="filter-active-indicator"></span>
                         </h2>
                         <div v-show="!collapsed.notes">
                             <div class="note-tabs">
-                                <div class="note-tab" :class="{active: activeNoteTab === 'all'}" @click="activeNoteTab = 'all'">全部笔记</div>
-                                <div class="note-tab" :class="{active: activeNoteTab === 'editor'}" @click="activeNoteTab = 'editor'">新建笔记</div>
+                                <div class="note-tab" :class="{active: activeNoteTab === 'all'}" @click="activeNoteTab = 'all'; clearFilters()">
+                                    全部笔记
+                                </div>
+                                <div class="note-tab" :class="{active: activeNoteTab === 'editor'}" @click="activeNoteTab = 'editor'">
+                                    新建笔记
+                                </div>
                             </div>
                             
                             <div v-if="activeNoteTab === 'editor'" style="background: #fffaf5; padding: 20px; border-radius: 12px;">
@@ -451,20 +786,127 @@
                                 <button class="btn" @click="saveNote">保存笔记</button>
                             </div>
                             
-                            <div v-if="activeNoteTab === 'all'" class="note-list">
-                                <div v-if="notes.length === 0" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #c9b8a7;">
-                                    <div style="font-size: 3em;">暂无笔记</div>
+                            <div v-if="activeNoteTab === 'all'">
+                                <!-- 笔记筛选器 -->
+                                <div class="note-filters">
+                                    <!-- 搜索框 -->
+                                    <div class="search-box">
+                                        <div class="search-icon">🔍</div>
+                                        <input 
+                                            type="text" 
+                                            v-model="noteFilters.search" 
+                                            placeholder="搜索笔记标题或内容..."
+                                            @input="applyFilters"
+                                        >
+                                    </div>
+                                    
+                                    <div class="filter-options">
+                                        <!-- 标签筛选 -->
+                                        <div class="filter-section">
+                                            <h4>
+                                                标签筛选 
+                                                <span v-if="noteFilters.selectedTags.length > 0" class="filter-active-indicator"></span>
+                                            </h4>
+                                            <div v-if="allTags.length > 0" class="tags-filter">
+                                                <button 
+                                                    v-for="tag in allTags" 
+                                                    :key="tag"
+                                                    class="tag-filter-btn"
+                                                    :class="{active: noteFilters.selectedTags.includes(tag)}"
+                                                    @click="toggleTagFilter(tag)"
+                                                >
+                                                    {{ tag }}
+                                                </button>
+                                            </div>
+                                            <div v-else style="color: #c9b8a7; font-size: 0.9em;">
+                                                暂无标签，添加笔记时添加标签即可筛选
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 排序选项 -->
+                                        <div class="filter-section">
+                                            <h4>
+                                                排序方式 
+                                                <span v-if="noteFilters.sortBy !== 'newest'" class="filter-active-indicator"></span>
+                                            </h4>
+                                            <div class="sort-options">
+                                                <button 
+                                                    class="sort-btn" 
+                                                    :class="{active: noteFilters.sortBy === 'newest'}"
+                                                    @click="noteFilters.sortBy = 'newest'; applyFilters()"
+                                                >
+                                                    最新优先
+                                                </button>
+                                                <button 
+                                                    class="sort-btn" 
+                                                    :class="{active: noteFilters.sortBy === 'oldest'}"
+                                                    @click="noteFilters.sortBy = 'oldest'; applyFilters()"
+                                                >
+                                                    最早优先
+                                                </button>
+                                                <button 
+                                                    class="sort-btn" 
+                                                    :class="{active: noteFilters.sortBy === 'title'}"
+                                                    @click="noteFilters.sortBy = 'title'; applyFilters()"
+                                                >
+                                                    标题排序
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 筛选结果和清除按钮 -->
+                                    <div class="filter-results">
+                                        <span v-if="filteredNotes.length !== notes.length">
+                                            找到 {{ filteredNotes.length }} 条笔记（共 {{ notes.length }} 条）
+                                        </span>
+                                        <span v-else>
+                                            共 {{ notes.length }} 条笔记
+                                        </span>
+                                        <button 
+                                            class="clear-filters-btn" 
+                                            @click="clearFilters"
+                                            v-if="isFilterActive"
+                                        >
+                                            清除筛选
+                                        </button>
+                                    </div>
                                 </div>
                                 
-                                <div v-for="note in notes" :key="note.id" class="note-card">
-                                    <h3 style="margin-bottom: 12px; font-family: 'Gochi Hand';">{{ note.title }}</h3>
-                                    <div class="note-tags" v-if="note.tags && note.tags.length">
-                                        <span class="note-tag" v-for="tag in note.tags" :key="tag">{{ tag }}</span>
+                                <!-- 笔记列表 -->
+                                <div class="note-list">
+                                    <div v-if="filteredNotes.length === 0" class="no-notes-message">
+                                        <div v-if="notes.length === 0">📝</div>
+                                        <div v-else>🔍</div>
+                                        <div v-if="notes.length === 0">
+                                            暂无笔记，点击"新建笔记"开始记录
+                                        </div>
+                                        <div v-else>
+                                            没有找到匹配的笔记，尝试修改筛选条件
+                                        </div>
                                     </div>
-                                    <div style="margin: 15px 0; color: #5a4a42;">{{ note.content }}</div>
-                                    <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px dotted #e0c9b8;">
-                                        <span style="color: #7a6a62; font-size: 0.85em;">{{ formatDate(note.createdAt) }}</span>
-                                        <button class="btn-sm" @click="deleteNote(note.id)" style="background: #ff7875;">删除</button>
+                                    
+                                    <div v-for="note in filteredNotes" :key="note.id" class="note-card">
+                                        <h3 style="margin-bottom: 12px; font-family: 'Gochi Hand';">{{ note.title }}</h3>
+                                        <div class="note-tags" v-if="note.tags && note.tags.length">
+                                            <span 
+                                                class="note-tag" 
+                                                v-for="tag in note.tags" 
+                                                :key="tag"
+                                                @click="setTagFilter(tag)"
+                                                :style="{cursor: 'pointer'}"
+                                            >
+                                                {{ tag }}
+                                            </span>
+                                        </div>
+                                        <div class="note-preview">{{ note.content }}</div>
+                                        <div class="note-date">{{ formatDate(note.createdAt) }}</div>
+                                        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px dotted #e0c9b8;">
+                                            <div>
+                                                <span style="color: #7a6a62; font-size: 0.85em;">{{ formatDateShort(note.createdAt) }}</span>
+                                            </div>
+                                            <button class="btn-sm" @click="deleteNote(note.id)" style="background: #ff7875;">删除</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -497,7 +939,7 @@
             </div>
         </div>
     </div>
-<script type="module">
+    <script type="module">
         const { createApp } = Vue;
         const sb = supabase.createClient(
             'https://zqmgigcnruvvdcholbuj.supabase.co',
@@ -521,14 +963,32 @@
                     playerData: { level: 1, xp: 0, nextLevelXp: 100 },
                     skills: [],
                     achievements: [
-                        { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50 },
-                        { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150 },
-                        { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100 },
-                        { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500 },
+                        { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
+                        { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
+                        { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
+                        { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
                     ],
                     notes: [],
                     activeNoteTab: 'all',
-                    newNote: { title: '', content: '', tags: '' }
+                    newNote: { title: '', content: '', tags: '' },
+                    // 成就相关的新增数据
+                    showAchievementForm: false,
+                    newAchievement: {
+                        name: '',
+                        description: '',
+                        icon: '🏆',
+                        requirement: 1,
+                        reward: 50,
+                        isCustom: true
+                    },
+                    achievementIcons: ['🏆', '⭐', '🎯', '🚀', '💡', '🔥', '✨', '🎖️', '🏅', '👑', '💎', '📚', '🎨', '🎵', '🏃', '🧠', '💪', '❤️', '🌟', '🌈'],
+                    editingAchievementId: null,
+                    // 笔记筛选相关数据
+                    noteFilters: {
+                        search: '',
+                        selectedTags: [],
+                        sortBy: 'newest' // 'newest', 'oldest', 'title'
+                    }
                 };
             },
             computed: {
@@ -536,10 +996,72 @@
                     return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100);
                 },
                 totalXpEarned() {
-                    return this.playerData.xp + this.skills.reduce((sum, s) => sum + (s.xp || 0), 0);
+                    return this.playerData.xp;
                 },
                 completedAchievementsCount() {
                     return this.achievements.filter(a => a.unlocked).length;
+                },
+                // 所有笔记中的标签（去重）
+                allTags() {
+                    const allTags = [];
+                    this.notes.forEach(note => {
+                        if (note.tags && Array.isArray(note.tags)) {
+                            note.tags.forEach(tag => {
+                                if (!allTags.includes(tag)) {
+                                    allTags.push(tag);
+                                }
+                            });
+                        }
+                    });
+                    return allTags.sort();
+                },
+                // 筛选后的笔记
+                filteredNotes() {
+                    let filtered = [...this.notes];
+                    
+                    // 搜索筛选
+                    if (this.noteFilters.search.trim()) {
+                        const searchTerm = this.noteFilters.search.toLowerCase().trim();
+                        filtered = filtered.filter(note => {
+                            return note.title.toLowerCase().includes(searchTerm) || 
+                                   note.content.toLowerCase().includes(searchTerm);
+                        });
+                    }
+                    
+                    // 标签筛选
+                    if (this.noteFilters.selectedTags.length > 0) {
+                        filtered = filtered.filter(note => {
+                            if (!note.tags || !Array.isArray(note.tags)) return false;
+                            return this.noteFilters.selectedTags.some(tag => 
+                                note.tags.includes(tag)
+                            );
+                        });
+                    }
+                    
+                    // 排序
+                    filtered.sort((a, b) => {
+                        const dateA = new Date(a.createdAt);
+                        const dateB = new Date(b.createdAt);
+                        
+                        switch (this.noteFilters.sortBy) {
+                            case 'newest':
+                                return dateB - dateA; // 最新的在前
+                            case 'oldest':
+                                return dateA - dateB; // 最早的在前
+                            case 'title':
+                                return a.title.localeCompare(b.title); // 标题排序
+                            default:
+                                return dateB - dateA;
+                        }
+                    });
+                    
+                    return filtered;
+                },
+                // 是否应用了筛选
+                isFilterActive() {
+                    return this.noteFilters.search.trim() !== '' || 
+                           this.noteFilters.selectedTags.length > 0 || 
+                           this.noteFilters.sortBy !== 'newest';
                 }
             },
             methods: {
@@ -620,10 +1142,32 @@
                         if (sData) this.skills = sData.map(s => s.data);
                         
                         const { data: aData } = await sb.from('achievements').select('*').eq('user_id', this.userId);
-                        if (aData && aData.length > 0) this.achievements = aData.map(a => a.data);
+                        if (aData && aData.length > 0) {
+                            // 合并默认成就和自定义成就
+                            const loadedAchievements = aData.map(a => a.data);
+                            const defaultAchievements = [
+                                { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
+                                { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
+                                { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
+                                { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
+                            ];
+                            
+                            // 合并成就，确保默认成就在前面
+                            const customAchievements = loadedAchievements.filter(a => a.isCustom);
+                            const defaultWithData = defaultAchievements.map(defaultAch => {
+                                const loadedAch = loadedAchievements.find(a => a.id === defaultAch.id && !a.isCustom);
+                                return loadedAch ? loadedAch : defaultAch;
+                            });
+                            
+                            this.achievements = [...defaultWithData, ...customAchievements];
+                        }
                         
                         const { data: nData } = await sb.from('notes').select('*').eq('user_id', this.userId);
-                        if (nData) this.notes = nData.map(n => n.data);
+                        if (nData) {
+                            this.notes = nData.map(n => n.data);
+                            // 按创建时间排序（最新的在前）
+                            this.notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                        }
                         
                         this.updateAchievements();
                         this.showMessage('数据已加载', 'success');
@@ -706,6 +1250,8 @@
                     this.skills.push(newSkill);
                     this.updateAchievements();
                     this.saveAllData();
+                    
+                    this.showMessage(`技能 "${name.trim()}" 已添加`, 'success');
                 },
                 
                 practiceSkill(skillId) {
@@ -713,7 +1259,6 @@
                     if (!skill) return;
                     
                     skill.xp += skill.xpPerPractice || 10;
-                    this.playerData.xp += Math.floor((skill.xpPerPractice || 10) * 0.5);
                     
                     if (skill.xp >= skill.maxXp) {
                         skill.level++;
@@ -722,7 +1267,6 @@
                         this.showMessage(`${skill.name} 升级到 ${skill.level} 级！`, 'success');
                     }
                     
-                    this.checkLevelUp();
                     this.updateAchievements();
                     this.saveAllData();
                 },
@@ -734,6 +1278,118 @@
                         this.skills.splice(index, 1);
                         this.updateAchievements();
                         this.saveAllData();
+                    }
+                },
+                
+                // 新增：切换成就表单显示
+                toggleAchievementForm() {
+                    this.showAchievementForm = !this.showAchievementForm;
+                    if (!this.showAchievementForm) {
+                        this.cancelNewAchievement();
+                    }
+                },
+                
+                // 新增：添加自定义成就
+                addNewAchievement() {
+                    if (!this.newAchievement.name.trim()) {
+                        this.showMessage('请输入成就名称', 'error');
+                        return;
+                    }
+                    
+                    if (!this.newAchievement.description.trim()) {
+                        this.showMessage('请输入成就描述', 'error');
+                        return;
+                    }
+                    
+                    if (this.newAchievement.requirement < 1) {
+                        this.showMessage('解锁要求必须大于0', 'error');
+                        return;
+                    }
+                    
+                    if (this.newAchievement.reward < 0) {
+                        this.showMessage('经验奖励不能为负数', 'error');
+                        return;
+                    }
+                    
+                    if (this.editingAchievementId) {
+                        // 编辑现有成就
+                        const index = this.achievements.findIndex(a => a.id === this.editingAchievementId);
+                        if (index !== -1) {
+                            this.achievements[index] = {
+                                ...this.achievements[index],
+                                name: this.newAchievement.name.trim(),
+                                description: this.newAchievement.description.trim(),
+                                icon: this.newAchievement.icon,
+                                requirement: this.newAchievement.requirement,
+                                reward: this.newAchievement.reward
+                            };
+                            this.showMessage('成就已更新', 'success');
+                        }
+                        this.editingAchievementId = null;
+                    } else {
+                        // 添加新成就
+                        const newAchievement = {
+                            id: Date.now(),
+                            name: this.newAchievement.name.trim(),
+                            description: this.newAchievement.description.trim(),
+                            icon: this.newAchievement.icon,
+                            requirement: this.newAchievement.requirement,
+                            current: 0,
+                            unlocked: false,
+                            reward: this.newAchievement.reward,
+                            isCustom: true
+                        };
+                        
+                        this.achievements.push(newAchievement);
+                        this.showMessage(`成就 "${this.newAchievement.name.trim()}" 已添加`, 'success');
+                    }
+                    
+                    this.updateAchievements();
+                    this.saveAllData();
+                    this.cancelNewAchievement();
+                    this.showAchievementForm = false;
+                },
+                
+                // 新增：取消添加成就
+                cancelNewAchievement() {
+                    this.newAchievement = {
+                        name: '',
+                        description: '',
+                        icon: '🏆',
+                        requirement: 1,
+                        reward: 50,
+                        isCustom: true
+                    };
+                    this.editingAchievementId = null;
+                },
+                
+                // 新增：编辑成就
+                editAchievement(achievementId) {
+                    const achievement = this.achievements.find(a => a.id === achievementId);
+                    if (!achievement) return;
+                    
+                    this.newAchievement = {
+                        name: achievement.name,
+                        description: achievement.description,
+                        icon: achievement.icon,
+                        requirement: achievement.requirement,
+                        reward: achievement.reward,
+                        isCustom: true
+                    };
+                    this.editingAchievementId = achievementId;
+                    this.showAchievementForm = true;
+                },
+                
+                // 新增：删除成就
+                deleteAchievement(achievementId) {
+                    if (!confirm('确定删除这个成就？')) return;
+                    
+                    const index = this.achievements.findIndex(a => a.id === achievementId);
+                    if (index !== -1) {
+                        this.achievements.splice(index, 1);
+                        this.updateAchievements();
+                        this.saveAllData();
+                        this.showMessage('成就已删除', 'success');
                     }
                 },
                 
@@ -787,15 +1443,22 @@
                     this.achievements.forEach(ach => {
                         if (ach.unlocked) return;
                         
-                        if (ach.id === 1) {
+                        // 根据成就描述智能判断成就类型
+                        const desc = ach.description.toLowerCase();
+                        if (desc.includes('技能') && desc.includes('第一个')) {
+                            // 初学者类型成就
                             ach.current = this.skills.length > 0 ? 1 : 0;
-                        } else if (ach.id === 2) {
+                        } else if (desc.includes('技能') && !desc.includes('第一个')) {
+                            // 技能数量类型成就
                             ach.current = this.skills.length;
-                        } else if (ach.id === 3) {
+                        } else if (desc.includes('笔记')) {
+                            // 笔记数量类型成就
                             ach.current = this.notes.length;
-                        } else if (ach.id === 4) {
+                        } else if (desc.includes('等级') || desc.includes('级')) {
+                            // 等级类型成就
                             ach.current = this.playerData.level;
                         }
+                        // 其他自定义成就需要手动设置进度
                         
                         if (ach.current >= ach.requirement) {
                             ach.unlocked = true;
@@ -811,14 +1474,63 @@
                     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                 },
                 
+                formatDateShort(dateStr) {
+                    const date = new Date(dateStr);
+                    const now = new Date();
+                    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays === 0) {
+                        return '今天';
+                    } else if (diffDays === 1) {
+                        return '昨天';
+                    } else if (diffDays < 7) {
+                        return `${diffDays}天前`;
+                    } else {
+                        return `${date.getMonth() + 1}-${date.getDate()}`;
+                    }
+                },
+                
                 resetData() {
                     this.playerData = { level: 1, xp: 0, nextLevelXp: 100 };
                     this.skills = [];
                     this.notes = [];
+                    // 重置默认成就
+                    this.achievements = this.achievements.filter(a => !a.isCustom);
                     this.achievements.forEach(a => {
                         a.current = 0;
                         a.unlocked = false;
                     });
+                    this.showAchievementForm = false;
+                    this.cancelNewAchievement();
+                    // 清除筛选
+                    this.clearFilters();
+                },
+                
+                // 笔记筛选相关方法
+                toggleTagFilter(tag) {
+                    const index = this.noteFilters.selectedTags.indexOf(tag);
+                    if (index === -1) {
+                        this.noteFilters.selectedTags.push(tag);
+                    } else {
+                        this.noteFilters.selectedTags.splice(index, 1);
+                    }
+                },
+                
+                setTagFilter(tag) {
+                    this.noteFilters.selectedTags = [tag];
+                },
+                
+                applyFilters() {
+                    // 这个方法在输入搜索时被调用，但实际筛选是通过计算属性自动进行的
+                    // 这里可以添加一些额外的逻辑，比如防抖
+                },
+                
+                clearFilters() {
+                    this.noteFilters = {
+                        search: '',
+                        selectedTags: [],
+                        sortBy: 'newest'
+                    };
                 }
             },
             
