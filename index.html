@@ -2499,35 +2499,59 @@
                     this.kbNotes = [];
                 },
                 
-                async syncData() { await this.loadAllData(); },
-                
                 async saveAllData() {
-                    if (!this.userId) return;
-                    this.saving = true;
-                    try {
-                        await sb.from('players').upsert({ user_id: this.userId, data: this.playerData });
-                        
-                        await sb.from('skills').delete().eq('user_id', this.userId);
-                        if (this.skills.length > 0) await sb.from('skills').insert(this.skills.map(skill => ({ user_id: this.userId, data: skill })));
-                        
-                        await sb.from('achievements').delete().eq('user_id', this.userId);
-                        if (this.achievements.length > 0) await sb.from('achievements').insert(this.achievements.map(ach => ({ user_id: this.userId, data: ach })));
-                        
-                        await sb.from('notes').delete().eq('user_id', this.userId);
-                        if (this.notes.length > 0) await sb.from('notes').insert(this.notes.map(note => ({ user_id: this.userId, data: note })));
-                        
-                        // 保存读书笔记数据
-                        await sb.from('books').delete().eq('user_id', this.userId);
-                        if (this.books.length > 0) await sb.from('books').insert(this.books.map(book => ({ user_id: this.userId, data: book })));
-                        
-                        await sb.from('kb_categories').delete().eq('user_id', this.userId);
-                        if (this.kbCategories.length > 0) await sb.from('kb_categories').insert(this.kbCategories.map(cat => ({ user_id: this.userId, data: cat })));
-                        
-                        await sb.from('kb_notes').delete().eq('user_id', this.userId);
-                        if (this.kbNotes.length > 0) await sb.from('kb_notes').insert(this.kbNotes.map(note => ({ user_id: this.userId, data: note })));
-                        
-                    // 添加成功提示
-        this.showMessage('✅ 所有数据已保存到云端！', 'success');
+    if (!this.userId) return;
+    this.saving = true;
+    
+    try {
+        // 并行执行所有 upsert 操作
+        await Promise.all([
+            // 玩家数据（总是保存）
+            sb.from('players').upsert({ 
+                user_id: this.userId, 
+                data: this.playerData 
+            }),
+            
+            // 其他数据（批量 upsert）
+            sb.from('skills').upsert(
+                this.skills.map(skill => ({ 
+                    user_id: this.userId, 
+                    data: skill 
+                }))
+            ),
+            sb.from('achievements').upsert(
+                this.achievements.map(ach => ({ 
+                    user_id: this.userId, 
+                    data: ach 
+                }))
+            ),
+            sb.from('notes').upsert(
+                this.notes.map(note => ({ 
+                    user_id: this.userId, 
+                    data: note 
+                }))
+            ),
+            sb.from('books').upsert(
+                this.books.map(book => ({ 
+                    user_id: this.userId, 
+                    data: book 
+                }))
+            ),
+            sb.from('kb_categories').upsert(
+                this.kbCategories.map(cat => ({ 
+                    user_id: this.userId, 
+                    data: cat 
+                }))
+            ),
+            sb.from('kb_notes').upsert(
+                this.kbNotes.map(note => ({ 
+                    user_id: this.userId, 
+                    data: note 
+                }))
+            )
+        ]);
+        
+        this.showMessage('✅ 数据已保存！', 'success');
         
     } catch (error) {
         console.error('保存失败:', error);
