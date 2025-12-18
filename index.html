@@ -16,42 +16,36 @@
             color: #5a4a42;
             padding: 20px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
+            margin-bottom: 30px;
+            padding: 25px;
             background: #fffaf0;
-            border-radius: 24px;
-            box-shadow: 8px 8px 0px #e0c9b8;
+            border-radius: 20px;
+            box-shadow: 6px 6px 0px #e0c9b8;
             border: 3px solid #5a4a42;
-            position: relative;
         }
         .header h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: 700;
-            text-shadow: 3px 3px 0px #ffd6cc;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            text-shadow: 2px 2px 0px #ffd6cc;
         }
         .card {
             background: #fffefc;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 6px 6px 0px #d4b8a7;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 5px 5px 0px #d4b8a7;
             border: 2.5px solid #5a4a42;
             transition: all 0.3s;
         }
-        .card:hover { transform: translateY(-5px); }
+        .card:hover { transform: translateY(-3px); }
         .card h2 {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
             border-bottom: 3px dotted #ff9a8b;
-            font-size: 1.4em;
+            font-size: 1.3em;
             font-weight: 700;
             display: flex;
             justify-content: space-between;
@@ -60,27 +54,27 @@
         .btn {
             background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
             border: none;
-            padding: 15px 30px;
+            padding: 12px 25px;
             border-radius: 50px;
             color: white;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             font-family: inherit;
             transition: all 0.3s;
             width: 100%;
-            margin-top: 15px;
-            box-shadow: 4px 4px 0px #d45d5d;
+            margin-top: 12px;
+            box-shadow: 3px 3px 0px #d45d5d;
         }
         .btn:hover:not(:disabled) { transform: translateY(-2px); }
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-sm {
-            padding: 8px 20px;
+            padding: 8px 18px;
             font-size: 0.9em;
             width: auto;
-            border-radius: 25px;
+            border-radius: 20px;
             background: linear-gradient(90deg, #4ecdc4, #a3de83);
-            box-shadow: 3px 3px 0px #2ba69b;
+            box-shadow: 2px 2px 0px #2ba69b;
             border: none;
             color: white;
             font-weight: bold;
@@ -92,50 +86,42 @@
             background: #fffaf5;
             border: 2px solid #ff9a8b;
             cursor: pointer;
-            font-size: 0.85em;
+            font-size: 0.8em;
             color: #ff6b6b;
-            padding: 5px 12px;
-            border-radius: 15px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-family: inherit;
             font-weight: bold;
         }
         .note-input, .note-textarea {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #e0c9b8;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-family: inherit;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: #fffaf9;
         }
-        .note-textarea { min-height: 180px; resize: vertical; }
+        .note-textarea { min-height: 150px; resize: vertical; }
         .note-input:focus, .note-textarea:focus {
             outline: none;
             border-color: #ff9a8b;
             box-shadow: 2px 2px 0px #ffd6cc;
         }
         .status-message {
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin: 20px 0;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
             font-weight: 700;
             border: 2px solid;
         }
-        .status-success {
-            background: rgba(163, 222, 131, 0.9);
-            color: #2d5a27;
-            border-color: #2ba69b;
-        }
-        .status-error {
-            background: rgba(255, 154, 139, 0.9);
-            color: #7a2c28;
-            border-color: #d45d5d;
-        }
+        .status-success { background: rgba(163, 222, 131, 0.9); color: #2d5a27; border-color: #2ba69b; }
+        .status-error { background: rgba(255, 154, 139, 0.9); color: #7a2c28; border-color: #d45d5d; }
         .loading-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 3px solid rgba(255, 154, 139, 0.3);
             border-radius: 50%;
             border-top-color: #ff6b6b;
@@ -143,18 +129,18 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .level-display {
-            font-size: 4.5em;
+            font-size: 4em;
             font-weight: 800;
             text-align: center;
-            margin: 25px 0;
+            margin: 20px 0;
             color: #ff6b6b;
             text-shadow: 3px 3px 0px #ffd6cc;
         }
         .xp-progress {
-            height: 24px;
+            height: 20px;
             background: #ffe8d6;
-            border-radius: 12px;
-            margin: 15px 0;
+            border-radius: 10px;
+            margin: 12px 0;
             overflow: hidden;
             border: 2px solid #5a4a42;
         }
@@ -164,10 +150,10 @@
             transition: width 0.5s ease;
         }
         .skill-item {
-            padding: 18px;
+            padding: 15px;
             background: #fffaf5;
-            border-radius: 15px;
-            margin: 15px 0;
+            border-radius: 12px;
+            margin: 12px 0;
             border: 2px solid #e0c9b8;
             display: flex;
             justify-content: space-between;
@@ -175,28 +161,24 @@
         }
         .achievement-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
         .achievement-card {
             background: #fffefc;
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: 4px 4px 0px #d4b8a7;
+            border-radius: 15px;
+            padding: 18px;
+            box-shadow: 3px 3px 0px #d4b8a7;
             border: 2px solid #5a4a42;
         }
         .achievement-card.locked { opacity: 0.6; filter: grayscale(0.4); }
-        .achievement-icon {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .achievement-icon { font-size: 2.2em; text-align: center; margin-bottom: 12px; }
         .achievement-progress {
-            height: 10px;
+            height: 8px;
             background: #ffe8d6;
-            border-radius: 6px;
-            margin: 15px 0;
+            border-radius: 5px;
+            margin: 12px 0;
             overflow: hidden;
         }
         .achievement-progress-fill {
@@ -204,18 +186,65 @@
             background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
             transition: width 0.6s ease;
         }
-        .note-tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0c9b8;
-            padding-bottom: 10px;
+        .achievement-form-container {
+            background: #fffaf5;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 2px solid #e0c9b8;
         }
-        .note-tab {
-            padding: 10px 20px;
+        .achievement-icon-picker {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .achievement-icon-option {
+            font-size: 1.8em;
+            padding: 8px;
+            border: 2px solid #e0c9b8;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            background: white;
+        }
+        .achievement-icon-option:hover { transform: scale(1.1); border-color: #ff9a8b; }
+        .achievement-icon-option.selected {
+            border-color: #ff6b6b;
+            background: #ffebe8;
+            box-shadow: 2px 2px 0px #d4b8a7;
+        }
+        .achievement-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        .achievement-actions button {
+            padding: 5px 10px;
             border: 2px solid #e0c9b8;
             background: #fffaf5;
-            border-radius: 15px 15px 0 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .achievement-actions button:hover { background: #ff9a8b; color: white; border-color: #ff6b6b; }
+        .note-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0c9b8;
+            padding-bottom: 8px;
+        }
+        .note-tab {
+            padding: 8px 18px;
+            border: 2px solid #e0c9b8;
+            background: #fffaf5;
+            border-radius: 12px 12px 0 0;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
@@ -224,93 +253,30 @@
             background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
             color: white;
             border-color: #ff6b6b;
-            transform: translateY(2px);
         }
-        .note-list { margin-top: 20px; }
+        .note-list { margin-top: 15px; }
         .note-card {
             background: #fffaf5;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             border: 2px solid #e0c9b8;
         }
-        .note-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
+        .note-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
         .note-tag {
             background: linear-gradient(90deg, #4ecdc4, #a3de83);
             color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        .achievement-form-container {
-            background: #fffaf5;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            border: 2px solid #e0c9b8;
-        }
-        .achievement-icon-picker {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .achievement-icon-option {
-            font-size: 2em;
-            padding: 10px;
-            border: 2px solid #e0c9b8;
+            padding: 3px 10px;
             border-radius: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-            background: white;
-        }
-        .achievement-icon-option:hover {
-            transform: scale(1.1);
-            border-color: #ff9a8b;
-        }
-        .achievement-icon-option.selected {
-            border-color: #ff6b6b;
-            background: #ffebe8;
-            box-shadow: 3px 3px 0px #d4b8a7;
-        }
-        .collapsible-content {
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .achievement-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            margin-top: 10px;
-        }
-        .achievement-actions button {
-            padding: 6px 12px;
-            border: 2px solid #e0c9b8;
-            background: #fffaf5;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-family: inherit;
+            font-size: 0.8em;
             font-weight: 600;
-            transition: all 0.2s;
-        }
-        .achievement-actions button:hover {
-            background: #ff9a8b;
-            color: white;
-            border-color: #ff6b6b;
+            cursor: pointer;
         }
         .filter-container {
             background: #fffaf5;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
             border: 2px solid #e0c9b8;
         }
         .filter-header {
@@ -318,89 +284,62 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            user-select: none;
         }
-        .filter-header h3 {
-            font-weight: 700;
-            color: #5a4a42;
-        }
+        .filter-header h3 { font-weight: 700; color: #5a4a42; }
         .filter-toggle {
             background: #fffaf5;
             border: 2px solid #ff9a8b;
             color: #ff6b6b;
-            padding: 5px 12px;
-            border-radius: 15px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-weight: bold;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
-        .filter-options {
-            margin-top: 20px;
-        }
-        .filter-section {
-            margin-bottom: 20px;
-        }
+        .filter-section { margin-bottom: 15px; }
         .filter-section h4 {
             color: #5a4a42;
-            margin-bottom: 10px;
-            font-family: inherit;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .filter-active-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: #ff6b6b;
             border-radius: 50%;
-            display: inline-block;
             animation: pulse 1.5s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .tags-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .tags-filter { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag-filter-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: 2px solid #e0c9b8;
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
             transition: all 0.3s;
         }
-        .tag-filter-btn:hover {
-            border-color: #ff9a8b;
-            background: #fff5e6;
-        }
+        .tag-filter-btn:hover { border-color: #ff9a8b; background: #fff5e6; }
         .tag-filter-btn.active {
             background: linear-gradient(90deg, #4ecdc4, #a3de83);
             color: white;
             border-color: #2ba69b;
         }
-        .sort-options {
-            display: flex;
-            gap: 10px;
-        }
+        .sort-options { display: flex; gap: 8px; flex-wrap: wrap; }
         .sort-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: 2px solid #e0c9b8;
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
             transition: all 0.3s;
         }
-        .sort-btn:hover {
-            border-color: #ff9a8b;
-            background: #fff5e6;
-        }
+        .sort-btn:hover { border-color: #ff9a8b; background: #fff5e6; }
         .sort-btn.active {
             background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
             color: white;
@@ -410,38 +349,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 15px;
+            padding-top: 12px;
             border-top: 2px dotted #e0c9b8;
             font-weight: 600;
             color: #7a6a62;
         }
         .clear-filters-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: 2px solid #ff9a8b;
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
             color: #ff6b6b;
             transition: all 0.3s;
         }
-        .clear-filters-btn:hover {
-            background: #ff9a8b;
-            color: white;
-        }
+        .clear-filters-btn:hover { background: #ff9a8b; color: white; }
         .no-notes-message {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 15px;
             color: #c9b8a7;
-            font-size: 1.1em;
+            font-size: 1em;
         }
-        .no-notes-message div:first-child {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
+        .no-notes-message div:first-child { font-size: 2.5em; margin-bottom: 8px; }
 
-        /* ========== 知识库样式 ========== */
+        /* ========== 知识库样式（语雀风格） ========== */
         .kb-modal-overlay {
             position: fixed;
             top: 0;
@@ -456,350 +389,400 @@
             backdrop-filter: blur(5px);
         }
         .kb-modal {
-            background: #fef9f3;
-            border-radius: 24px;
+            background: #fff;
+            border-radius: 12px;
             width: 95%;
-            max-width: 1400px;
+            max-width: 1200px;
             height: 90vh;
             display: flex;
             flex-direction: column;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 3px solid #5a4a42;
             overflow: hidden;
         }
         .kb-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #36cfc9 0%, #40a9ff 100%);
             color: white;
-            padding: 20px 30px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #5a4a42;
         }
         .kb-header h1 {
-            font-weight: 700;
-            font-size: 1.8em;
+            font-weight: 600;
+            font-size: 1.4em;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
         .kb-close-btn {
             background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
+            border: none;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .kb-close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
+        .kb-close-btn:hover { background: rgba(255, 255, 255, 0.3); }
         .kb-content {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
+        /* 左侧树形目录 */
         .kb-sidebar {
             width: 280px;
-            background: #fffaf0;
-            border-right: 3px solid #e0c9b8;
+            background: #fafafa;
+            border-right: 1px solid #e8e8e8;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
         }
         .kb-sidebar-header {
-            padding: 20px;
-            border-bottom: 2px dotted #ff9a8b;
+            padding: 16px;
+            border-bottom: 1px solid #e8e8e8;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #fff;
         }
         .kb-sidebar-header h3 {
-            font-weight: 700;
-            color: #5a4a42;
+            font-weight: 600;
+            font-size: 14px;
+            color: #262626;
             margin: 0;
         }
-        .kb-category-list {
-            padding: 10px;
-        }
-        .kb-category-item {
-            padding: 12px 15px;
-            margin: 5px 0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .kb-sidebar-actions {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #fffefc;
-            border: 2px solid transparent;
-            position: relative;
+            gap: 8px;
         }
-        .kb-category-item:hover {
-            background: #fff5e6;
-            border-color: #ff9a8b;
-            transform: translateX(5px);
-        }
-        .kb-category-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #5a4a42;
-            box-shadow: 4px 4px 0px #d4b8a7;
-        }
-        .kb-category-icon {
-            font-size: 1.3em;
-        }
-        .kb-category-name {
-            flex: 1;
-            font-weight: 600;
-        }
-        .kb-category-count {
-            font-size: 0.85em;
-            opacity: 0.7;
-        }
-        .kb-category-actions {
-            display: none;
-            gap: 5px;
-        }
-        .kb-category-item:hover .kb-category-actions {
-            display: flex;
-        }
-        .kb-category-actions button {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e0c9b8;
-            border-radius: 6px;
-            padding: 4px 8px;
+        .kb-sidebar-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 1px solid #d9d9d9;
+            background: #fff;
             cursor: pointer;
-            font-size: 0.9em;
+            color: #595959;
+            font-family: inherit;
             transition: all 0.2s;
         }
-        .kb-category-actions button:hover {
-            background: #ff9a8b;
-            transform: scale(1.1);
+        .kb-sidebar-btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
         }
+        .kb-sidebar-btn.primary {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+        .kb-sidebar-btn.primary:hover {
+            background: #40a9ff;
+            border-color: #40a9ff;
+        }
+        .kb-tree-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        /* 树形节点样式 */
+        .kb-tree-node {
+            user-select: none;
+        }
+        .kb-tree-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 4px;
+            margin: 2px 8px;
+            position: relative;
+        }
+        .kb-tree-item:hover {
+            background: #e6f7ff;
+        }
+        .kb-tree-item.active {
+            background: #bae7ff;
+            color: #1890ff;
+        }
+        .kb-tree-item.drop-target {
+            background: #d6e4ff;
+            border: 2px dashed #1890ff;
+        }
+        .kb-tree-expand {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+            color: #8c8c8c;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        .kb-tree-expand.expanded {
+            transform: rotate(90deg);
+        }
+        .kb-tree-expand.empty {
+            visibility: hidden;
+        }
+        .kb-tree-icon {
+            font-size: 16px;
+            margin-right: 8px;
+        }
+        .kb-tree-name {
+            flex: 1;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .kb-tree-count {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-left: 8px;
+        }
+        .kb-tree-actions {
+            display: none;
+            gap: 4px;
+            margin-left: 8px;
+        }
+        .kb-tree-item:hover .kb-tree-actions {
+            display: flex;
+        }
+        .kb-tree-action-btn {
+            padding: 2px 6px;
+            font-size: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #8c8c8c;
+            transition: all 0.2s;
+        }
+        .kb-tree-action-btn:hover {
+            background: #fff;
+            color: #1890ff;
+        }
+        .kb-tree-children {
+            margin-left: 24px;
+        }
+        /* 右侧内容区 */
         .kb-main {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: #fff;
         }
         .kb-toolbar {
-            padding: 20px;
-            background: #fffaf0;
-            border-bottom: 2px dotted #ff9a8b;
+            padding: 16px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
-        .kb-search-input {
+        .kb-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #8c8c8c;
             flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e0c9b8;
-            border-radius: 25px;
-            font-size: 16px;
+        }
+        .kb-breadcrumb-item {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .kb-breadcrumb-item:hover {
+            color: #1890ff;
+        }
+        .kb-breadcrumb-item.current {
+            color: #262626;
+            font-weight: 500;
+        }
+        .kb-breadcrumb-separator {
+            color: #d9d9d9;
+        }
+        .kb-search-input {
+            width: 240px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
             font-family: inherit;
-            background: #fffefc;
+            background: #fafafa;
             transition: all 0.3s;
         }
         .kb-search-input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #40a9ff;
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
         }
-        .btn-primary {
-            background: linear-gradient(90deg, #667eea, #764ba2);
+        .kb-btn-primary {
+            background: #1890ff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            border-radius: 6px;
             color: white;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            font-family: inherit;
-            transition: all 0.3s;
-            box-shadow: 4px 4px 0px #5a4a42;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 6px 6px 0px #5a4a42;
-        }
-        .btn-secondary {
-            background: #e0c9b8;
-            border: 2px solid #5a4a42;
-            padding: 12px 24px;
-            border-radius: 25px;
-            color: #5a4a42;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 500;
             font-family: inherit;
             transition: all 0.3s;
         }
-        .btn-secondary:hover {
-            background: #d4b8a7;
-            transform: translateY(-2px);
+        .kb-btn-primary:hover {
+            background: #40a9ff;
         }
+        /* 笔记列表 */
         .kb-notes-list {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            align-content: start;
         }
         .kb-empty {
-            grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
-            color: #a0a0a0;
+            color: #8c8c8c;
         }
         .kb-empty-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
-        .kb-empty p {
-            font-size: 1.1em;
-            font-family: inherit;
-        }
-        .kb-note-card {
-            background: #fffefc;
-            border-radius: 16px;
-            padding: 20px;
-            border: 2px solid #e0c9b8;
-            box-shadow: 4px 4px 0px #d4b8a7;
-            cursor: pointer;
-            transition: all 0.3s;
-            height: fit-content;
+        .kb-empty p { font-size: 14px; }
+        .kb-note-item {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .kb-note-item:hover {
+            border-color: #40a9ff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .kb-note-icon {
+            font-size: 24px;
+            margin-right: 16px;
+            color: #1890ff;
+        }
+        .kb-note-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .kb-note-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #262626;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .kb-note-meta {
+            font-size: 12px;
+            color: #8c8c8c;
+            display: flex;
+            align-items: center;
             gap: 12px;
         }
-        .kb-note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 6px 6px 0px #d4b8a7;
-            border-color: #667eea;
-        }
-        .kb-note-header {
+        .kb-note-path {
             display: flex;
-            justify-content: space-between;
-            align-items: start;
-            gap: 10px;
-        }
-        .kb-note-header h3 {
-            font-weight: 700;
-            font-size: 1.2em;
-            color: #5a4a42;
-            margin: 0;
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        .kb-note-date {
-            font-size: 0.85em;
-            color: #a0a0a0;
-            white-space: nowrap;
-        }
-        .kb-note-preview {
-            color: #7a6a62;
-            font-size: 0.95em;
-            line-height: 1.6;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        .kb-note-footer {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-top: 10px;
-            border-top: 1px dotted #e0c9b8;
-        }
-        .kb-note-category {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
+            gap: 4px;
         }
         .kb-note-actions {
             display: flex;
             gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
-        .kb-action-btn {
-            background: #fffaf5;
-            border: 1px solid #e0c9b8;
-            border-radius: 8px;
-            padding: 6px 10px;
+        .kb-note-item:hover .kb-note-actions {
+            opacity: 1;
+        }
+        .kb-note-action-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            border: 1px solid #d9d9d9;
+            background: #fff;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1em;
+            color: #595959;
+            font-family: inherit;
             transition: all 0.2s;
         }
-        .kb-action-btn:hover {
-            background: #ff9a8b;
-            transform: scale(1.1);
+        .kb-note-action-btn:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
         }
+        .kb-note-action-btn.danger:hover {
+            border-color: #ff4d4f;
+            color: #ff4d4f;
+        }
+        /* 弹窗表单样式 */
         .kb-form-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.45);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            backdrop-filter: blur(5px);
         }
         .kb-form-modal {
-            background: #fef9f3;
-            border-radius: 20px;
+            background: #fff;
+            border-radius: 8px;
             width: 90%;
-            max-width: 600px;
+            max-width: 560px;
             max-height: 90vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            border: 3px solid #5a4a42;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             overflow: hidden;
         }
-        .kb-editor-modal {
-            max-width: 800px;
-        }
-        .kb-detail-modal {
-            max-width: 900px;
+        .kb-form-modal.large {
+            max-width: 720px;
         }
         .kb-form-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 25px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #e8e8e8;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #5a4a42;
         }
         .kb-form-header h2 {
-            font-weight: 700;
+            font-weight: 600;
             margin: 0;
-            font-size: 1.4em;
+            font-size: 16px;
+            color: #262626;
         }
+        .kb-form-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #8c8c8c;
+            padding: 4px;
+            line-height: 1;
+        }
+        .kb-form-close:hover { color: #262626; }
         .kb-form-body {
             flex: 1;
-            padding: 25px;
+            padding: 24px;
             overflow-y: auto;
         }
         .kb-form-group {
@@ -808,169 +791,167 @@
         .kb-form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 700;
-            color: #5a4a42;
-            font-family: inherit;
+            font-weight: 500;
+            color: #262626;
+            font-size: 14px;
         }
         .kb-form-input,
         .kb-form-select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0c9b8;
-            border-radius: 12px;
-            font-size: 16px;
+            padding: 10px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
             font-family: inherit;
-            background: #fffaf9;
+            background: #fff;
             transition: all 0.3s;
         }
         .kb-form-input:focus,
         .kb-form-select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
         }
         .kb-form-textarea {
             width: 100%;
-            min-height: 300px;
-            padding: 15px;
-            border: 2px solid #e0c9b8;
-            border-radius: 12px;
-            font-size: 16px;
+            min-height: 240px;
+            padding: 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
             font-family: inherit;
-            background: #fffaf9;
+            background: #fff;
             resize: vertical;
             line-height: 1.6;
             transition: all 0.3s;
         }
         .kb-form-textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
         }
         .kb-form-footer {
-            padding: 20px 25px;
-            background: #fffaf0;
-            border-top: 2px dotted #ff9a8b;
+            padding: 16px 24px;
+            border-top: 1px solid #e8e8e8;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: flex-end;
+        }
+        .kb-btn-default {
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            padding: 8px 16px;
+            border-radius: 6px;
+            color: #595959;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .kb-btn-default:hover {
+            border-color: #40a9ff;
+            color: #40a9ff;
         }
         .kb-icon-picker {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
         }
         .kb-icon-btn {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #e0c9b8;
-            border-radius: 12px;
-            background: #fffaf9;
-            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: #fff;
+            font-size: 18px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .kb-icon-btn:hover {
-            background: #fff5e6;
-            border-color: #ff9a8b;
-            transform: scale(1.1);
+            border-color: #40a9ff;
+            background: #e6f7ff;
         }
         .kb-icon-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #5a4a42;
-            box-shadow: 3px 3px 0px #d4b8a7;
+            border-color: #1890ff;
+            background: #e6f7ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        /* 笔记详情 */
+        .kb-detail-header {
+            margin-bottom: 16px;
+        }
+        .kb-detail-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 8px;
         }
         .kb-detail-meta {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 2px dotted #ff9a8b;
-            margin-bottom: 20px;
-        }
-        .kb-detail-category {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-        .kb-detail-date {
-            color: #a0a0a0;
-            font-size: 0.9em;
+            gap: 16px;
+            font-size: 13px;
+            color: #8c8c8c;
         }
         .kb-detail-content {
-            font-size: 1.05em;
+            font-size: 15px;
             line-height: 1.8;
-            color: #5a4a42;
+            color: #262626;
             white-space: pre-wrap;
             word-wrap: break-word;
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            min-height: 200px;
         }
-        .kb-sidebar::-webkit-scrollbar,
+        .kb-folder-select {
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .kb-folder-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .kb-folder-option:hover {
+            background: #e6f7ff;
+        }
+        .kb-folder-option.selected {
+            background: #bae7ff;
+        }
+        .kb-folder-option.root {
+            border-bottom: 1px solid #e8e8e8;
+            font-weight: 500;
+        }
+        /* 滚动条 */
+        .kb-tree-container::-webkit-scrollbar,
         .kb-notes-list::-webkit-scrollbar,
         .kb-form-body::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
-        .kb-sidebar::-webkit-scrollbar-track,
-        .kb-notes-list::-webkit-scrollbar-track,
-        .kb-form-body::-webkit-scrollbar-track {
-            background: #fffaf0;
-        }
-        .kb-sidebar::-webkit-scrollbar-thumb,
+        .kb-tree-container::-webkit-scrollbar-thumb,
         .kb-notes-list::-webkit-scrollbar-thumb,
         .kb-form-body::-webkit-scrollbar-thumb {
-            background: #e0c9b8;
-            border-radius: 4px;
+            background: #d9d9d9;
+            border-radius: 3px;
         }
-        .kb-sidebar::-webkit-scrollbar-thumb:hover,
+        .kb-tree-container::-webkit-scrollbar-thumb:hover,
         .kb-notes-list::-webkit-scrollbar-thumb:hover,
         .kb-form-body::-webkit-scrollbar-thumb:hover {
-            background: #d4b8a7;
+            background: #bfbfbf;
         }
         @media (max-width: 768px) {
-            .kb-modal {
-                width: 100%;
-                height: 100vh;
-                border-radius: 0;
-            }
-            .kb-content {
-                flex-direction: column;
-            }
-            .kb-sidebar {
-                width: 100%;
-                max-height: 200px;
-                border-right: none;
-                border-bottom: 3px solid #e0c9b8;
-            }
-            .kb-notes-list {
-                grid-template-columns: 1fr;
-            }
-            .kb-form-modal {
-                width: 100%;
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
-            }
-        }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .kb-note-card {
-            animation: slideIn 0.3s ease-out;
-        }
-        .kb-category-item {
-            animation: slideIn 0.3s ease-out;
+            .kb-modal { width: 100%; height: 100vh; border-radius: 0; }
+            .kb-content { flex-direction: column; }
+            .kb-sidebar { width: 100%; max-height: 40vh; border-right: none; border-bottom: 1px solid #e8e8e8; }
+            .kb-form-modal { width: 100%; max-height: 100vh; border-radius: 0; }
         }
     </style>
 </head>
@@ -980,523 +961,324 @@
         <div v-if="!isLoggedIn">
             <div class="header">
                 <h1>🌟 成长手账 🌟</h1>
-                <p style="margin-top: 10px; font-size: 1.2em; color: #7a6a62;">记录每一步成长的足迹</p>
+                <p style="margin-top: 10px; font-size: 1.1em; color: #7a6a62;">记录每一步成长的足迹</p>
             </div>
-            
-            <div class="grid">
-                <div class="card">
-                    <h2>🔐 登录/注册</h2>
-                    <input 
-                        type="email" 
-                        v-model="email" 
-                        placeholder="邮箱"
-                        class="note-input"
-                        @keyup.enter="login"
-                    >
-                    <input 
-                        type="password" 
-                        v-model="password" 
-                        placeholder="密码（至少6位）"
-                        class="note-input"
-                        @keyup.enter="login"
-                    >
-                    <button class="btn" @click="login" :disabled="loading">
-                        <span v-if="!loading">登录</span>
-                        <span v-else class="loading-spinner"></span>
-                    </button>
-                    <button class="btn" @click="register" :disabled="loading" style="background: linear-gradient(90deg, #4ecdc4, #a3de83); box-shadow: 4px 4px 0px #2ba69b;">
-                        <span v-if="!loading">注册</span>
-                        <span v-else class="loading-spinner"></span>
-                    </button>
-                </div>
+            <div class="card">
+                <h2>🔐 登录/注册</h2>
+                <input type="email" v-model="email" placeholder="邮箱" class="note-input" @keyup.enter="login">
+                <input type="password" v-model="password" placeholder="密码（至少6位）" class="note-input" @keyup.enter="login">
+                <button class="btn" @click="login" :disabled="loading">
+                    <span v-if="!loading">登录</span>
+                    <span v-else class="loading-spinner"></span>
+                </button>
+                <button class="btn" @click="register" :disabled="loading" style="background: linear-gradient(90deg, #4ecdc4, #a3de83); box-shadow: 3px 3px 0px #2ba69b;">
+                    <span v-if="!loading">注册</span>
+                    <span v-else class="loading-spinner"></span>
+                </button>
             </div>
-            
-            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
-                {{ message }}
-            </div>
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
         </div>
         
         <!-- 主界面 -->
         <div v-else>
             <div class="header">
                 <h1>🌟 我的成长手账 🌟</h1>
-                <p style="margin-top: 10px; font-size: 1.1em; color: #7a6a62;">
+                <p style="margin-top: 10px; font-size: 1em; color: #7a6a62;">
                     欢迎回来，{{ userEmail }}！
-                    <button class="btn-sm" @click="syncData" :disabled="syncing" style="margin-left: 15px;">
+                    <button class="btn-sm" @click="syncData" :disabled="syncing" style="margin-left: 12px;">
                         <span v-if="!syncing">🔄 同步</span>
                         <span v-else class="loading-spinner"></span>
                     </button>
-                    <button class="btn-sm" @click="logout" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
-                        退出
-                    </button>
+                    <button class="btn-sm" @click="logout" style="margin-left: 8px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 2px 2px 0px #d45d5d;">退出</button>
                 </p>
             </div>
             
-            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
-                {{ message }}
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
+            
+            <!-- 等级状态 - 独占一行 -->
+            <div class="card">
+                <h2>📊 等级状态 <button class="collapse-btn" @click="collapsed.status = !collapsed.status">{{ collapsed.status ? '展开' : '收起' }}</button></h2>
+                <div v-show="!collapsed.status">
+                    <div class="level-display">Lv.{{ playerData.level }}</div>
+                    <div class="xp-progress">
+                        <div class="xp-fill" :style="{width: xpPercentage + '%'}"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 12px; font-size: 1.05em;">
+                        <strong>{{ playerData.xp }}</strong> / {{ playerData.nextLevelXp }} XP
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: #7a6a62; font-size: 0.9em;">
+                        🏆 已完成成就: {{ completedAchievementsCount }} / {{ achievements.length }}
+                    </div>
+                </div>
             </div>
             
-            <div class="grid">
-                <!-- 等级状态 -->
-                <div class="card">
-                    <h2>
-                        📊 等级状态
-                        <button class="collapse-btn" @click="collapsed.status = !collapsed.status">
-                            {{ collapsed.status ? '展开' : '收起' }}
-                        </button>
-                    </h2>
-                    <div v-show="!collapsed.status">
-                        <div class="level-display">Lv.{{ playerData.level }}</div>
-                        <div class="xp-progress">
-                            <div class="xp-fill" :style="{width: xpPercentage + '%'}"></div>
+            <!-- 技能追踪 - 独占一行 -->
+            <div class="card">
+                <h2>⚡ 技能追踪 <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">{{ collapsed.skills ? '展开' : '收起' }}</button></h2>
+                <div v-show="!collapsed.skills">
+                    <div v-if="skills.length === 0" style="color: #c9b8a7; text-align: center; padding: 20px;">还没有添加技能，点击下方按钮开始！</div>
+                    <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; font-size: 1.05em; margin-bottom: 6px;">
+                                {{ skill.icon }} {{ skill.name }}
+                                <span style="color: #a0a0a0; font-size: 0.85em; margin-left: 6px;">Lv.{{ skill.level }}</span>
+                            </div>
+                            <div style="font-size: 0.85em; color: #7a6a62;">{{ skill.category }}</div>
+                            <div class="xp-progress" style="height: 6px; margin: 8px 0;">
+                                <div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div>
+                            </div>
+                            <div style="font-size: 0.8em; color: #a0a0a0;">{{ skill.xp }} / {{ skill.maxXp }} XP</div>
                         </div>
-                        <div style="text-align: center; margin-top: 15px; font-size: 1.1em;">
-                            <strong>{{ playerData.xp }}</strong> / {{ playerData.nextLevelXp }} XP
-                        </div>
-                        <div style="text-align: center; margin-top: 12px; color: #7a6a62; font-size: 0.95em;">
-                            🏆 已完成成就: {{ completedAchievementsCount }} / {{ achievements.length }}
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <button class="btn-sm" @click="practiceSkill(skill.id)">练习</button>
+                            <button class="btn-sm" @click="deleteSkill(skill.id)" style="background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 2px 2px 0px #d45d5d;">删除</button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- 技能追踪 -->
-                <div class="card">
-                    <h2>
-                        ⚡ 技能追踪
-                        <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">
-                            {{ collapsed.skills ? '展开' : '收起' }}
-                        </button>
-                    </h2>
-                    <div v-show="!collapsed.skills">
-                        <div v-if="skills.length === 0" style="color: #c9b8a7; text-align: center; padding: 20px;">
-                            还没有添加技能，点击下方按钮开始！
-                        </div>
-                        <div v-for="skill in skills" :key="skill.id" class="skill-item">
-                            <div>
-                                <div style="font-weight: 700; font-size: 1.1em; margin-bottom: 8px;">
-                                    {{ skill.icon }} {{ skill.name }}
-                                    <span style="color: #a0a0a0; font-size: 0.85em; margin-left: 8px;">Lv.{{ skill.level }}</span>
-                                </div>
-                                <div style="font-size: 0.9em; color: #7a6a62;">{{ skill.category }}</div>
-                                <div class="xp-progress" style="height: 8px; margin: 10px 0;">
-                                    <div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div>
-                                </div>
-                                <div style="font-size: 0.85em; color: #a0a0a0;">{{ skill.xp }} / {{ skill.maxXp }} XP</div>
-                            </div>
-                            <div>
-                                <button class="btn-sm" @click="practiceSkill(skill.id)">练习</button>
-                                <button class="btn-sm" @click="deleteSkill(skill.id)" style="background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d; margin-top: 8px;">删除</button>
-                            </div>
-                        </div>
-                        <button class="btn" @click="addNewSkill">➕ 添加新技能</button>
-                    </div>
-                </div>
-                <!-- 成就系统 -->
-                <div class="card">
-                    <h2>
-                        🏆 成就系统
-                        <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">
-                            {{ collapsed.achievements ? '展开' : '收起' }}
-                        </button>
-                    </h2>
-                    <div v-show="!collapsed.achievements">
-                        <button class="btn-sm" @click="showAchievementForm = !showAchievementForm" style="margin-bottom: 15px;">
-                            {{ showAchievementForm ? '取消创建' : '➕ 创建成就' }}
-                        </button>
-                        
-                        <!-- 成就创建/编辑表单 -->
-                        <div v-if="showAchievementForm" class="achievement-form-container">
-                            <h3 style="margin-bottom: 15px; font-weight: 700;">
-                                {{ editingAchievementId ? '编辑成就' : '创建新成就' }}
-                            </h3>
-                            <input 
-                                type="text" 
-                                v-model="newAchievement.name" 
-                                placeholder="成就名称"
-                                class="note-input"
-                            >
-                            <textarea 
-                                v-model="newAchievement.description" 
-                                placeholder="成就描述"
-                                class="note-textarea"
-                                style="min-height: 80px;"
-                            ></textarea>
-                            <div style="margin: 15px 0;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 700;">选择图标:</label>
-                                <div class="achievement-icon-picker">
-                                    <div 
-                                        v-for="icon in achievementIcons" 
-                                        :key="icon"
-                                        class="achievement-icon-option"
-                                        :class="{selected: newAchievement.icon === icon}"
-                                        @click="newAchievement.icon = icon"
-                                    >
-                                        {{ icon }}
-                                    </div>
-                                </div>
-                            </div>
-                            <input 
-                                type="number" 
-                                v-model.number="newAchievement.requirement" 
-                                placeholder="完成要求（数量）"
-                                class="note-input"
-                                min="1"
-                            >
-                            <input 
-                                type="number" 
-                                v-model.number="newAchievement.reward" 
-                                placeholder="奖励经验"
-                                class="note-input"
-                                min="1"
-                            >
-                            <button class="btn" @click="saveAchievement">
-                                {{ editingAchievementId ? '更新成就' : '创建成就' }}
-                            </button>
-                            <button class="btn" @click="cancelNewAchievement" style="background: #e0c9b8; box-shadow: 4px 4px 0px #d4b8a7;">
-                                取消
-                            </button>
-                        </div>
-                        
-                        <!-- 成就列表 -->
-                        <div class="achievement-grid">
-                            <div 
-                                v-for="ach in achievements" 
-                                :key="ach.id"
-                                class="achievement-card"
-                                :class="{locked: !ach.unlocked}"
-                            >
-                                <div class="achievement-icon">{{ ach.icon }}</div>
-                                <h3 style="margin-bottom: 8px; text-align: center; font-weight: 700;">
-                                    {{ ach.name }}
-                                </h3>
-                                <p style="font-size: 0.9em; color: #7a6a62; text-align: center; margin-bottom: 12px;">
-                                    {{ ach.description }}
-                                </p>
-                                <div class="achievement-progress">
-                                    <div 
-                                        class="achievement-progress-fill" 
-                                        :style="{width: Math.min(100, (ach.current / ach.requirement * 100)) + '%'}"
-                                    ></div>
-                                </div>
-                                <div style="text-align: center; font-size: 0.9em; color: #7a6a62;">
-                                    {{ ach.current }} / {{ ach.requirement }}
-                                </div>
-                                <div style="text-align: center; margin-top: 10px; font-weight: 700; color: #4ecdc4;">
-                                    💎 +{{ ach.reward }} XP
-                                </div>
-                                <div v-if="ach.unlocked" style="text-align: center; margin-top: 10px; color: #a3de83; font-weight: 700;">
-                                    ✅ 已解锁
-                                </div>
-                                
-                                <!-- 自定义成就的编辑/删除按钮 -->
-                                <div v-if="ach.isCustom" class="achievement-actions">
-                                    <button @click="editAchievement(ach.id)">✏️ 编辑</button>
-                                    <button @click="deleteAchievement(ach.id)">🗑️ 删除</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 笔记本 -->
-                <div class="card" style="grid-column: 1 / -1;">
-                    <h2>
-                        📝 笔记本
-                        <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">
-                            {{ collapsed.notes ? '展开' : '收起' }}
-                        </button>
-                    </h2>
-                    <div v-show="!collapsed.notes">
-                        <!-- 笔记标签页 -->
-                        <div class="note-tabs">
-                            <div 
-                                class="note-tab"
-                                :class="{active: activeNoteTab === 'all'}"
-                                @click="activeNoteTab = 'all'"
-                            >
-                                全部笔记 ({{ notes.length }})
-                            </div>
-                            <div 
-                                class="note-tab"
-                                :class="{active: activeNoteTab === 'new'}"
-                                @click="activeNoteTab = 'new'"
-                            >
-                                ✨ 新建笔记
-                            </div>
-                        </div>
-                        
-                        <!-- 新建笔记 -->
-                        <div v-if="activeNoteTab === 'new'">
-                            <input 
-                                type="text" 
-                                v-model="newNote.title" 
-                                placeholder="笔记标题..."
-                                class="note-input"
-                            >
-                            <textarea 
-                                v-model="newNote.content" 
-                                placeholder="记录你的想法..."
-                                class="note-textarea"
-                            ></textarea>
-                            <input 
-                                type="text" 
-                                v-model="newNote.tags" 
-                                placeholder="标签（用逗号分隔，如: 学习,编程,思考）"
-                                class="note-input"
-                            >
-                            <button class="btn" @click="saveNote">💾 保存笔记</button>
-                        </div>
-                        
-                        <!-- 笔记筛选器 -->
-                        <div v-if="activeNoteTab === 'all'">
-                            <div class="filter-container">
-                                <div class="filter-header" @click="collapsed.filterExpanded = !collapsed.filterExpanded">
-                                    <h3>🔍 筛选和搜索</h3>
-                                    <button class="filter-toggle">
-                                        {{ collapsed.filterExpanded ? '展开' : '收起' }}
-                                    </button>
-                                </div>
-                                
-                                <div v-show="!collapsed.filterExpanded" class="collapsible-content">
-                                    <!-- 搜索框 -->
-                                    <div style="margin-top: 15px;">
-                                        <input 
-                                            type="text" 
-                                            v-model="noteFilters.search" 
-                                            placeholder="搜索标题或内容..."
-                                            class="note-input"
-                                            @input="applyFilters"
-                                        >
-                                    </div>
-                                    
-                                    <div class="filter-options">
-                                        <!-- 标签筛选 -->
-                                        <div class="filter-section">
-                                            <h4>
-                                                标签筛选 
-                                                <span v-if="noteFilters.selectedTags.length > 0" class="filter-active-indicator"></span>
-                                            </h4>
-                                            <div v-if="allTags.length > 0" class="tags-filter">
-                                                <button 
-                                                    v-for="tag in allTags" 
-                                                    :key="tag"
-                                                    class="tag-filter-btn"
-                                                    :class="{active: noteFilters.selectedTags.includes(tag)}"
-                                                    @click="toggleTagFilter(tag)"
-                                                >
-                                                    {{ tag }}
-                                                </button>
-                                            </div>
-                                            <div v-else style="color: #c9b8a7; font-size: 0.9em;">
-                                                暂无标签，添加笔记时添加标签即可筛选
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- 排序选项 -->
-                                        <div class="filter-section">
-                                            <h4>
-                                                排序方式 
-                                                <span v-if="noteFilters.sortBy !== 'newest'" class="filter-active-indicator"></span>
-                                            </h4>
-                                            <div class="sort-options">
-                                                <button 
-                                                    class="sort-btn" 
-                                                    :class="{active: noteFilters.sortBy === 'newest'}"
-                                                    @click="noteFilters.sortBy = 'newest'; applyFilters()"
-                                                >
-                                                    最新优先
-                                                </button>
-                                                <button 
-                                                    class="sort-btn" 
-                                                    :class="{active: noteFilters.sortBy === 'oldest'}"
-                                                    @click="noteFilters.sortBy = 'oldest'; applyFilters()"
-                                                >
-                                                    最早优先
-                                                </button>
-                                                <button 
-                                                    class="sort-btn" 
-                                                    :class="{active: noteFilters.sortBy === 'title'}"
-                                                    @click="noteFilters.sortBy = 'title'; applyFilters()"
-                                                >
-                                                    标题排序
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- 筛选结果和清除按钮 -->
-                                    <div class="filter-results">
-                                        <span v-if="filteredNotes.length !== notes.length">
-                                            找到 {{ filteredNotes.length }} 条笔记（共 {{ notes.length }} 条）
-                                        </span>
-                                        <span v-else>
-                                            共 {{ notes.length }} 条笔记
-                                        </span>
-                                        <button 
-                                            class="clear-filters-btn" 
-                                            @click="clearFilters"
-                                            v-if="isFilterActive"
-                                        >
-                                            清除筛选
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- 笔记列表 -->
-                            <div class="note-list">
-                                <div v-if="filteredNotes.length === 0" class="no-notes-message">
-                                    <div>📭</div>
-                                    <div v-if="notes.length === 0">还没有笔记，去新建一条吧！</div>
-                                    <div v-else>没有找到符合条件的笔记</div>
-                                </div>
-                                <div 
-                                    v-for="note in filteredNotes" 
-                                    :key="note.id"
-                                    class="note-card"
-                                >
-                                    <h3 style="margin-bottom: 12px; font-weight: 700;">{{ note.title }}</h3>
-                                    <div class="note-tags" v-if="note.tags && note.tags.length">
-                                        <span 
-                                            class="note-tag" 
-                                            v-for="tag in note.tags" 
-                                            :key="tag"
-                                            @click="setTagFilter(tag)"
-                                            :style="{cursor: 'pointer'}"
-                                        >
-                                            {{ tag }}
-                                        </span>
-                                    </div>
-                                    <p style="margin: 12px 0; line-height: 1.6;">{{ note.content }}</p>
-                                    <div style="font-size: 0.85em; color: #a0a0a0; margin-top: 10px;">
-                                        {{ formatDate(note.createdAt) }}
-                                    </div>
-                                    <button class="btn-sm" @click="deleteNote(note.id)" style="margin-top: 12px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
-                                        删除
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 知识库入口 -->
-                <div class="card">
-                    <h2>📚 知识库</h2>
-                    <p style="margin: 15px 0; color: #7a6a62;">
-                        创建分类、整理笔记，构建你的知识体系
-                    </p>
-                    <button class="btn" @click="openKnowledgeBase" style="background: linear-gradient(90deg, #667eea, #764ba2); box-shadow: 4px 4px 0px #5a4a42;">
-                        📚 打开知识库
-                    </button>
+                    <button class="btn" @click="addNewSkill">➕ 添加新技能</button>
                 </div>
             </div>
-        </div>
+            
+            <!-- 成就系统 - 独占一行 -->
+            <div class="card">
+                <h2>🏆 成就系统 <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">{{ collapsed.achievements ? '展开' : '收起' }}</button></h2>
+                <div v-show="!collapsed.achievements">
+                    <button class="btn-sm" @click="showAchievementForm = !showAchievementForm" style="margin-bottom: 12px;">
+                        {{ showAchievementForm ? '取消创建' : '➕ 创建成就' }}
+                    </button>
+                    <div v-if="showAchievementForm" class="achievement-form-container">
+                        <h3 style="margin-bottom: 12px; font-weight: 700;">{{ editingAchievementId ? '编辑成就' : '创建新成就' }}</h3>
+                        <input type="text" v-model="newAchievement.name" placeholder="成就名称" class="note-input">
+                        <textarea v-model="newAchievement.description" placeholder="成就描述" class="note-textarea" style="min-height: 60px;"></textarea>
+                        <div style="margin: 12px 0;">
+                            <label style="display: block; margin-bottom: 6px; font-weight: 700;">选择图标:</label>
+                            <div class="achievement-icon-picker">
+                                <div v-for="icon in achievementIcons" :key="icon" class="achievement-icon-option" :class="{selected: newAchievement.icon === icon}" @click="newAchievement.icon = icon">{{ icon }}</div>
+                            </div>
+                        </div>
+                        <input type="number" v-model.number="newAchievement.requirement" placeholder="完成要求（数量）" class="note-input" min="1">
+                        <input type="number" v-model.number="newAchievement.reward" placeholder="奖励经验" class="note-input" min="1">
+                        <button class="btn" @click="saveAchievement">{{ editingAchievementId ? '更新成就' : '创建成就' }}</button>
+                        <button class="btn" @click="cancelNewAchievement" style="background: #e0c9b8; box-shadow: 3px 3px 0px #d4b8a7;">取消</button>
+                    </div>
+                    <div class="achievement-grid">
+                        <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
+                            <div class="achievement-icon">{{ ach.icon }}</div>
+                            <h3 style="margin-bottom: 6px; text-align: center; font-weight: 700; font-size: 1em;">{{ ach.name }}</h3>
+                            <p style="font-size: 0.85em; color: #7a6a62; text-align: center; margin-bottom: 10px;">{{ ach.description }}</p>
+                            <div class="achievement-progress">
+                                <div class="achievement-progress-fill" :style="{width: Math.min(100, (ach.current / ach.requirement * 100)) + '%'}"></div>
+                            </div>
+                            <div style="text-align: center; font-size: 0.85em; color: #7a6a62;">{{ ach.current }} / {{ ach.requirement }}</div>
+                            <div style="text-align: center; margin-top: 8px; font-weight: 700; color: #4ecdc4; font-size: 0.9em;">💎 +{{ ach.reward }} XP</div>
+                            <div v-if="ach.unlocked" style="text-align: center; margin-top: 8px; color: #a3de83; font-weight: 700; font-size: 0.9em;">✅ 已解锁</div>
+                            <div v-if="ach.isCustom" class="achievement-actions">
+                                <button @click="editAchievement(ach.id)">✏️ 编辑</button>
+                                <button @click="deleteAchievement(ach.id)">🗑️ 删除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 笔记本 - 独占一行 -->
+            <div class="card">
+                <h2>📝 笔记本 <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">{{ collapsed.notes ? '展开' : '收起' }}</button></h2>
+                <div v-show="!collapsed.notes">
+                    <div class="note-tabs">
+                        <div class="note-tab" :class="{active: activeNoteTab === 'all'}" @click="activeNoteTab = 'all'">全部笔记 ({{ notes.length }})</div>
+                        <div class="note-tab" :class="{active: activeNoteTab === 'new'}" @click="activeNoteTab = 'new'">✨ 新建笔记</div>
+                    </div>
+                    <div v-if="activeNoteTab === 'new'">
+                        <input type="text" v-model="newNote.title" placeholder="笔记标题..." class="note-input">
+                        <textarea v-model="newNote.content" placeholder="记录你的想法..." class="note-textarea"></textarea>
+                        <input type="text" v-model="newNote.tags" placeholder="标签（用逗号分隔，如: 学习,编程,思考）" class="note-input">
+                        <button class="btn" @click="saveNote">💾 保存笔记</button>
+                    </div>
+                    <div v-if="activeNoteTab === 'all'">
+                        <div class="filter-container">
+                            <div class="filter-header" @click="collapsed.filterExpanded = !collapsed.filterExpanded">
+                                <h3>🔍 筛选和搜索</h3>
+                                <button class="filter-toggle">{{ collapsed.filterExpanded ? '展开' : '收起' }}</button>
+                            </div>
+                            <div v-show="!collapsed.filterExpanded" style="margin-top: 12px;">
+                                <input type="text" v-model="noteFilters.search" placeholder="搜索标题或内容..." class="note-input">
+                                <div class="filter-section">
+                                    <h4>标签筛选 <span v-if="noteFilters.selectedTags.length > 0" class="filter-active-indicator"></span></h4>
+                                    <div v-if="allTags.length > 0" class="tags-filter">
+                                        <button v-for="tag in allTags" :key="tag" class="tag-filter-btn" :class="{active: noteFilters.selectedTags.includes(tag)}" @click="toggleTagFilter(tag)">{{ tag }}</button>
+                                    </div>
+                                    <div v-else style="color: #c9b8a7; font-size: 0.85em;">暂无标签</div>
+                                </div>
+                                <div class="filter-section">
+                                    <h4>排序方式 <span v-if="noteFilters.sortBy !== 'newest'" class="filter-active-indicator"></span></h4>
+                                    <div class="sort-options">
+                                        <button class="sort-btn" :class="{active: noteFilters.sortBy === 'newest'}" @click="noteFilters.sortBy = 'newest'">最新优先</button>
+                                        <button class="sort-btn" :class="{active: noteFilters.sortBy === 'oldest'}" @click="noteFilters.sortBy = 'oldest'">最早优先</button>
+                                        <button class="sort-btn" :class="{active: noteFilters.sortBy === 'title'}" @click="noteFilters.sortBy = 'title'">标题排序</button>
+                                    </div>
+                                </div>
+                                <div class="filter-results">
+                                    <span>{{ filteredNotes.length !== notes.length ? '找到 ' + filteredNotes.length + ' 条（共 ' + notes.length + ' 条）' : '共 ' + notes.length + ' 条笔记' }}</span>
+                                    <button v-if="isFilterActive" class="clear-filters-btn" @click="clearFilters">清除筛选</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="note-list">
+                            <div v-if="filteredNotes.length === 0" class="no-notes-message">
+                                <div>📭</div>
+                                <div>{{ notes.length === 0 ? '还没有笔记，去新建一条吧！' : '没有找到符合条件的笔记' }}</div>
+                            </div>
+                            <div v-for="note in filteredNotes" :key="note.id" class="note-card">
+                                <h3 style="margin-bottom: 10px; font-weight: 700;">{{ note.title }}</h3>
+                                <div class="note-tags" v-if="note.tags && note.tags.length">
+                                    <span class="note-tag" v-for="tag in note.tags" :key="tag" @click="setTagFilter(tag)">{{ tag }}</span>
+                                </div>
+                                <p style="margin: 10px 0; line-height: 1.5; font-size: 0.95em;">{{ note.content }}</p>
+                                <div style="font-size: 0.8em; color: #a0a0a0; margin-top: 8px;">{{ formatDate(note.createdAt) }}</div>
+                                <button class="btn-sm" @click="deleteNote(note.id)" style="margin-top: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 2px 2px 0px #d45d5d;">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 知识库弹窗 -->
+            <!-- 知识库入口 - 独占一行 -->
+            <div class="card">
+                <h2>📚 知识库</h2>
+                <p style="margin: 12px 0; color: #7a6a62;">创建多级文件夹、整理笔记，构建你的知识体系</p>
+                <button class="btn" @click="openKnowledgeBase" style="background: linear-gradient(90deg, #36cfc9, #40a9ff); box-shadow: 3px 3px 0px #1890ff;">📚 打开知识库</button>
+            </div>
+        </div>
+        <!-- 知识库弹窗（语雀风格） -->
         <div v-if="isLoggedIn && showKnowledgeBase" class="kb-modal-overlay" @click.self="closeKnowledgeBase">
             <div class="kb-modal">
-                <!-- 顶部标题栏 -->
                 <div class="kb-header">
                     <h1>📚 我的知识库</h1>
                     <button class="kb-close-btn" @click="closeKnowledgeBase">✕</button>
                 </div>
-                
-                <!-- 主体内容 -->
                 <div class="kb-content">
-                    <!-- 左侧边栏 - 分类列表 -->
+                    <!-- 左侧树形目录 -->
                     <div class="kb-sidebar">
                         <div class="kb-sidebar-header">
-                            <h3>分类目录</h3>
-                            <button class="btn-sm" @click="showCategoryForm = true">+ 新建</button>
-                        </div>
-                        
-                        <!-- 分类列表 -->
-                        <div class="kb-category-list">
-                            <!-- 全部笔记 -->
-                            <div 
-                                class="kb-category-item"
-                                :class="{ active: selectedCategory === 'all' }"
-                                @click="selectCategory('all')"
-                            >
-                                <span class="kb-category-icon">📖</span>
-                                <span class="kb-category-name">全部笔记</span>
-                                <span class="kb-category-count">({{ kbNotes.length }})</span>
+                            <h3>目录</h3>
+                            <div class="kb-sidebar-actions">
+                                <button class="kb-sidebar-btn" @click="openFolderForm(null)">+ 文件夹</button>
+                                <button class="kb-sidebar-btn primary" @click="openNoteForm(null)">+ 笔记</button>
                             </div>
-                            
-                            <div 
-                                v-for="category in kbCategories" 
-                                :key="category.id"
-                                class="kb-category-item"
-                                :class="{ active: selectedCategory && selectedCategory.id === category.id }"
-                                @click="selectCategory(category)"
-                            >
-                                <span class="kb-category-icon">{{ category.icon }}</span>
-                                <span class="kb-category-name">{{ category.name }}</span>
-                                <span class="kb-category-count">({{ getCategoryNotesCount(category.id) }})</span>
-                                <div class="kb-category-actions">
-                                    <button @click.stop="editCategory(category)" title="编辑">✏️</button>
-                                    <button @click.stop="deleteCategory(category.id)" title="删除">🗑️</button>
+                        </div>
+                        <div class="kb-tree-container">
+                            <!-- 全部笔记 -->
+                            <div class="kb-tree-node">
+                                <div class="kb-tree-item" :class="{active: currentFolderId === 'all'}" @click="selectFolder('all')">
+                                    <span class="kb-tree-expand empty"></span>
+                                    <span class="kb-tree-icon">📖</span>
+                                    <span class="kb-tree-name">全部笔记</span>
+                                    <span class="kb-tree-count">{{ kbNotes.length }}</span>
                                 </div>
                             </div>
-                            
+                            <!-- 递归渲染文件夹树 -->
+                            <div v-for="folder in rootFolders" :key="folder.id" class="kb-tree-node">
+                                <div class="kb-tree-item" :class="{active: currentFolderId === folder.id}" @click="selectFolder(folder.id)">
+                                    <span class="kb-tree-expand" :class="{expanded: expandedFolders[folder.id], empty: !hasChildren(folder.id)}" @click.stop="toggleFolder(folder.id)">▶</span>
+                                    <span class="kb-tree-icon">{{ folder.icon }}</span>
+                                    <span class="kb-tree-name">{{ folder.name }}</span>
+                                    <span class="kb-tree-count">{{ getFolderItemCount(folder.id) }}</span>
+                                    <div class="kb-tree-actions">
+                                        <button class="kb-tree-action-btn" @click.stop="openFolderForm(folder.id)" title="新建子文件夹">📁+</button>
+                                        <button class="kb-tree-action-btn" @click.stop="openNoteForm(folder.id)" title="新建笔记">📝+</button>
+                                        <button class="kb-tree-action-btn" @click.stop="editFolder(folder)" title="编辑">✏️</button>
+                                        <button class="kb-tree-action-btn" @click.stop="deleteFolder(folder.id)" title="删除">🗑️</button>
+                                    </div>
+                                </div>
+                                <!-- 子文件夹 -->
+                                <div v-show="expandedFolders[folder.id]" class="kb-tree-children">
+                                    <template v-for="child in getChildFolders(folder.id)" :key="child.id">
+                                        <div class="kb-tree-item" :class="{active: currentFolderId === child.id}" @click="selectFolder(child.id)">
+                                            <span class="kb-tree-expand" :class="{expanded: expandedFolders[child.id], empty: !hasChildren(child.id)}" @click.stop="toggleFolder(child.id)">▶</span>
+                                            <span class="kb-tree-icon">{{ child.icon }}</span>
+                                            <span class="kb-tree-name">{{ child.name }}</span>
+                                            <span class="kb-tree-count">{{ getFolderItemCount(child.id) }}</span>
+                                            <div class="kb-tree-actions">
+                                                <button class="kb-tree-action-btn" @click.stop="openFolderForm(child.id)" title="新建子文件夹">📁+</button>
+                                                <button class="kb-tree-action-btn" @click.stop="openNoteForm(child.id)" title="新建笔记">📝+</button>
+                                                <button class="kb-tree-action-btn" @click.stop="editFolder(child)" title="编辑">✏️</button>
+                                                <button class="kb-tree-action-btn" @click.stop="deleteFolder(child.id)" title="删除">🗑️</button>
+                                            </div>
+                                        </div>
+                                        <!-- 第三级 -->
+                                        <div v-show="expandedFolders[child.id]" class="kb-tree-children">
+                                            <div v-for="grandchild in getChildFolders(child.id)" :key="grandchild.id" class="kb-tree-item" :class="{active: currentFolderId === grandchild.id}" @click="selectFolder(grandchild.id)">
+                                                <span class="kb-tree-expand" :class="{expanded: expandedFolders[grandchild.id], empty: !hasChildren(grandchild.id)}" @click.stop="toggleFolder(grandchild.id)">▶</span>
+                                                <span class="kb-tree-icon">{{ grandchild.icon }}</span>
+                                                <span class="kb-tree-name">{{ grandchild.name }}</span>
+                                                <span class="kb-tree-count">{{ getFolderItemCount(grandchild.id) }}</span>
+                                                <div class="kb-tree-actions">
+                                                    <button class="kb-tree-action-btn" @click.stop="openFolderForm(grandchild.id)" title="新建子文件夹">📁+</button>
+                                                    <button class="kb-tree-action-btn" @click.stop="openNoteForm(grandchild.id)" title="新建笔记">📝+</button>
+                                                    <button class="kb-tree-action-btn" @click.stop="editFolder(grandchild)" title="编辑">✏️</button>
+                                                    <button class="kb-tree-action-btn" @click.stop="deleteFolder(grandchild.id)" title="删除">🗑️</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
                             <!-- 未分类 -->
-                            <div 
-                                class="kb-category-item"
-                                :class="{ active: selectedCategory === 'uncategorized' }"
-                                @click="selectCategory('uncategorized')"
-                            >
-                                <span class="kb-category-icon">📋</span>
-                                <span class="kb-category-name">未分类</span>
-                                <span class="kb-category-count">({{ getUncategorizedCount() }})</span>
+                            <div class="kb-tree-node">
+                                <div class="kb-tree-item" :class="{active: currentFolderId === 'uncategorized'}" @click="selectFolder('uncategorized')">
+                                    <span class="kb-tree-expand empty"></span>
+                                    <span class="kb-tree-icon">📋</span>
+                                    <span class="kb-tree-name">未分类</span>
+                                    <span class="kb-tree-count">{{ uncategorizedCount }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
                     <!-- 右侧内容区 -->
                     <div class="kb-main">
-                        <!-- 工具栏 -->
                         <div class="kb-toolbar">
-                            <input 
-                                type="text" 
-                                v-model="kbSearchQuery" 
-                                placeholder="🔍 搜索笔记..."
-                                class="kb-search-input"
-                            >
-                            <button class="btn-primary" @click="showNoteEditor = true">
-                                ✨ 新建笔记
-                            </button>
-                        </div>
-                        
-                        <!-- 笔记列表 -->
-                        <div class="kb-notes-list">
-                            <div v-if="filteredKbNotes.length === 0" class="kb-empty">
-                                <div class="kb-empty-icon">📝</div>
-                                <p>暂无笔记，点击"新建笔记"开始记录吧！</p>
+                            <div class="kb-breadcrumb">
+                                <span class="kb-breadcrumb-item" @click="selectFolder('all')">知识库</span>
+                                <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.id">
+                                    <span class="kb-breadcrumb-separator">/</span>
+                                    <span class="kb-breadcrumb-item" :class="{current: idx === breadcrumbs.length - 1}" @click="selectFolder(crumb.id)">{{ crumb.name }}</span>
+                                </template>
                             </div>
-                            
-                            <div 
-                                v-for="note in filteredKbNotes" 
-                                :key="note.id"
-                                class="kb-note-card"
-                                @click="openNoteDetail(note)"
-                            >
-                                <div class="kb-note-header">
-                                    <h3>{{ note.title }}</h3>
-                                    <span class="kb-note-date">{{ formatDateShort(note.updatedAt || note.createdAt) }}</span>
-                                </div>
-                                <div class="kb-note-preview">{{ getPreviewText(note.content) }}</div>
-                                <div class="kb-note-footer">
-                                    <span v-if="note.categoryId" class="kb-note-category">
-                                        {{ getCategoryIcon(note.categoryId) }} {{ getCategoryName(note.categoryId) }}
-                                    </span>
-                                    <span v-else class="kb-note-category" style="background: #a0a0a0;">
-                                        📋 未分类
-                                    </span>
-                                    <div class="kb-note-actions">
-                                        <button @click.stop="editKbNote(note)" class="kb-action-btn">✏️</button>
-                                        <button @click.stop="deleteKbNote(note.id)" class="kb-action-btn">🗑️</button>
+                            <input type="text" v-model="kbSearchQuery" placeholder="搜索笔记..." class="kb-search-input">
+                            <button class="kb-btn-primary" @click="openNoteForm(currentFolderId === 'all' || currentFolderId === 'uncategorized' ? null : currentFolderId)">✨ 新建笔记</button>
+                        </div>
+                        <div class="kb-notes-list">
+                            <!-- 当前文件夹下的子文件夹 -->
+                            <div v-for="folder in currentSubFolders" :key="'folder-'+folder.id" class="kb-note-item" @click="selectFolder(folder.id)">
+                                <span class="kb-note-icon">📁</span>
+                                <div class="kb-note-info">
+                                    <div class="kb-note-title">{{ folder.icon }} {{ folder.name }}</div>
+                                    <div class="kb-note-meta">
+                                        <span>{{ getFolderItemCount(folder.id) }} 项</span>
+                                        <span>{{ formatDate(folder.createdAt) }}</span>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- 笔记列表 -->
+                            <div v-if="filteredKbNotes.length === 0 && currentSubFolders.length === 0" class="kb-empty">
+                                <div class="kb-empty-icon">📝</div>
+                                <p>暂无内容，点击"新建笔记"开始记录吧！</p>
+                            </div>
+                            <div v-for="note in filteredKbNotes" :key="note.id" class="kb-note-item" @click="openNoteDetail(note)">
+                                <span class="kb-note-icon">📄</span>
+                                <div class="kb-note-info">
+                                    <div class="kb-note-title">{{ note.title }}</div>
+                                    <div class="kb-note-meta">
+                                        <span class="kb-note-path" v-if="note.folderId && currentFolderId === 'all'">
+                                            <span>{{ getFolderPath(note.folderId) }}</span>
+                                        </span>
+                                        <span>{{ formatDate(note.updatedAt || note.createdAt) }}</span>
+                                    </div>
+                                </div>
+                                <div class="kb-note-actions">
+                                    <button class="kb-note-action-btn" @click.stop="editKbNote(note)">编辑</button>
+                                    <button class="kb-note-action-btn" @click.stop="moveNote(note)">移动</button>
+                                    <button class="kb-note-action-btn danger" @click.stop="deleteKbNote(note.id)">删除</button>
                                 </div>
                             </div>
                         </div>
@@ -1505,389 +1287,134 @@
             </div>
         </div>
 
-        <!-- 新建/编辑分类弹窗 -->
-        <div v-if="showCategoryForm" class="kb-form-overlay" @click.self="closeCategoryForm">
+        <!-- 新建/编辑文件夹弹窗 -->
+        <div v-if="showFolderForm" class="kb-form-overlay" @click.self="closeFolderForm">
             <div class="kb-form-modal">
                 <div class="kb-form-header">
-                    <h2>{{ editingCategoryId ? '编辑分类' : '新建分类' }}</h2>
-                    <button class="kb-close-btn" @click="closeCategoryForm">✕</button>
+                    <h2>{{ editingFolderId ? '编辑文件夹' : '新建文件夹' }}</h2>
+                    <button class="kb-form-close" @click="closeFolderForm">✕</button>
                 </div>
                 <div class="kb-form-body">
                     <div class="kb-form-group">
-                        <label>分类名称</label>
-                        <input 
-                            type="text" 
-                            v-model="categoryForm.name" 
-                            placeholder="输入分类名称..."
-                            class="kb-form-input"
-                        >
+                        <label>文件夹名称</label>
+                        <input type="text" v-model="folderForm.name" placeholder="输入文件夹名称..." class="kb-form-input">
                     </div>
                     <div class="kb-form-group">
                         <label>选择图标</label>
                         <div class="kb-icon-picker">
-                            <button 
-                                v-for="icon in categoryIcons" 
-                                :key="icon"
-                                class="kb-icon-btn"
-                                :class="{ active: categoryForm.icon === icon }"
-                                @click="categoryForm.icon = icon"
-                            >
-                                {{ icon }}
-                            </button>
+                            <button v-for="icon in folderIcons" :key="icon" class="kb-icon-btn" :class="{active: folderForm.icon === icon}" @click="folderForm.icon = icon">{{ icon }}</button>
+                        </div>
+                    </div>
+                    <div class="kb-form-group" v-if="!editingFolderId">
+                        <label>父文件夹（可选）</label>
+                        <div class="kb-folder-select">
+                            <div class="kb-folder-option root" :class="{selected: folderForm.parentId === null}" @click="folderForm.parentId = null">
+                                <span>📚</span>
+                                <span>根目录</span>
+                            </div>
+                            <div v-for="folder in allFoldersFlat" :key="folder.id" class="kb-folder-option" :class="{selected: folderForm.parentId === folder.id}" @click="folderForm.parentId = folder.id" :style="{paddingLeft: (folder.level * 20 + 12) + 'px'}">
+                                <span>{{ folder.icon }}</span>
+                                <span>{{ folder.name }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="kb-form-footer">
-                    <button class="btn-secondary" @click="closeCategoryForm">取消</button>
-                    <button class="btn-primary" @click="saveCategoryForm">保存</button>
+                    <button class="kb-btn-default" @click="closeFolderForm">取消</button>
+                    <button class="kb-btn-primary" @click="saveFolderForm">保存</button>
                 </div>
             </div>
         </div>
 
         <!-- 新建/编辑笔记弹窗 -->
         <div v-if="showNoteEditor" class="kb-form-overlay" @click.self="closeNoteEditor">
-            <div class="kb-form-modal kb-editor-modal">
+            <div class="kb-form-modal large">
                 <div class="kb-form-header">
                     <h2>{{ editingNoteId ? '编辑笔记' : '新建笔记' }}</h2>
-                    <button class="kb-close-btn" @click="closeNoteEditor">✕</button>
+                    <button class="kb-form-close" @click="closeNoteEditor">✕</button>
                 </div>
                 <div class="kb-form-body">
                     <div class="kb-form-group">
                         <label>笔记标题</label>
-                        <input 
-                            type="text" 
-                            v-model="noteForm.title" 
-                            placeholder="输入笔记标题..."
-                            class="kb-form-input"
-                        >
+                        <input type="text" v-model="noteForm.title" placeholder="输入笔记标题..." class="kb-form-input">
                     </div>
                     <div class="kb-form-group">
-                        <label>选择分类</label>
-                        <select v-model="noteForm.categoryId" class="kb-form-select">
-                            <option :value="null">未分类</option>
-                            <option 
-                                v-for="category in kbCategories" 
-                                :key="category.id" 
-                                :value="category.id"
-                            >
-                                {{ category.icon }} {{ category.name }}
-                            </option>
-                        </select>
+                        <label>所属文件夹</label>
+                        <div class="kb-folder-select">
+                            <div class="kb-folder-option root" :class="{selected: noteForm.folderId === null}" @click="noteForm.folderId = null">
+                                <span>📋</span>
+                                <span>未分类</span>
+                            </div>
+                            <div v-for="folder in allFoldersFlat" :key="folder.id" class="kb-folder-option" :class="{selected: noteForm.folderId === folder.id}" @click="noteForm.folderId = folder.id" :style="{paddingLeft: (folder.level * 20 + 12) + 'px'}">
+                                <span>{{ folder.icon }}</span>
+                                <span>{{ folder.name }}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="kb-form-group">
                         <label>笔记内容</label>
-                        <textarea 
-                            v-model="noteForm.content" 
-                            placeholder="开始记录..."
-                            class="kb-form-textarea"
-                        ></textarea>
+                        <textarea v-model="noteForm.content" placeholder="开始记录..." class="kb-form-textarea"></textarea>
                     </div>
                 </div>
                 <div class="kb-form-footer">
-                    <button class="btn-secondary" @click="closeNoteEditor">取消</button>
-                    <button class="btn-primary" @click="saveNoteForm">保存</button>
+                    <button class="kb-btn-default" @click="closeNoteEditor">取消</button>
+                    <button class="kb-btn-primary" @click="saveNoteForm">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动笔记弹窗 -->
+        <div v-if="showMoveDialog" class="kb-form-overlay" @click.self="closeMoveDialog">
+            <div class="kb-form-modal">
+                <div class="kb-form-header">
+                    <h2>移动笔记到...</h2>
+                    <button class="kb-form-close" @click="closeMoveDialog">✕</button>
+                </div>
+                <div class="kb-form-body">
+                    <div class="kb-folder-select" style="max-height: 300px;">
+                        <div class="kb-folder-option root" :class="{selected: moveTargetFolderId === null}" @click="moveTargetFolderId = null">
+                            <span>📋</span>
+                            <span>未分类</span>
+                        </div>
+                        <div v-for="folder in allFoldersFlat" :key="folder.id" class="kb-folder-option" :class="{selected: moveTargetFolderId === folder.id}" @click="moveTargetFolderId = folder.id" :style="{paddingLeft: (folder.level * 20 + 12) + 'px'}">
+                            <span>{{ folder.icon }}</span>
+                            <span>{{ folder.name }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="kb-form-footer">
+                    <button class="kb-btn-default" @click="closeMoveDialog">取消</button>
+                    <button class="kb-btn-primary" @click="confirmMoveNote">确认移动</button>
                 </div>
             </div>
         </div>
 
         <!-- 笔记详情弹窗 -->
         <div v-if="viewingNote" class="kb-form-overlay" @click.self="closeNoteDetail">
-            <div class="kb-form-modal kb-detail-modal">
+            <div class="kb-form-modal large">
                 <div class="kb-form-header">
-                    <h2>{{ viewingNote.title }}</h2>
-                    <button class="kb-close-btn" @click="closeNoteDetail">✕</button>
+                    <h2>笔记详情</h2>
+                    <button class="kb-form-close" @click="closeNoteDetail">✕</button>
                 </div>
                 <div class="kb-form-body">
-                    <div class="kb-detail-meta">
-                        <span v-if="viewingNote.categoryId" class="kb-detail-category">
-                            {{ getCategoryIcon(viewingNote.categoryId) }} {{ getCategoryName(viewingNote.categoryId) }}
-                        </span>
-                        <span v-else class="kb-detail-category" style="background: #a0a0a0;">
-                            📋 未分类
-                        </span>
-                        <span class="kb-detail-date">
-                            创建于: {{ formatDate(viewingNote.createdAt) }}
-                        </span>
-                        <span v-if="viewingNote.updatedAt" class="kb-detail-date">
-                            更新于: {{ formatDate(viewingNote.updatedAt) }}
-                        </span>
+                    <div class="kb-detail-header">
+                        <div class="kb-detail-title">{{ viewingNote.title }}</div>
+                        <div class="kb-detail-meta">
+                            <span v-if="viewingNote.folderId">📁 {{ getFolderPath(viewingNote.folderId) }}</span>
+                            <span v-else>📋 未分类</span>
+                            <span>创建于 {{ formatDate(viewingNote.createdAt) }}</span>
+                            <span v-if="viewingNote.updatedAt">更新于 {{ formatDate(viewingNote.updatedAt) }}</span>
+                        </div>
                     </div>
-                    <div class="kb-detail-content">
-                        {{ viewingNote.content }}
-                    </div>
+                    <div class="kb-detail-content">{{ viewingNote.content }}</div>
                 </div>
                 <div class="kb-form-footer">
-                    <button class="btn-secondary" @click="closeNoteDetail">关闭</button>
-                    <button class="btn-primary" @click="editKbNote(viewingNote); closeNoteDetail()">编辑</button>
+                    <button class="kb-btn-default" @click="closeNoteDetail">关闭</button>
+                    <button class="kb-btn-primary" @click="editKbNote(viewingNote); closeNoteDetail()">编辑</button>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        const SUPABASE_URL = 'https://zqmgigcnruvvdcholbuj.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI';
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        const { createApp } = Vue;
-        
-        createApp({
-            data() {
-                return {
-                    isLoggedIn: false,
-                    userId: null,
-                    userEmail: '',
-                    email: '',
-                    password: '',
-                    loading: false,
-                    syncing: false,
-                    saving: false,
-                    message: '',
-                    messageType: 'success',
-                    collapsed: { status: false, skills: false, achievements: false, notes: false, filterExpanded: false },
-                    playerData: { level: 1, xp: 0, nextLevelXp: 100 },
-                    skills: [],
-                    achievements: [
-                        { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
-                        { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
-                        { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
-                        { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
-                    ],
-                    notes: [],
-                    activeNoteTab: 'all',
-                    newNote: { title: '', content: '', tags: '' },
-                    showAchievementForm: false,
-                    newAchievement: {
-                        name: '',
-                        description: '',
-                        icon: '🏆',
-                        requirement: 1,
-                        reward: 50,
-                        isCustom: true
-                    },
-                    achievementIcons: ['🏆', '⭐', '🎯', '🚀', '💡', '🔥', '✨', '🎖️', '🏅', '👑', '💎', '📚', '🎨', '🎵', '🏃', '🧠', '💪', '❤️', '🌟', '🌈'],
-                    editingAchievementId: null,
-                    noteFilters: {
-                        search: '',
-                        selectedTags: [],
-                        sortBy: 'newest'
-                    },
-                    showKnowledgeBase: false,
-                    kbCategories: [],
-                    kbNotes: [],
-                    selectedCategory: 'all',
-                    kbSearchQuery: '',
-                    showCategoryForm: false,
-                    editingCategoryId: null,
-                    categoryForm: { name: '', icon: '📁' },
-                    categoryIcons: ['📁', '📂', '📚', '📖', '📝', '✏️', '💡', '🎯', '🎨', '💻', '🔬', '📊', '🎵', '🎬', '🏋️', '🍳', '✈️', '🌟', '❤️', '🎓', '💼', '🏠', '🌱', '⚡'],
-                    showNoteEditor: false,
-                    editingNoteId: null,
-                    noteForm: { title: '', content: '', categoryId: null },
-                    viewingNote: null
-                };
-            },
-            
-            computed: {
-                xpPercentage() {
-                    return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100);
-                },
-                completedAchievementsCount() {
-                    return this.achievements.filter(a => a.unlocked).length;
-                },
-                allTags() {
-                    const allTags = [];
-                    this.notes.forEach(note => {
-                        if (note.tags && Array.isArray(note.tags)) {
-                            note.tags.forEach(tag => {
-                                if (!allTags.includes(tag)) allTags.push(tag);
-                            });
-                        }
-                    });
-                    return allTags.sort();
-                },
-                filteredNotes() {
-                    let filtered = [...this.notes];
-                    if (this.noteFilters.search.trim()) {
-                        const searchTerm = this.noteFilters.search.toLowerCase().trim();
-                        filtered = filtered.filter(note => note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm));
-                    }
-                    if (this.noteFilters.selectedTags.length > 0) {
-                        filtered = filtered.filter(note => {
-                            if (!note.tags || !Array.isArray(note.tags)) return false;
-                            return this.noteFilters.selectedTags.some(tag => note.tags.includes(tag));
-                        });
-                    }
-                    filtered.sort((a, b) => {
-                        const dateA = new Date(a.createdAt);
-                        const dateB = new Date(b.createdAt);
-                        switch (this.noteFilters.sortBy) {
-                            case 'newest': return dateB - dateA;
-                            case 'oldest': return dateA - dateB;
-                            case 'title': return a.title.localeCompare(b.title);
-                            default: return dateB - dateA;
-                        }
-                    });
-                    return filtered;
-                },
-                isFilterActive() {
-                    return this.noteFilters.search.trim() !== '' || this.noteFilters.selectedTags.length > 0 || this.noteFilters.sortBy !== 'newest';
-                },
-                filteredKbNotes() {
-                    let filtered = [...this.kbNotes];
-                    if (this.selectedCategory === 'all') {
-                        // 显示全部
-                    } else if (this.selectedCategory === 'uncategorized') {
-                        filtered = filtered.filter(note => !note.categoryId);
-                    } else if (this.selectedCategory && this.selectedCategory.id) {
-                        filtered = filtered.filter(note => note.categoryId === this.selectedCategory.id);
-                    }
-                    if (this.kbSearchQuery.trim()) {
-                        const query = this.kbSearchQuery.toLowerCase();
-                        filtered = filtered.filter(note => note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query));
-                    }
-                    return filtered.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
-                }
-            },
-            
-            methods: {
-                showMessage(text, type = 'success') {
-                    this.message = text;
-                    this.messageType = type;
-                    setTimeout(() => this.message = '', 4000);
-                },
-                
-                async register() {
-                    if (!this.email || !this.password) { this.showMessage('请输入邮箱和密码', 'error'); return; }
-                    if (this.password.length < 6) { this.showMessage('密码至少6位', 'error'); return; }
-                    this.loading = true;
-                    try {
-                        const { data, error } = await sb.auth.signUp({ email: this.email, password: this.password });
-                        if (error) throw error;
-                        if (data.user && data.user.identities && data.user.identities.length === 0) {
-                            this.showMessage('邮箱已注册', 'error');
-                        } else {
-                            this.showMessage('注册成功！请登录', 'success');
-                        }
-                        this.password = '';
-                    } catch (error) {
-                        this.showMessage(error.message || '注册失败', 'error');
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-                
-                async login() {
-                    if (!this.email || !this.password) { this.showMessage('请输入邮箱和密码', 'error'); return; }
-                    this.loading = true;
-                    try {
-                        const { data, error } = await sb.auth.signInWithPassword({ email: this.email.trim(), password: this.password });
-                        if (error) throw error;
-                        this.isLoggedIn = true;
-                        this.userId = data.user.id;
-                        this.userEmail = data.user.email;
-                        this.showMessage('登录成功！', 'success');
-                        await this.loadAllData();
-                    } catch (error) {
-                        this.showMessage(error.message || '登录失败', 'error');
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-                
-                async logout() {
-                    await sb.auth.signOut();
-                    this.isLoggedIn = false;
-                    this.userId = null;
-                    this.showKnowledgeBase = false;
-                    this.resetData();
-                    this.showMessage('已退出', 'success');
-                },
-                
-                async loadAllData() {
-                    this.syncing = true;
-                    try {
-                        const { data: pData } = await sb.from('players').select('*').eq('user_id', this.userId).single();
-                        if (pData && pData.data) this.playerData = pData.data;
-                        
-                        const { data: sData } = await sb.from('skills').select('*').eq('user_id', this.userId);
-                        if (sData) this.skills = sData.map(s => s.data);
-                        
-                        const { data: aData } = await sb.from('achievements').select('*').eq('user_id', this.userId);
-                        if (aData && aData.length > 0) {
-                            const loadedAchievements = aData.map(a => a.data);
-                            const defaultAchievements = [
-                                { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
-                                { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
-                                { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
-                                { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
-                            ];
-                            const customAchievements = loadedAchievements.filter(a => a.isCustom);
-                            const defaultWithData = defaultAchievements.map(defaultAch => {
-                                const loadedAch = loadedAchievements.find(a => a.id === defaultAch.id && !a.isCustom);
-                                return loadedAch ? loadedAch : defaultAch;
-                            });
-                            this.achievements = [...defaultWithData, ...customAchievements];
-                        }
-                        
-                        const { data: nData } = await sb.from('notes').select('*').eq('user_id', this.userId);
-                        if (nData) {
-                            this.notes = nData.map(n => n.data);
-                            this.notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                        }
-                        
-                        const { data: kbCatData } = await sb.from('kb_categories').select('*').eq('user_id', this.userId);
-                        if (kbCatData) this.kbCategories = kbCatData.map(c => c.data);
-                        
-                        const { data: kbNotesData } = await sb.from('kb_notes').select('*').eq('user_id', this.userId);
-                        if (kbNotesData) this.kbNotes = kbNotesData.map(n => n.data);
-                        
-                        this.updateAchievements();
-                        this.showMessage('数据已加载', 'success');
-                    } catch (error) {
-                        console.error('加载失败:', error);
-                    } finally {
-                        this.syncing = false;
-                    }
-                },
-                
-                resetData() {
-                    this.playerData = { level: 1, xp: 0, nextLevelXp: 100 };
-                    this.skills = [];
-                    this.achievements = [
-                        { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
-                        { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
-                        { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
-                        { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
-                    ];
-                    this.notes = [];
-                    this.kbCategories = [];
-                    this.kbNotes = [];
-                },
-                
-                async syncData() { await this.loadAllData(); },
-                
-                async saveAllData() {
-                    if (!this.userId) return;
-                    this.saving = true;
-                    try {
-                        await sb.from('players').upsert({ user_id: this.userId, data: this.playerData });
-                        await sb.from('skills').delete().eq('user_id', this.userId);
-                        if (this.skills.length > 0) await sb.from('skills').insert(this.skills.map(skill => ({ user_id: this.userId, data: skill })));
-                        await sb.from('achievements').delete().eq('user_id', this.userId);
-                        if (this.achievements.length > 0) await sb.from('achievements').insert(this.achievements.map(ach => ({ user_id: this.userId, data: ach })));
-                        await sb.from('notes').delete().eq('user_id', this.userId);
-                        if (this.notes.length > 0) await sb.from('notes').insert(this.notes.map(note => ({ user_id: this.userId, data: note })));
-                        await sb.from('kb_categories').delete().eq('user_id', this.userId);
-                        if (this.kbCategories.length > 0) await sb.from('kb_categories').insert(this.kbCategories.map(cat => ({ user_id: this.userId, data: cat })));
-                        await sb.from('kb_notes').delete().eq('user_id', this.userId);
-                        if (this.kbNotes.length > 0) await sb.from('kb_notes').insert(this.kbNotes.map(note => ({ user_id: this.userId, data: note })));
-                    } catch (error) {
-                        console.error('保存失败:', error);
-                    } finally {
-                        this.saving = false;
-                    }
-                },
-                
                 addXp(amount) {
                     this.playerData.xp += amount;
                     while (this.playerData.xp >= this.playerData.nextLevelXp) {
@@ -1896,364 +1423,151 @@
                         this.playerData.nextLevelXp = Math.floor(this.playerData.nextLevelXp * 1.5);
                         this.showMessage('升级了！现在是 Lv.' + this.playerData.level, 'success');
                     }
-                    this.updateAchievements();
-                    this.saveAllData();
+                    this.updateAchievements(); this.saveAllData();
                 },
-                
                 addNewSkill() {
-                    const name = prompt('请输入技能名称:');
-                    if (!name || !name.trim()) return;
-                    const category = prompt('请输入技能分类 (如: 编程、语言、运动):') || '通用';
+                    const name = prompt('请输入技能名称:'); if (!name?.trim()) return;
+                    const category = prompt('请输入技能分类:') || '通用';
                     const icons = ['💻', '📚', '🎨', '🎵', '🏃', '🍳', '📷', '✍️', '🎯', '🧠'];
-                    const newSkill = {
-                        id: Date.now(),
-                        name: name.trim(),
-                        category: category.trim(),
-                        icon: icons[Math.floor(Math.random() * icons.length)],
-                        level: 1,
-                        xp: 0,
-                        maxXp: 50
-                    };
-                    this.skills.push(newSkill);
-                    this.addXp(10);
-                    this.showMessage('技能已添加！+10 XP', 'success');
+                    this.skills.push({ id: Date.now(), name: name.trim(), category: category.trim(), icon: icons[Math.floor(Math.random() * icons.length)], level: 1, xp: 0, maxXp: 50 });
+                    this.addXp(10); this.showMessage('技能已添加！+10 XP', 'success');
                 },
-                
                 practiceSkill(skillId) {
-                    const skill = this.skills.find(s => s.id === skillId);
-                    if (!skill) return;
+                    const skill = this.skills.find(s => s.id === skillId); if (!skill) return;
                     const xpGain = 10 + Math.floor(Math.random() * 10);
                     skill.xp += xpGain;
-                    if (skill.xp >= skill.maxXp) {
-                        skill.xp -= skill.maxXp;
-                        skill.level++;
-                        skill.maxXp = Math.floor(skill.maxXp * 1.3);
-                        this.showMessage(skill.name + ' 升级了！Lv.' + skill.level, 'success');
-                    }
-                    this.addXp(xpGain);
-                    this.showMessage('练习完成！+' + xpGain + ' XP', 'success');
+                    if (skill.xp >= skill.maxXp) { skill.xp -= skill.maxXp; skill.level++; skill.maxXp = Math.floor(skill.maxXp * 1.3); this.showMessage(skill.name + ' 升级了！Lv.' + skill.level, 'success'); }
+                    this.addXp(xpGain); this.showMessage('练习完成！+' + xpGain + ' XP', 'success');
                 },
-                
                 deleteSkill(skillId) {
                     if (!confirm('确定删除这个技能吗？')) return;
-                    const index = this.skills.findIndex(s => s.id === skillId);
-                    if (index !== -1) {
-                        this.skills.splice(index, 1);
-                        this.updateAchievements();
-                        this.saveAllData();
-                        this.showMessage('技能已删除', 'success');
-                    }
+                    const idx = this.skills.findIndex(s => s.id === skillId);
+                    if (idx !== -1) { this.skills.splice(idx, 1); this.updateAchievements(); this.saveAllData(); this.showMessage('技能已删除', 'success'); }
                 },
-                
                 updateAchievements() {
                     this.achievements.forEach(ach => {
                         if (ach.unlocked) return;
-                        switch (ach.id) {
-                            case 1: ach.current = this.skills.length; break;
-                            case 2: ach.current = this.skills.length; break;
-                            case 3: ach.current = this.notes.length; break;
-                            case 4: ach.current = this.playerData.level; break;
-                        }
-                        if (ach.current >= ach.requirement && !ach.unlocked) {
-                            ach.unlocked = true;
-                            this.addXp(ach.reward);
-                            this.showMessage('成就解锁: ' + ach.name + '! +' + ach.reward + ' XP', 'success');
-                        }
+                        if (ach.id === 1 || ach.id === 2) ach.current = this.skills.length;
+                        else if (ach.id === 3) ach.current = this.notes.length;
+                        else if (ach.id === 4) ach.current = this.playerData.level;
+                        if (ach.current >= ach.requirement && !ach.unlocked) { ach.unlocked = true; this.addXp(ach.reward); this.showMessage('成就解锁: ' + ach.name + '! +' + ach.reward + ' XP', 'success'); }
                     });
                 },
-                
                 saveAchievement() {
                     if (!this.newAchievement.name.trim()) { this.showMessage('请输入成就名称', 'error'); return; }
                     if (this.editingAchievementId) {
                         const ach = this.achievements.find(a => a.id === this.editingAchievementId);
-                        if (ach) {
-                            ach.name = this.newAchievement.name.trim();
-                            ach.description = this.newAchievement.description.trim();
-                            ach.icon = this.newAchievement.icon;
-                            ach.requirement = this.newAchievement.requirement || 1;
-                            ach.reward = this.newAchievement.reward || 50;
-                            this.showMessage('成就已更新', 'success');
-                        }
+                        if (ach) { Object.assign(ach, { name: this.newAchievement.name.trim(), description: this.newAchievement.description.trim(), icon: this.newAchievement.icon, requirement: this.newAchievement.requirement || 1, reward: this.newAchievement.reward || 50 }); this.showMessage('成就已更新', 'success'); }
                     } else {
-                        const newAch = {
-                            id: Date.now(),
-                            name: this.newAchievement.name.trim(),
-                            description: this.newAchievement.description.trim(),
-                            icon: this.newAchievement.icon,
-                            requirement: this.newAchievement.requirement || 1,
-                            current: 0,
-                            unlocked: false,
-                            reward: this.newAchievement.reward || 50,
-                            isCustom: true
-                        };
-                        this.achievements.push(newAch);
+                        this.achievements.push({ id: Date.now(), name: this.newAchievement.name.trim(), description: this.newAchievement.description.trim(), icon: this.newAchievement.icon, requirement: this.newAchievement.requirement || 1, current: 0, unlocked: false, reward: this.newAchievement.reward || 50, isCustom: true });
                         this.showMessage('成就已创建', 'success');
                     }
-                    this.cancelNewAchievement();
-                    this.saveAllData();
+                    this.cancelNewAchievement(); this.saveAllData();
                 },
-                
                 editAchievement(achId) {
                     const ach = this.achievements.find(a => a.id === achId);
-                    if (ach) {
-                        this.newAchievement = { name: ach.name, description: ach.description, icon: ach.icon, requirement: ach.requirement, reward: ach.reward, isCustom: true };
-                        this.editingAchievementId = achId;
-                        this.showAchievementForm = true;
-                    }
+                    if (ach) { this.newAchievement = { name: ach.name, description: ach.description, icon: ach.icon, requirement: ach.requirement, reward: ach.reward, isCustom: true }; this.editingAchievementId = achId; this.showAchievementForm = true; }
                 },
-                
-                deleteAchievement(achId) {
-                    if (!confirm('确定删除这个成就吗？')) return;
-                    const index = this.achievements.findIndex(a => a.id === achId);
-                    if (index !== -1) {
-                        this.achievements.splice(index, 1);
-                        this.saveAllData();
-                        this.showMessage('成就已删除', 'success');
-                    }
-                },
-                
-                cancelNewAchievement() {
-                    this.newAchievement = { name: '', description: '', icon: '🏆', requirement: 1, reward: 50, isCustom: true };
-                    this.editingAchievementId = null;
-                    this.showAchievementForm = false;
-                },
-                
+                deleteAchievement(achId) { if (!confirm('确定删除这个成就吗？')) return; const idx = this.achievements.findIndex(a => a.id === achId); if (idx !== -1) { this.achievements.splice(idx, 1); this.saveAllData(); this.showMessage('成就已删除', 'success'); } },
+                cancelNewAchievement() { this.newAchievement = { name: '', description: '', icon: '🏆', requirement: 1, reward: 50, isCustom: true }; this.editingAchievementId = null; this.showAchievementForm = false; },
                 async saveNote() {
                     if (!this.newNote.title.trim()) { this.showMessage('请输入笔记标题', 'error'); return; }
                     if (!this.newNote.content.trim()) { this.showMessage('请输入笔记内容', 'error'); return; }
                     const tags = this.newNote.tags ? this.newNote.tags.split(',').map(t => t.trim()).filter(t => t) : [];
-                    const note = {
-                        id: Date.now(),
-                        title: this.newNote.title.trim(),
-                        content: this.newNote.content.trim(),
-                        tags: tags,
-                        createdAt: new Date().toISOString()
-                    };
-                    this.notes.unshift(note);
-                    this.newNote = { title: '', content: '', tags: '' };
-                    this.activeNoteTab = 'all';
-                    this.addXp(15);
-                    this.showMessage('笔记已保存！+15 XP', 'success');
+                    this.notes.unshift({ id: Date.now(), title: this.newNote.title.trim(), content: this.newNote.content.trim(), tags, createdAt: new Date().toISOString() });
+                    this.newNote = { title: '', content: '', tags: '' }; this.activeNoteTab = 'all';
+                    this.addXp(15); this.showMessage('笔记已保存！+15 XP', 'success');
                 },
-                
-                deleteNote(noteId) {
-                    if (!confirm('确定删除这条笔记吗？')) return;
-                    const index = this.notes.findIndex(n => n.id === noteId);
-                    if (index !== -1) {
-                        this.notes.splice(index, 1);
-                        this.updateAchievements();
-                        this.saveAllData();
-                        this.showMessage('笔记已删除', 'success');
-                    }
-                },
-                
-                formatDate(dateStr) {
-                    if (!dateStr) return '';
-                    const date = new Date(dateStr);
-                    return date.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-                },
-                
-                formatDateShort(dateStr) {
-                    if (!dateStr) return '';
-                    const date = new Date(dateStr);
-                    return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
-                },
-                
-                toggleTagFilter(tag) {
-                    const index = this.noteFilters.selectedTags.indexOf(tag);
-                    if (index === -1) {
-                        this.noteFilters.selectedTags.push(tag);
-                    } else {
-                        this.noteFilters.selectedTags.splice(index, 1);
-                    }
-                },
-                
-                setTagFilter(tag) {
-                    this.noteFilters.selectedTags = [tag];
-                    this.collapsed.filterExpanded = false;
-                },
-                
-                clearFilters() {
-                    this.noteFilters = { search: '', selectedTags: [], sortBy: 'newest' };
-                },
-                
-                applyFilters() {},
-                
+                deleteNote(noteId) { if (!confirm('确定删除这条笔记吗？')) return; const idx = this.notes.findIndex(n => n.id === noteId); if (idx !== -1) { this.notes.splice(idx, 1); this.updateAchievements(); this.saveAllData(); this.showMessage('笔记已删除', 'success'); } },
+                formatDate(dateStr) { if (!dateStr) return ''; return new Date(dateStr).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }); },
+                toggleTagFilter(tag) { const idx = this.noteFilters.selectedTags.indexOf(tag); idx === -1 ? this.noteFilters.selectedTags.push(tag) : this.noteFilters.selectedTags.splice(idx, 1); },
+                setTagFilter(tag) { this.noteFilters.selectedTags = [tag]; this.collapsed.filterExpanded = false; },
+                clearFilters() { this.noteFilters = { search: '', selectedTags: [], sortBy: 'newest' }; },
                 // 知识库方法
-                openKnowledgeBase() {
-                    this.showKnowledgeBase = true;
-                    this.selectedCategory = 'all';
-                    this.kbSearchQuery = '';
+                openKnowledgeBase() { this.showKnowledgeBase = true; this.currentFolderId = 'all'; this.kbSearchQuery = ''; },
+                closeKnowledgeBase() { this.showKnowledgeBase = false; },
+                selectFolder(folderId) { this.currentFolderId = folderId; },
+                toggleFolder(folderId) { this.expandedFolders[folderId] = !this.expandedFolders[folderId]; },
+                hasChildren(folderId) { return this.kbFolders.some(f => f.parentId === folderId) || this.kbNotes.some(n => n.folderId === folderId); },
+                getChildFolders(parentId) { return this.kbFolders.filter(f => f.parentId === parentId).sort((a, b) => a.name.localeCompare(b.name)); },
+                getAllDescendantFolderIds(folderId) {
+                    const ids = [];
+                    const children = this.kbFolders.filter(f => f.parentId === folderId);
+                    children.forEach(c => { ids.push(c.id); ids.push(...this.getAllDescendantFolderIds(c.id)); });
+                    return ids;
                 },
-                
-                closeKnowledgeBase() {
-                    this.showKnowledgeBase = false;
-                    this.selectedCategory = 'all';
-                    this.kbSearchQuery = '';
+                getFolderItemCount(folderId) {
+                    const folderIds = [folderId, ...this.getAllDescendantFolderIds(folderId)];
+                    const noteCount = this.kbNotes.filter(n => folderIds.includes(n.folderId)).length;
+                    const subFolderCount = this.kbFolders.filter(f => f.parentId === folderId).length;
+                    return noteCount + subFolderCount;
                 },
-                
-                selectCategory(category) {
-                    this.selectedCategory = category;
+                getFolderPath(folderId) {
+                    const path = [];
+                    let id = folderId;
+                    while (id) { const folder = this.kbFolders.find(f => f.id === id); if (folder) { path.unshift(folder.name); id = folder.parentId; } else break; }
+                    return path.join(' / ');
                 },
-                
-                getCategoryNotesCount(categoryId) {
-                    return this.kbNotes.filter(note => note.categoryId === categoryId).length;
-                },
-                
-                getUncategorizedCount() {
-                    return this.kbNotes.filter(note => !note.categoryId).length;
-                },
-                
-                getCategoryName(categoryId) {
-                    const category = this.kbCategories.find(c => c.id === categoryId);
-                    return category ? category.name : '未分类';
-                },
-                
-                getCategoryIcon(categoryId) {
-                    const category = this.kbCategories.find(c => c.id === categoryId);
-                    return category ? category.icon : '📋';
-                },
-                
-                editCategory(category) {
-                    this.categoryForm = { name: category.name, icon: category.icon };
-                    this.editingCategoryId = category.id;
-                    this.showCategoryForm = true;
-                },
-                
-                async saveCategoryForm() {
-                    if (!this.categoryForm.name.trim()) { this.showMessage('请输入分类名称', 'error'); return; }
-                    if (this.editingCategoryId) {
-                        const category = this.kbCategories.find(c => c.id === this.editingCategoryId);
-                        if (category) {
-                            category.name = this.categoryForm.name.trim();
-                            category.icon = this.categoryForm.icon;
-                            this.showMessage('分类已更新', 'success');
-                        }
+                openFolderForm(parentId) { this.folderForm = { name: '', icon: '📁', parentId }; this.editingFolderId = null; this.showFolderForm = true; },
+                editFolder(folder) { this.folderForm = { name: folder.name, icon: folder.icon, parentId: folder.parentId }; this.editingFolderId = folder.id; this.showFolderForm = true; },
+                closeFolderForm() { this.showFolderForm = false; this.editingFolderId = null; this.folderForm = { name: '', icon: '📁', parentId: null }; },
+                async saveFolderForm() {
+                    if (!this.folderForm.name.trim()) { this.showMessage('请输入文件夹名称', 'error'); return; }
+                    if (this.editingFolderId) {
+                        const folder = this.kbFolders.find(f => f.id === this.editingFolderId);
+                        if (folder) { folder.name = this.folderForm.name.trim(); folder.icon = this.folderForm.icon; this.showMessage('文件夹已更新', 'success'); }
                     } else {
-                        const newCategory = {
-                            id: Date.now(),
-                            name: this.categoryForm.name.trim(),
-                            icon: this.categoryForm.icon,
-                            createdAt: new Date().toISOString()
-                        };
-                        this.kbCategories.push(newCategory);
-                        this.showMessage('分类已创建', 'success');
+                        this.kbFolders.push({ id: Date.now(), name: this.folderForm.name.trim(), icon: this.folderForm.icon, parentId: this.folderForm.parentId, createdAt: new Date().toISOString() });
+                        if (this.folderForm.parentId) this.expandedFolders[this.folderForm.parentId] = true;
+                        this.showMessage('文件夹已创建', 'success');
                     }
-                    await this.saveAllData();
-                    this.closeCategoryForm();
+                    await this.saveAllData(); this.closeFolderForm();
                 },
-                
-                closeCategoryForm() {
-                    this.showCategoryForm = false;
-                    this.editingCategoryId = null;
-                    this.categoryForm = { name: '', icon: '📁' };
+                async deleteFolder(folderId) {
+                    const descendantIds = this.getAllDescendantFolderIds(folderId);
+                    const allIds = [folderId, ...descendantIds];
+                    const noteCount = this.kbNotes.filter(n => allIds.includes(n.folderId)).length;
+                    const msg = noteCount > 0 ? `此文件夹及子文件夹下有 ${noteCount} 篇笔记，删除后笔记将移至未分类。确定删除？` : '确定删除此文件夹？';
+                    if (!confirm(msg)) return;
+                    this.kbNotes.forEach(n => { if (allIds.includes(n.folderId)) n.folderId = null; });
+                    this.kbFolders = this.kbFolders.filter(f => !allIds.includes(f.id));
+                    if (allIds.includes(this.currentFolderId)) this.currentFolderId = 'all';
+                    await this.saveAllData(); this.showMessage('文件夹已删除', 'success');
                 },
-                
-                async deleteCategory(categoryId) {
-                    if (!confirm('确定删除此分类？该分类下的笔记将变为未分类。')) return;
-                    const index = this.kbCategories.findIndex(c => c.id === categoryId);
-                    if (index !== -1) {
-                        this.kbCategories.splice(index, 1);
-                        this.kbNotes.forEach(note => {
-                            if (note.categoryId === categoryId) note.categoryId = null;
-                        });
-                        if (this.selectedCategory && this.selectedCategory.id === categoryId) {
-                            this.selectedCategory = 'all';
-                        }
-                        await this.saveAllData();
-                        this.showMessage('分类已删除', 'success');
-                    }
-                },
-                
-                editKbNote(note) {
-                    this.noteForm = { title: note.title, content: note.content, categoryId: note.categoryId };
-                    this.editingNoteId = note.id;
-                    this.showNoteEditor = true;
-                },
-                
+                openNoteForm(folderId) { this.noteForm = { title: '', content: '', folderId }; this.editingNoteId = null; this.showNoteEditor = true; },
+                editKbNote(note) { this.noteForm = { title: note.title, content: note.content, folderId: note.folderId }; this.editingNoteId = note.id; this.showNoteEditor = true; },
+                closeNoteEditor() { this.showNoteEditor = false; this.editingNoteId = null; this.noteForm = { title: '', content: '', folderId: null }; },
                 async saveNoteForm() {
                     if (!this.noteForm.title.trim()) { this.showMessage('请输入笔记标题', 'error'); return; }
                     if (!this.noteForm.content.trim()) { this.showMessage('请输入笔记内容', 'error'); return; }
                     if (this.editingNoteId) {
                         const note = this.kbNotes.find(n => n.id === this.editingNoteId);
-                        if (note) {
-                            note.title = this.noteForm.title.trim();
-                            note.content = this.noteForm.content.trim();
-                            note.categoryId = this.noteForm.categoryId;
-                            note.updatedAt = new Date().toISOString();
-                            this.showMessage('笔记已更新', 'success');
-                        }
+                        if (note) { note.title = this.noteForm.title.trim(); note.content = this.noteForm.content.trim(); note.folderId = this.noteForm.folderId; note.updatedAt = new Date().toISOString(); this.showMessage('笔记已更新', 'success'); }
                     } else {
-                        const newNote = {
-                            id: Date.now(),
-                            title: this.noteForm.title.trim(),
-                            content: this.noteForm.content.trim(),
-                            categoryId: this.noteForm.categoryId,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString()
-                        };
-                        this.kbNotes.unshift(newNote);
+                        this.kbNotes.unshift({ id: Date.now(), title: this.noteForm.title.trim(), content: this.noteForm.content.trim(), folderId: this.noteForm.folderId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
                         this.showMessage('笔记已创建', 'success');
                     }
-                    await this.saveAllData();
-                    this.closeNoteEditor();
+                    await this.saveAllData(); this.closeNoteEditor();
                 },
-                
-                closeNoteEditor() {
-                    this.showNoteEditor = false;
-                    this.editingNoteId = null;
-                    this.noteForm = { title: '', content: '', categoryId: null };
-                },
-                
-                async deleteKbNote(noteId) {
-                    if (!confirm('确定删除这篇笔记？')) return;
-                    const index = this.kbNotes.findIndex(n => n.id === noteId);
-                    if (index !== -1) {
-                        this.kbNotes.splice(index, 1);
-                        await this.saveAllData();
-                        this.showMessage('笔记已删除', 'success');
-                    }
-                },
-                
-                openNoteDetail(note) {
-                    this.viewingNote = note;
-                },
-                
-                closeNoteDetail() {
-                    this.viewingNote = null;
-                },
-                
-                getPreviewText(content) {
-                    return content.length > 100 ? content.substring(0, 100) + '...' : content;
+                async deleteKbNote(noteId) { if (!confirm('确定删除这篇笔记？')) return; const idx = this.kbNotes.findIndex(n => n.id === noteId); if (idx !== -1) { this.kbNotes.splice(idx, 1); await this.saveAllData(); this.showMessage('笔记已删除', 'success'); } },
+                openNoteDetail(note) { this.viewingNote = note; },
+                closeNoteDetail() { this.viewingNote = null; },
+                moveNote(note) { this.movingNote = note; this.moveTargetFolderId = note.folderId; this.showMoveDialog = true; },
+                closeMoveDialog() { this.showMoveDialog = false; this.movingNote = null; this.moveTargetFolderId = null; },
+                async confirmMoveNote() {
+                    if (this.movingNote) { this.movingNote.folderId = this.moveTargetFolderId; this.movingNote.updatedAt = new Date().toISOString(); await this.saveAllData(); this.showMessage('笔记已移动', 'success'); }
+                    this.closeMoveDialog();
                 }
             },
-            
             async mounted() {
                 try {
                     const { data: { session } } = await sb.auth.getSession();
-                    if (session) {
-                        this.isLoggedIn = true;
-                        this.userId = session.user.id;
-                        this.userEmail = session.user.email;
-                        await this.loadAllData();
-                    }
-                    
+                    if (session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; await this.loadAllData(); }
                     sb.auth.onAuthStateChange((event, session) => {
-                        if (event === 'SIGNED_IN' && session) {
-                            this.isLoggedIn = true;
-                            this.userId = session.user.id;
-                            this.userEmail = session.user.email;
-                            this.loadAllData();
-                        } else if (event === 'SIGNED_OUT') {
-                            this.isLoggedIn = false;
-                            this.userId = null;
-                            this.showKnowledgeBase = false;
-                            this.resetData();
-                        }
+                        if (event === 'SIGNED_IN' && session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadAllData(); }
+                        else if (event === 'SIGNED_OUT') { this.isLoggedIn = false; this.userId = null; this.showKnowledgeBase = false; this.resetData(); }
                     });
-                } catch (error) {
-                    console.error('初始化失败:', error);
-                }
+                } catch (e) { console.error('初始化失败:', e); }
             }
         }).mount('#app');
     </script>
