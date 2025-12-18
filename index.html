@@ -1215,15 +1215,21 @@
             <div class="header">
                 <h1>🌟 我的成长手账 🌟</h1>
                 <p style="margin-top: 10px; font-size: 1.1em; color: #7a6a62;">
-                    欢迎回来，{{ userEmail }}！
-                    <button class="btn-sm" @click="syncData" :disabled="syncing" style="margin-left: 15px;">
-                        <span v-if="!syncing">🔄 同步</span>
-                        <span v-else class="loading-spinner"></span>
-                    </button>
-                    <button class="btn-sm" @click="logout" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
-                        退出
-                    </button>
-                </p>
+                   <p style="margin-top: 10px; font-size: 1.1em; color: #7a6a62;">
+    欢迎回来，{{ userEmail }}！
+    <button class="btn-sm" @click="syncData" :disabled="syncing" style="margin-left: 15px;">
+        <span v-if="!syncing">🔄 同步</span>
+        <span v-else class="loading-spinner"></span>
+    </button>
+    <!-- 添加保存按钮 -->
+    <button class="btn-sm" @click="saveAllData" :disabled="saving" style="margin-left: 10px; background: linear-gradient(90deg, #4ecdc4, #a3de83); box-shadow: 3px 3px 0px #2ba69b;">
+        <span v-if="!saving">💾 保存</span>
+        <span v-else class="loading-spinner"></span>
+    </button>
+    <button class="btn-sm" @click="logout" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
+        退出
+    </button>
+</p>
             </div>
             
             <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
@@ -2520,12 +2526,16 @@
                         await sb.from('kb_notes').delete().eq('user_id', this.userId);
                         if (this.kbNotes.length > 0) await sb.from('kb_notes').insert(this.kbNotes.map(note => ({ user_id: this.userId, data: note })));
                         
-                    } catch (error) {
-                        console.error('保存失败:', error);
-                    } finally {
-                        this.saving = false;
-                    }
-                },
+                    // 添加成功提示
+        this.showMessage('✅ 所有数据已保存到云端！', 'success');
+        
+    } catch (error) {
+        console.error('保存失败:', error);
+        this.showMessage('❌ 保存失败: ' + error.message, 'error');
+    } finally {
+        this.saving = false;
+    }
+},
                 
                 addXp(amount) {
                     this.playerData.xp += amount;
@@ -3020,3 +3030,4 @@
     </script>
 </body>
 </html>
+
