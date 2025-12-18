@@ -33,11 +33,12 @@
             text-shadow: 3px 3px 0px #ffd6cc;
         }
         .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
+    display: grid;
+    /* 改为单列布局，每个项目单独一行 */
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
         .card {
             background: #fffefc;
             border-radius: 20px;
@@ -1199,7 +1200,7 @@
                 </div>
                 
                 <!-- 笔记本 -->
-                <div class="card" style="grid-column: 1 / -1;">
+                <div class="card">
                     <h2>
                         📝 笔记本
                         <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">
@@ -2259,3 +2260,4 @@
     </script>
 </body>
 </html>
+
