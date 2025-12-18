@@ -6,11 +6,11 @@
     <title>成长手账</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Comic Neue', cursive, sans-serif;
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #fef9f3;
             min-height: 100vh;
             color: #5a4a42;
@@ -28,8 +28,8 @@
             position: relative;
         }
         .header h1 {
-            font-size: 3em;
-            font-family: 'Gochi Hand', cursive;
+            font-size: 2.5em;
+            font-weight: 700;
             text-shadow: 3px 3px 0px #ffd6cc;
         }
         .grid {
@@ -51,8 +51,8 @@
             margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 3px dotted #ff9a8b;
-            font-size: 1.5em;
-            font-family: 'Gochi Hand', cursive;
+            font-size: 1.4em;
+            font-weight: 700;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -66,7 +66,7 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 700;
-            font-family: 'Comic Neue', cursive;
+            font-family: inherit;
             transition: all 0.3s;
             width: 100%;
             margin-top: 15px;
@@ -86,6 +86,7 @@
             font-weight: bold;
             cursor: pointer;
             margin: 0;
+            font-family: inherit;
         }
         .collapse-btn {
             background: #fffaf5;
@@ -95,7 +96,7 @@
             color: #ff6b6b;
             padding: 5px 12px;
             border-radius: 15px;
-            font-family: 'Comic Neue', cursive;
+            font-family: inherit;
             font-weight: bold;
         }
         .note-input, .note-textarea {
@@ -104,7 +105,7 @@
             border: 2px solid #e0c9b8;
             border-radius: 12px;
             font-size: 16px;
-            font-family: 'Comic Neue', cursive;
+            font-family: inherit;
             margin-bottom: 15px;
             background: #fffaf9;
         }
@@ -146,7 +147,6 @@
             font-weight: 800;
             text-align: center;
             margin: 25px 0;
-            font-family: 'Gochi Hand', cursive;
             color: #ff6b6b;
             text-shadow: 3px 3px 0px #ffd6cc;
         }
@@ -207,595 +207,1064 @@
         .note-tabs {
             display: flex;
             gap: 12px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0c9b8;
+            padding-bottom: 10px;
         }
         .note-tab {
-            padding: 12px 28px;
-            background: #fffaf5;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 700;
+            padding: 10px 20px;
             border: 2px solid #e0c9b8;
-        }
-        .note-tab.active {
-            background: linear-gradient(90deg, #a3de83, #4ecdc4);
-            color: white;
-            box-shadow: 3px 3px 0px #2ba69b;
-        }
-        .note-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        .note-card {
-            background: #fffefc;
-            border-radius: 18px;
-            padding: 25px;
-            box-shadow: 5px 5px 0px #d4b8a7;
-            border: 2px solid #5a4a42;
-        }
-        .note-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 15px 0; }
-        .note-tag {
-            background: rgba(255, 154, 139, 0.15);
-            color: #d45d5d;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            font-weight: 700;
-            border: 1px dashed #ff9a8b;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            text-align: center;
-            margin-top: 25px;
-        }
-        .stat-box {
-            padding: 25px 15px;
-            background: #fffefc;
-            border-radius: 18px;
-            box-shadow: 4px 4px 0px #d4b8a7;
-            border: 2px solid #5a4a42;
-        }
-        .stat-value {
-            font-size: 3em;
-            font-weight: 800;
-            font-family: 'Gochi Hand', cursive;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .stat-label {
-            margin-top: 10px;
-            font-size: 1.1em;
-            color: #7a6a62;
-            font-weight: 700;
-        }
-        .login-panel { max-width: 550px; margin: 80px auto; }
-        .action-buttons {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            display: flex;
-            gap: 10px;
-        }
-        @media (max-width: 768px) {
-            .action-buttons { position: static; justify-content: center; margin-top: 20px; }
-            .header h1 { font-size: 2em; }
-        }
-        /* 新增样式 */
-        .single-row-card {
-            grid-column: 1 / -1;
-        }
-        .filter-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            padding: 8px 16px;
             background: #fffaf5;
-            border: 2px solid #4ecdc4;
-            border-radius: 20px;
+            border-radius: 15px 15px 0 0;
             cursor: pointer;
             font-weight: 600;
-            font-family: 'Comic Neue', cursive;
-            color: #5a4a42;
             transition: all 0.3s;
         }
-        .filter-btn.active {
-            background: linear-gradient(90deg, #4ecdc4, #2ba69b);
+        .note-tab.active {
+            background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
             color: white;
-            box-shadow: 2px 2px 0px #2ba69b;
+            border-color: #ff6b6b;
+            transform: translateY(2px);
         }
-        .filter-btn:hover:not(.active) {
-            background: #e8f4f3;
-        }
-        .btn-danger {
-            background: linear-gradient(90deg, #ff6b6b, #d45d5d) !important;
-            box-shadow: 3px 3px 0px #d45d5d !important;
-        }
-        .achievement-manage-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 10px;
-            font-size: 0.8em;
-            background: #fffaf5;
-            border: 1px solid #ff9a8b;
-            border-radius: 10px;
-            cursor: pointer;
-            color: #ff6b6b;
-        }
-        .achievement-form {
-            background: #fffaf5;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 2px dashed #4ecdc4;
-        }
-        .achievement-form h3 {
-            margin-bottom: 15px;
-            color: #5a4a42;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #7a6a62;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0c9b8;
-            border-radius: 8px;
-            font-family: 'Comic Neue', cursive;
-            background: #fffefc;
-        }
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .custom-achievement-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(78, 205, 196, 0.2);
-            color: #2ba69b;
-            font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-        /* 笔记筛选相关样式 */
-        .note-filters {
+        .note-list { margin-top: 20px; }
+        .note-card {
             background: #fffaf5;
             padding: 20px;
             border-radius: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
             border: 2px solid #e0c9b8;
         }
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 2px solid #e0c9b8;
-            border-radius: 30px;
-            font-family: 'Comic Neue', cursive;
-            font-size: 16px;
-            background: #fffefc;
-        }
-        .search-box input:focus {
-            outline: none;
-            border-color: #4ecdc4;
-            box-shadow: 2px 2px 0px #2ba69b;
-        }
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-            color: #7a6a62;
-        }
-        .filter-options {
+        .note-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .note-tag {
+            background: linear-gradient(90deg, #4ecdc4, #a3de83);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .achievement-form-container {
+            background: #fffaf5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #e0c9b8;
+        }
+        .achievement-icon-picker {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .achievement-icon-option {
+            font-size: 2em;
+            padding: 10px;
+            border: 2px solid #e0c9b8;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            background: white;
+        }
+        .achievement-icon-option:hover {
+            transform: scale(1.1);
+            border-color: #ff9a8b;
+        }
+        .achievement-icon-option.selected {
+            border-color: #ff6b6b;
+            background: #ffebe8;
+            box-shadow: 3px 3px 0px #d4b8a7;
+        }
+        .collapsible-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .achievement-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .achievement-actions button {
+            padding: 6px 12px;
+            border: 2px solid #e0c9b8;
+            background: #fffaf5;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .achievement-actions button:hover {
+            background: #ff9a8b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+        .filter-container {
+            background: #fffaf5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #e0c9b8;
+        }
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .filter-header h3 {
+            font-weight: 700;
+            color: #5a4a42;
+        }
+        .filter-toggle {
+            background: #fffaf5;
+            border: 2px solid #ff9a8b;
+            color: #ff6b6b;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .filter-options {
+            margin-top: 20px;
         }
         .filter-section {
-            flex: 1;
-            min-width: 200px;
+            margin-bottom: 20px;
         }
         .filter-section h4 {
-            margin-bottom: 10px;
             color: #5a4a42;
-            font-family: 'Gochi Hand', cursive;
-            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-active-indicator {
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         .tags-filter {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 10px;
         }
         .tag-filter-btn {
-            padding: 6px 12px;
-            background: rgba(255, 154, 139, 0.1);
-            border: 1px solid #ff9a8b;
-            border-radius: 15px;
+            padding: 8px 16px;
+            border: 2px solid #e0c9b8;
+            background: white;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
-            color: #d45d5d;
+            font-family: inherit;
+            font-weight: 600;
             transition: all 0.3s;
         }
         .tag-filter-btn:hover {
-            background: rgba(255, 154, 139, 0.2);
+            border-color: #ff9a8b;
+            background: #fff5e6;
         }
         .tag-filter-btn.active {
-            background: rgba(255, 154, 139, 0.3);
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-            font-weight: bold;
+            background: linear-gradient(90deg, #4ecdc4, #a3de83);
+            color: white;
+            border-color: #2ba69b;
         }
         .sort-options {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
         }
         .sort-btn {
-            padding: 8px 15px;
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px solid #4ecdc4;
+            padding: 10px 20px;
+            border: 2px solid #e0c9b8;
+            background: white;
             border-radius: 15px;
             cursor: pointer;
-            font-size: 0.9em;
-            color: #2ba69b;
+            font-family: inherit;
+            font-weight: 600;
             transition: all 0.3s;
         }
         .sort-btn:hover {
-            background: rgba(78, 205, 196, 0.2);
+            border-color: #ff9a8b;
+            background: #fff5e6;
         }
         .sort-btn.active {
-            background: rgba(78, 205, 196, 0.3);
-            border-color: #2ba69b;
-            color: #2ba69b;
-            font-weight: bold;
+            background: linear-gradient(90deg, #ff9a8b, #ff6b6b);
+            color: white;
+            border-color: #ff6b6b;
         }
         .filter-results {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px dashed #e0c9b8;
-        }
-        .filter-results span {
+            border-top: 2px dotted #e0c9b8;
+            font-weight: 600;
             color: #7a6a62;
-            font-size: 0.9em;
         }
         .clear-filters-btn {
-            padding: 6px 12px;
-            background: rgba(255, 107, 107, 0.1);
-            border: 1px solid #ff6b6b;
-            border-radius: 15px;
+            padding: 8px 16px;
+            border: 2px solid #ff9a8b;
+            background: white;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-family: inherit;
+            font-weight: 600;
             color: #ff6b6b;
             transition: all 0.3s;
         }
         .clear-filters-btn:hover {
-            background: rgba(255, 107, 107, 0.2);
+            background: #ff9a8b;
+            color: white;
         }
         .no-notes-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #c9b8a7;
+            font-size: 1.1em;
+        }
+        .no-notes-message div:first-child {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        /* ========== 知识库样式 ========== */
+        .kb-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .kb-modal {
+            background: #fef9f3;
+            border-radius: 24px;
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 3px solid #5a4a42;
+            overflow: hidden;
+        }
+        .kb-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #5a4a42;
+        }
+        .kb-header h1 {
+            font-weight: 700;
+            font-size: 1.8em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .kb-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .kb-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        .kb-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .kb-sidebar {
+            width: 280px;
+            background: #fffaf0;
+            border-right: 3px solid #e0c9b8;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .kb-sidebar-header {
+            padding: 20px;
+            border-bottom: 2px dotted #ff9a8b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .kb-sidebar-header h3 {
+            font-weight: 700;
+            color: #5a4a42;
+            margin: 0;
+        }
+        .kb-category-list {
+            padding: 10px;
+        }
+        .kb-category-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fffefc;
+            border: 2px solid transparent;
+            position: relative;
+        }
+        .kb-category-item:hover {
+            background: #fff5e6;
+            border-color: #ff9a8b;
+            transform: translateX(5px);
+        }
+        .kb-category-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #5a4a42;
+            box-shadow: 4px 4px 0px #d4b8a7;
+        }
+        .kb-category-icon {
+            font-size: 1.3em;
+        }
+        .kb-category-name {
+            flex: 1;
+            font-weight: 600;
+        }
+        .kb-category-count {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+        .kb-category-actions {
+            display: none;
+            gap: 5px;
+        }
+        .kb-category-item:hover .kb-category-actions {
+            display: flex;
+        }
+        .kb-category-actions button {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e0c9b8;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+        .kb-category-actions button:hover {
+            background: #ff9a8b;
+            transform: scale(1.1);
+        }
+        .kb-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .kb-toolbar {
+            padding: 20px;
+            background: #fffaf0;
+            border-bottom: 2px dotted #ff9a8b;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .kb-search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0c9b8;
+            border-radius: 25px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fffefc;
+            transition: all 0.3s;
+        }
+        .kb-search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0px #5a4a42;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px #5a4a42;
+        }
+        .btn-secondary {
+            background: #e0c9b8;
+            border: 2px solid #5a4a42;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: #5a4a42;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background: #d4b8a7;
+            transform: translateY(-2px);
+        }
+        .kb-notes-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            align-content: start;
+        }
+        .kb-empty {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
-            color: #c9b8a7;
+            color: #a0a0a0;
         }
-        .no-notes-message div:first-child {
-            font-size: 3.5em;
-            margin-bottom: 15px;
+        .kb-empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
-        .no-notes-message div:last-child {
+        .kb-empty p {
+            font-size: 1.1em;
+            font-family: inherit;
+        }
+        .kb-note-card {
+            background: #fffefc;
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid #e0c9b8;
+            box-shadow: 4px 4px 0px #d4b8a7;
+            cursor: pointer;
+            transition: all 0.3s;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .kb-note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 6px 6px 0px #d4b8a7;
+            border-color: #667eea;
+        }
+        .kb-note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 10px;
+        }
+        .kb-note-header h3 {
+            font-weight: 700;
             font-size: 1.2em;
-            color: #a39687;
-        }
-        .note-preview {
-            margin: 15px 0;
             color: #5a4a42;
-            line-height: 1.6;
-            max-height: 120px;
+            margin: 0;
+            flex: 1;
             overflow: hidden;
-            position: relative;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
-        .note-preview::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
+        .kb-note-date {
+            font-size: 0.85em;
+            color: #a0a0a0;
+            white-space: nowrap;
+        }
+        .kb-note-preview {
+            color: #7a6a62;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        .kb-note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px dotted #e0c9b8;
+        }
+        .kb-note-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .kb-note-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .kb-action-btn {
+            background: #fffaf5;
+            border: 1px solid #e0c9b8;
+            border-radius: 8px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+        .kb-action-btn:hover {
+            background: #ff9a8b;
+            transform: scale(1.1);
+        }
+        .kb-form-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
             right: 0;
-            height: 40px;
-            background: linear-gradient(to bottom, transparent, #fffefc 80%);
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
         }
-        .note-date {
-            color: #7a6a62;
-            font-size: 0.85em;
-            margin-top: 10px;
+        .kb-form-modal {
+            background: #fef9f3;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 3px solid #5a4a42;
+            overflow: hidden;
         }
-        .filter-active-indicator {
-            display: inline-block;
+        .kb-editor-modal {
+            max-width: 800px;
+        }
+        .kb-detail-modal {
+            max-width: 900px;
+        }
+        .kb-form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #5a4a42;
+        }
+        .kb-form-header h2 {
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.4em;
+        }
+        .kb-form-body {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+        .kb-form-group {
+            margin-bottom: 20px;
+        }
+        .kb-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #5a4a42;
+            font-family: inherit;
+        }
+        .kb-form-input,
+        .kb-form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0c9b8;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fffaf9;
+            transition: all 0.3s;
+        }
+        .kb-form-input:focus,
+        .kb-form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .kb-form-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0c9b8;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fffaf9;
+            resize: vertical;
+            line-height: 1.6;
+            transition: all 0.3s;
+        }
+        .kb-form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .kb-form-footer {
+            padding: 20px 25px;
+            background: #fffaf0;
+            border-top: 2px dotted #ff9a8b;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        .kb-icon-picker {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+        }
+        .kb-icon-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #e0c9b8;
+            border-radius: 12px;
+            background: #fffaf9;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .kb-icon-btn:hover {
+            background: #fff5e6;
+            border-color: #ff9a8b;
+            transform: scale(1.1);
+        }
+        .kb-icon-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #5a4a42;
+            box-shadow: 3px 3px 0px #d4b8a7;
+        }
+        .kb-detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 2px dotted #ff9a8b;
+            margin-bottom: 20px;
+        }
+        .kb-detail-category {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .kb-detail-date {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+        .kb-detail-content {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #5a4a42;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .kb-sidebar::-webkit-scrollbar,
+        .kb-notes-list::-webkit-scrollbar,
+        .kb-form-body::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            margin-left: 5px;
-            vertical-align: middle;
+        }
+        .kb-sidebar::-webkit-scrollbar-track,
+        .kb-notes-list::-webkit-scrollbar-track,
+        .kb-form-body::-webkit-scrollbar-track {
+            background: #fffaf0;
+        }
+        .kb-sidebar::-webkit-scrollbar-thumb,
+        .kb-notes-list::-webkit-scrollbar-thumb,
+        .kb-form-body::-webkit-scrollbar-thumb {
+            background: #e0c9b8;
+            border-radius: 4px;
+        }
+        .kb-sidebar::-webkit-scrollbar-thumb:hover,
+        .kb-notes-list::-webkit-scrollbar-thumb:hover,
+        .kb-form-body::-webkit-scrollbar-thumb:hover {
+            background: #d4b8a7;
+        }
+        @media (max-width: 768px) {
+            .kb-modal {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+            .kb-content {
+                flex-direction: column;
+            }
+            .kb-sidebar {
+                width: 100%;
+                max-height: 200px;
+                border-right: none;
+                border-bottom: 3px solid #e0c9b8;
+            }
+            .kb-notes-list {
+                grid-template-columns: 1fr;
+            }
+            .kb-form-modal {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .kb-note-card {
+            animation: slideIn 0.3s ease-out;
+        }
+        .kb-category-item {
+            animation: slideIn 0.3s ease-out;
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="container">
-            <!-- 登录界面 -->
-            <div v-if="!isLoggedIn" class="login-panel">
+    <div id="app" class="container">
+        <!-- 登录界面 -->
+        <div v-if="!isLoggedIn">
+            <div class="header">
+                <h1>🌟 成长手账 🌟</h1>
+                <p style="margin-top: 10px; font-size: 1.2em; color: #7a6a62;">记录每一步成长的足迹</p>
+            </div>
+            
+            <div class="grid">
                 <div class="card">
-                    <h2 style="text-align: center;">欢迎使用成长手账</h2>
-                    <p style="text-align: center; margin-bottom: 20px; color: #7a6a62;">登录或注册开始你的成长之旅</p>
-                    
-                    <input v-model="email" type="email" class="note-input" placeholder="邮箱" @keyup.enter="login">
-                    <input v-model="password" type="password" class="note-input" placeholder="密码 (至少6位)" @keyup.enter="login">
-                    
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn" @click="login" :disabled="loading" style="flex: 1;">
-                            {{ loading ? '登录中...' : '登录' }}
-                        </button>
-                        <button class="btn" @click="register" :disabled="loading" style="flex: 1; background:linear-gradient(90deg, #4ecdc4, #2ba69b);">
-                            {{ loading ? '注册中...' : '注册' }}
-                        </button>
-                    </div>
-                    
-                    <p style="margin-top: 18px; font-size: 0.9em; color: #7a6a62; text-align: center;">
-                        数据存储在 Supabase 云端
-                    </p>
+                    <h2>🔐 登录/注册</h2>
+                    <input 
+                        type="email" 
+                        v-model="email" 
+                        placeholder="邮箱"
+                        class="note-input"
+                        @keyup.enter="login"
+                    >
+                    <input 
+                        type="password" 
+                        v-model="password" 
+                        placeholder="密码（至少6位）"
+                        class="note-input"
+                        @keyup.enter="login"
+                    >
+                    <button class="btn" @click="login" :disabled="loading">
+                        <span v-if="!loading">登录</span>
+                        <span v-else class="loading-spinner"></span>
+                    </button>
+                    <button class="btn" @click="register" :disabled="loading" style="background: linear-gradient(90deg, #4ecdc4, #a3de83); box-shadow: 4px 4px 0px #2ba69b;">
+                        <span v-if="!loading">注册</span>
+                        <span v-else class="loading-spinner"></span>
+                    </button>
                 </div>
             </div>
             
-            <!-- 主界面 -->
-            <div v-if="isLoggedIn">
-                <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
-                    {{ message }}
-                </div>
-                
-                <div class="header">
-                    <h1>成长手账</h1>
-                    <p>用户: {{ userEmail }}</p>
-                    
-                    <div class="action-buttons">
-                        <button class="btn-sm" @click="syncData" :disabled="syncing">
-                            {{ syncing ? '同步中' : '同步' }}
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
+                {{ message }}
+            </div>
+        </div>
+        
+        <!-- 主界面 -->
+        <div v-else>
+            <div class="header">
+                <h1>🌟 我的成长手账 🌟</h1>
+                <p style="margin-top: 10px; font-size: 1.1em; color: #7a6a62;">
+                    欢迎回来，{{ userEmail }}！
+                    <button class="btn-sm" @click="syncData" :disabled="syncing" style="margin-left: 15px;">
+                        <span v-if="!syncing">🔄 同步</span>
+                        <span v-else class="loading-spinner"></span>
+                    </button>
+                    <button class="btn-sm" @click="logout" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
+                        退出
+                    </button>
+                </p>
+            </div>
+            
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
+                {{ message }}
+            </div>
+            
+            <div class="grid">
+                <!-- 等级状态 -->
+                <div class="card">
+                    <h2>
+                        📊 等级状态
+                        <button class="collapse-btn" @click="collapsed.status = !collapsed.status">
+                            {{ collapsed.status ? '展开' : '收起' }}
                         </button>
-                        <button class="btn-sm" @click="saveAllData" :disabled="saving">
-                            {{ saving ? '保存中' : '保存' }}
-                        </button>
-                        <button class="btn-sm" @click="logout" style="background:linear-gradient(90deg, #ff7b6b, #d45d5d);">
-                            退出
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="grid">
-                    <!-- 成长状态 -->
-                    <div class="card single-row-card">
-                        <h2>
-                            成长状态
-                            <button class="collapse-btn" @click="collapsed.status = !collapsed.status">
-                                {{ collapsed.status ? '展开' : '折叠' }}
-                            </button>
-                        </h2>
-                        <div v-show="!collapsed.status">
-                            <div class="level-display">Lv. {{ playerData.level }}</div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold;">
-                                <span>经验值:</span>
-                                <span>{{ playerData.xp }} / {{ playerData.nextLevelXp }}</span>
-                            </div>
-                            <div class="xp-progress">
-                                <div class="xp-fill" :style="{ width: xpPercentage + '%' }"></div>
-                            </div>
-                            <div style="text-align: center; margin-top: 12px; color: #7a6a62; font-weight: bold;">
-                                还需 {{ playerData.nextLevelXp - playerData.xp }} XP 升级
-                            </div>
+                    </h2>
+                    <div v-show="!collapsed.status">
+                        <div class="level-display">Lv.{{ playerData.level }}</div>
+                        <div class="xp-progress">
+                            <div class="xp-fill" :style="{width: xpPercentage + '%'}"></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px; font-size: 1.1em;">
+                            <strong>{{ playerData.xp }}</strong> / {{ playerData.nextLevelXp }} XP
+                        </div>
+                        <div style="text-align: center; margin-top: 12px; color: #7a6a62; font-size: 0.95em;">
+                            🏆 已完成成就: {{ completedAchievementsCount }} / {{ achievements.length }}
                         </div>
                     </div>
-                    
-                    <!-- 技能树 -->
-                    <div class="card single-row-card">
-                        <h2>
-                            技能树
-                            <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">
-                                {{ collapsed.skills ? '展开' : '折叠' }}
-                            </button>
-                        </h2>
-                        <div v-show="!collapsed.skills">
-                            <div v-if="skills.length === 0" style="text-align: center; padding: 35px 15px; color: #c9b8a7;">
-                                <div style="font-size: 2.5em;">暂无技能</div>
-                            </div>
-                            
-                            <div v-for="skill in skills" :key="skill.id" class="skill-item">
-                                <div style="flex-grow: 1;">
-                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                                        <span style="font-size: 1.8em;">{{ skill.icon }}</span>
-                                        <div>
-                                            <strong style="font-size: 1.1em;">{{ skill.name }}</strong>
-                                            <div style="font-size: 0.85em; color: #7a6a62;">等级 {{ skill.level }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="xp-progress" style="height: 12px;">
-                                        <div class="xp-fill" :style="{ width: (skill.xp / skill.maxXp * 100) + '%' }"></div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn-sm" @click="practiceSkill(skill.id)">练习</button>
-                                    <button class="btn-sm" @click="deleteSkill(skill.id)" style="background: #ff7875;">删除</button>
-                                </div>
-                            </div>
-                            
-                            <button class="btn" @click="addNewSkill" style="background: linear-gradient(90deg, #a3de83, #4ecdc4);">
-                                添加技能
-                            </button>
+                </div>
+                
+                <!-- 技能追踪 -->
+                <div class="card">
+                    <h2>
+                        ⚡ 技能追踪
+                        <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">
+                            {{ collapsed.skills ? '展开' : '收起' }}
+                        </button>
+                    </h2>
+                    <div v-show="!collapsed.skills">
+                        <div v-if="skills.length === 0" style="color: #c9b8a7; text-align: center; padding: 20px;">
+                            还没有添加技能，点击下方按钮开始！
                         </div>
+                        <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                            <div>
+                                <div style="font-weight: 700; font-size: 1.1em; margin-bottom: 8px;">
+                                    {{ skill.icon }} {{ skill.name }}
+                                    <span style="color: #a0a0a0; font-size: 0.85em; margin-left: 8px;">Lv.{{ skill.level }}</span>
+                                </div>
+                                <div style="font-size: 0.9em; color: #7a6a62;">{{ skill.category }}</div>
+                                <div class="xp-progress" style="height: 8px; margin: 10px 0;">
+                                    <div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div>
+                                </div>
+                                <div style="font-size: 0.85em; color: #a0a0a0;">{{ skill.xp }} / {{ skill.maxXp }} XP</div>
+                            </div>
+                            <div>
+                                <button class="btn-sm" @click="practiceSkill(skill.id)">练习</button>
+                                <button class="btn-sm" @click="deleteSkill(skill.id)" style="background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d; margin-top: 8px;">删除</button>
+                            </div>
+                        </div>
+                        <button class="btn" @click="addNewSkill">➕ 添加新技能</button>
                     </div>
-                    
-                    <!-- 成就系统 -->
-                    <div class="card single-row-card">
-                        <h2>
-                            成就系统
-                            <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">
-                                {{ collapsed.achievements ? '展开' : '折叠' }}
-                            </button>
-                            <button class="btn-sm" @click="toggleAchievementForm" style="margin-left: 10px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b);">
-                                {{ showAchievementForm ? '取消添加' : '添加成就' }}
-                            </button>
-                        </h2>
+                </div>
+                <!-- 成就系统 -->
+                <div class="card">
+                    <h2>
+                        🏆 成就系统
+                        <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">
+                            {{ collapsed.achievements ? '展开' : '收起' }}
+                        </button>
+                    </h2>
+                    <div v-show="!collapsed.achievements">
+                        <button class="btn-sm" @click="showAchievementForm = !showAchievementForm" style="margin-bottom: 15px;">
+                            {{ showAchievementForm ? '取消创建' : '➕ 创建成就' }}
+                        </button>
                         
-                        <!-- 添加成就表单 -->
-                        <div v-if="showAchievementForm" class="achievement-form">
-                            <h3>添加新成就</h3>
-                            <div class="form-group">
-                                <label for="achievement-name">成就名称</label>
-                                <input type="text" id="achievement-name" v-model="newAchievement.name" placeholder="例如: 早起达人">
-                            </div>
-                            <div class="form-group">
-                                <label for="achievement-description">成就描述</label>
-                                <textarea id="achievement-description" v-model="newAchievement.description" placeholder="例如: 连续7天早起"></textarea>
-                            </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div class="form-group">
-                                    <label for="achievement-requirement">解锁要求</label>
-                                    <input type="number" id="achievement-requirement" v-model.number="newAchievement.requirement" min="1" placeholder="例如: 7">
-                                </div>
-                                <div class="form-group">
-                                    <label for="achievement-reward">经验奖励</label>
-                                    <input type="number" id="achievement-reward" v-model.number="newAchievement.reward" min="0" placeholder="例如: 50">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="achievement-icon">选择图标</label>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
-                                    <span v-for="icon in achievementIcons" :key="icon" 
-                                          class="achievement-icon-preview"
-                                          :style="{ 
-                                              cursor: 'pointer',
-                                              fontSize: '1.5em',
-                                              padding: '5px',
-                                              borderRadius: '5px',
-                                              backgroundColor: newAchievement.icon === icon ? '#e8f4f3' : 'transparent',
-                                              border: newAchievement.icon === icon ? '2px solid #4ecdc4' : '1px solid #e0c9b8'
-                                          }"
-                                          @click="newAchievement.icon = icon">
+                        <!-- 成就创建/编辑表单 -->
+                        <div v-if="showAchievementForm" class="achievement-form-container">
+                            <h3 style="margin-bottom: 15px; font-weight: 700;">
+                                {{ editingAchievementId ? '编辑成就' : '创建新成就' }}
+                            </h3>
+                            <input 
+                                type="text" 
+                                v-model="newAchievement.name" 
+                                placeholder="成就名称"
+                                class="note-input"
+                            >
+                            <textarea 
+                                v-model="newAchievement.description" 
+                                placeholder="成就描述"
+                                class="note-textarea"
+                                style="min-height: 80px;"
+                            ></textarea>
+                            <div style="margin: 15px 0;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 700;">选择图标:</label>
+                                <div class="achievement-icon-picker">
+                                    <div 
+                                        v-for="icon in achievementIcons" 
+                                        :key="icon"
+                                        class="achievement-icon-option"
+                                        :class="{selected: newAchievement.icon === icon}"
+                                        @click="newAchievement.icon = icon"
+                                    >
                                         {{ icon }}
-                                    </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-actions">
-                                <button class="btn-sm" @click="addNewAchievement" style="flex: 1;">保存成就</button>
-                                <button class="btn-sm btn-danger" @click="cancelNewAchievement" style="flex: 1;">取消</button>
-                            </div>
+                            <input 
+                                type="number" 
+                                v-model.number="newAchievement.requirement" 
+                                placeholder="完成要求（数量）"
+                                class="note-input"
+                                min="1"
+                            >
+                            <input 
+                                type="number" 
+                                v-model.number="newAchievement.reward" 
+                                placeholder="奖励经验"
+                                class="note-input"
+                                min="1"
+                            >
+                            <button class="btn" @click="saveAchievement">
+                                {{ editingAchievementId ? '更新成就' : '创建成就' }}
+                            </button>
+                            <button class="btn" @click="cancelNewAchievement" style="background: #e0c9b8; box-shadow: 4px 4px 0px #d4b8a7;">
+                                取消
+                            </button>
                         </div>
                         
-                        <div v-show="!collapsed.achievements" class="achievement-grid">
-                            <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}" :style="{position: 'relative'}">
-                                <!-- 自定义成就标记 -->
-                                <div v-if="ach.isCustom" class="custom-achievement-badge">自定义</div>
-                                
+                        <!-- 成就列表 -->
+                        <div class="achievement-grid">
+                            <div 
+                                v-for="ach in achievements" 
+                                :key="ach.id"
+                                class="achievement-card"
+                                :class="{locked: !ach.unlocked}"
+                            >
                                 <div class="achievement-icon">{{ ach.icon }}</div>
-                                <h3 style="margin-bottom: 8px;">{{ ach.name }}</h3>
-                                <p style="color: #7a6a62; margin-bottom: 12px; font-size: 0.9em;">{{ ach.description }}</p>
-                                
-                                <div v-if="!ach.unlocked">
-                                    <div class="achievement-progress">
-                                        <div class="achievement-progress-fill" :style="{ width: Math.min(100, (ach.current / ach.requirement * 100)) + '%' }"></div>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; color: #7a6a62;">
-                                        <span>{{ ach.current }} / {{ ach.requirement }}</span>
-                                        <span>{{ Math.round(Math.min(100, ach.current / ach.requirement * 100)) }}%</span>
-                                    </div>
+                                <h3 style="margin-bottom: 8px; text-align: center; font-weight: 700;">
+                                    {{ ach.name }}
+                                </h3>
+                                <p style="font-size: 0.9em; color: #7a6a62; text-align: center; margin-bottom: 12px;">
+                                    {{ ach.description }}
+                                </p>
+                                <div class="achievement-progress">
+                                    <div 
+                                        class="achievement-progress-fill" 
+                                        :style="{width: Math.min(100, (ach.current / ach.requirement * 100)) + '%'}"
+                                    ></div>
+                                </div>
+                                <div style="text-align: center; font-size: 0.9em; color: #7a6a62;">
+                                    {{ ach.current }} / {{ ach.requirement }}
+                                </div>
+                                <div style="text-align: center; margin-top: 10px; font-weight: 700; color: #4ecdc4;">
+                                    💎 +{{ ach.reward }} XP
+                                </div>
+                                <div v-if="ach.unlocked" style="text-align: center; margin-top: 10px; color: #a3de83; font-weight: 700;">
+                                    ✅ 已解锁
                                 </div>
                                 
-                                <div v-else style="text-align: center; padding: 12px; background: rgba(163,222,131,0.2); border-radius: 8px; margin-top: 12px;">
-                                    <span style="color: #2d5a27; font-weight: bold;">已解锁</span>
+                                <!-- 自定义成就的编辑/删除按钮 -->
+                                <div v-if="ach.isCustom" class="achievement-actions">
+                                    <button @click="editAchievement(ach.id)">✏️ 编辑</button>
+                                    <button @click="deleteAchievement(ach.id)">🗑️ 删除</button>
                                 </div>
-                                
-                                <!-- 自定义成就管理按钮 -->
-                                <div v-if="ach.isCustom" style="margin-top: 15px; display: flex; gap: 8px;">
-                                    <button class="btn-sm" @click="editAchievement(ach.id)" style="font-size: 0.8em; padding: 5px 10px;">编辑</button>
-                                    <button class="btn-sm btn-danger" @click="deleteAchievement(ach.id)" style="font-size: 0.8em; padding: 5px 10px;">删除</button>
-                                </div>
-                            </div>
-                            
-                            <!-- 添加新成就卡片 -->
-                            <div class="achievement-card" style="border: 2px dashed #4ecdc4; background-color: rgba(78, 205, 196, 0.05); display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                <div class="achievement-icon">➕</div>
-                                <h3 style="margin-bottom: 8px; text-align: center;">添加新成就</h3>
-                                <p style="color: #7a6a62; margin-bottom: 12px; font-size: 0.9em; text-align: center;">创建自定义成就</p>
-                                <button class="btn-sm" @click="toggleAchievementForm" style="width: 80%; margin-top: 10px;">
-                                    添加成就
-                                </button>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- 笔记系统 -->
-                    <div class="card single-row-card">
-                        <h2>
-                            笔记系统
-                            <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">
-                                {{ collapsed.notes ? '展开' : '折叠' }}
-                            </button>
-                            <span v-if="isFilterActive" class="filter-active-indicator"></span>
-                        </h2>
-                        <div v-show="!collapsed.notes">
-                            <div class="note-tabs">
-                                <div class="note-tab" :class="{active: activeNoteTab === 'all'}" @click="activeNoteTab = 'all'; clearFilters()">
-                                    全部笔记
-                                </div>
-                                <div class="note-tab" :class="{active: activeNoteTab === 'editor'}" @click="activeNoteTab = 'editor'">
-                                    新建笔记
-                                </div>
+                </div>
+                
+                <!-- 笔记本 -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>
+                        📝 笔记本
+                        <button class="collapse-btn" @click="collapsed.notes = !collapsed.notes">
+                            {{ collapsed.notes ? '展开' : '收起' }}
+                        </button>
+                    </h2>
+                    <div v-show="!collapsed.notes">
+                        <!-- 笔记标签页 -->
+                        <div class="note-tabs">
+                            <div 
+                                class="note-tab"
+                                :class="{active: activeNoteTab === 'all'}"
+                                @click="activeNoteTab = 'all'"
+                            >
+                                全部笔记 ({{ notes.length }})
                             </div>
-                            
-                            <div v-if="activeNoteTab === 'editor'" style="background: #fffaf5; padding: 20px; border-radius: 12px;">
-                                <input v-model="newNote.title" class="note-input" placeholder="标题">
-                                <textarea v-model="newNote.content" class="note-textarea" placeholder="内容"></textarea>
-                                <input v-model="newNote.tags" class="note-input" placeholder="标签 (逗号分隔)">
-                                <button class="btn" @click="saveNote">保存笔记</button>
+                            <div 
+                                class="note-tab"
+                                :class="{active: activeNoteTab === 'new'}"
+                                @click="activeNoteTab = 'new'"
+                            >
+                                ✨ 新建笔记
                             </div>
-                            
-                            <div v-if="activeNoteTab === 'all'">
-                                <!-- 笔记筛选器 -->
-                                <div class="note-filters">
+                        </div>
+                        
+                        <!-- 新建笔记 -->
+                        <div v-if="activeNoteTab === 'new'">
+                            <input 
+                                type="text" 
+                                v-model="newNote.title" 
+                                placeholder="笔记标题..."
+                                class="note-input"
+                            >
+                            <textarea 
+                                v-model="newNote.content" 
+                                placeholder="记录你的想法..."
+                                class="note-textarea"
+                            ></textarea>
+                            <input 
+                                type="text" 
+                                v-model="newNote.tags" 
+                                placeholder="标签（用逗号分隔，如: 学习,编程,思考）"
+                                class="note-input"
+                            >
+                            <button class="btn" @click="saveNote">💾 保存笔记</button>
+                        </div>
+                        
+                        <!-- 笔记筛选器 -->
+                        <div v-if="activeNoteTab === 'all'">
+                            <div class="filter-container">
+                                <div class="filter-header" @click="collapsed.filterExpanded = !collapsed.filterExpanded">
+                                    <h3>🔍 筛选和搜索</h3>
+                                    <button class="filter-toggle">
+                                        {{ collapsed.filterExpanded ? '展开' : '收起' }}
+                                    </button>
+                                </div>
+                                
+                                <div v-show="!collapsed.filterExpanded" class="collapsible-content">
                                     <!-- 搜索框 -->
-                                    <div class="search-box">
-                                        <div class="search-icon">🔍</div>
+                                    <div style="margin-top: 15px;">
                                         <input 
                                             type="text" 
                                             v-model="noteFilters.search" 
-                                            placeholder="搜索笔记标题或内容..."
+                                            placeholder="搜索标题或内容..."
+                                            class="note-input"
                                             @input="applyFilters"
                                         >
                                     </div>
@@ -872,79 +1341,294 @@
                                         </button>
                                     </div>
                                 </div>
-                                
-                                <!-- 笔记列表 -->
-                                <div class="note-list">
-                                    <div v-if="filteredNotes.length === 0" class="no-notes-message">
-                                        <div v-if="notes.length === 0">📝</div>
-                                        <div v-else>🔍</div>
-                                        <div v-if="notes.length === 0">
-                                            暂无笔记，点击"新建笔记"开始记录
-                                        </div>
-                                        <div v-else>
-                                            没有找到匹配的笔记，尝试修改筛选条件
-                                        </div>
+                            </div>
+                            
+                            <!-- 笔记列表 -->
+                            <div class="note-list">
+                                <div v-if="filteredNotes.length === 0" class="no-notes-message">
+                                    <div>📭</div>
+                                    <div v-if="notes.length === 0">还没有笔记，去新建一条吧！</div>
+                                    <div v-else>没有找到符合条件的笔记</div>
+                                </div>
+                                <div 
+                                    v-for="note in filteredNotes" 
+                                    :key="note.id"
+                                    class="note-card"
+                                >
+                                    <h3 style="margin-bottom: 12px; font-weight: 700;">{{ note.title }}</h3>
+                                    <div class="note-tags" v-if="note.tags && note.tags.length">
+                                        <span 
+                                            class="note-tag" 
+                                            v-for="tag in note.tags" 
+                                            :key="tag"
+                                            @click="setTagFilter(tag)"
+                                            :style="{cursor: 'pointer'}"
+                                        >
+                                            {{ tag }}
+                                        </span>
                                     </div>
-                                    
-                                    <div v-for="note in filteredNotes" :key="note.id" class="note-card">
-                                        <h3 style="margin-bottom: 12px; font-family: 'Gochi Hand';">{{ note.title }}</h3>
-                                        <div class="note-tags" v-if="note.tags && note.tags.length">
-                                            <span 
-                                                class="note-tag" 
-                                                v-for="tag in note.tags" 
-                                                :key="tag"
-                                                @click="setTagFilter(tag)"
-                                                :style="{cursor: 'pointer'}"
-                                            >
-                                                {{ tag }}
-                                            </span>
-                                        </div>
-                                        <div class="note-preview">{{ note.content }}</div>
-                                        <div class="note-date">{{ formatDate(note.createdAt) }}</div>
-                                        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px dotted #e0c9b8;">
-                                            <div>
-                                                <span style="color: #7a6a62; font-size: 0.85em;">{{ formatDateShort(note.createdAt) }}</span>
-                                            </div>
-                                            <button class="btn-sm" @click="deleteNote(note.id)" style="background: #ff7875;">删除</button>
-                                        </div>
+                                    <p style="margin: 12px 0; line-height: 1.6;">{{ note.content }}</p>
+                                    <div style="font-size: 0.85em; color: #a0a0a0; margin-top: 10px;">
+                                        {{ formatDate(note.createdAt) }}
+                                    </div>
+                                    <button class="btn-sm" @click="deleteNote(note.id)" style="margin-top: 12px; background: linear-gradient(90deg, #ff9a8b, #ff6b6b); box-shadow: 3px 3px 0px #d45d5d;">
+                                        删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 知识库入口 -->
+                <div class="card">
+                    <h2>📚 知识库</h2>
+                    <p style="margin: 15px 0; color: #7a6a62;">
+                        创建分类、整理笔记，构建你的知识体系
+                    </p>
+                    <button class="btn" @click="openKnowledgeBase" style="background: linear-gradient(90deg, #667eea, #764ba2); box-shadow: 4px 4px 0px #5a4a42;">
+                        📚 打开知识库
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识库弹窗 -->
+        <div v-if="isLoggedIn && showKnowledgeBase" class="kb-modal-overlay" @click.self="closeKnowledgeBase">
+            <div class="kb-modal">
+                <!-- 顶部标题栏 -->
+                <div class="kb-header">
+                    <h1>📚 我的知识库</h1>
+                    <button class="kb-close-btn" @click="closeKnowledgeBase">✕</button>
+                </div>
+                
+                <!-- 主体内容 -->
+                <div class="kb-content">
+                    <!-- 左侧边栏 - 分类列表 -->
+                    <div class="kb-sidebar">
+                        <div class="kb-sidebar-header">
+                            <h3>分类目录</h3>
+                            <button class="btn-sm" @click="showCategoryForm = true">+ 新建</button>
+                        </div>
+                        
+                        <!-- 分类列表 -->
+                        <div class="kb-category-list">
+                            <!-- 全部笔记 -->
+                            <div 
+                                class="kb-category-item"
+                                :class="{ active: selectedCategory === 'all' }"
+                                @click="selectCategory('all')"
+                            >
+                                <span class="kb-category-icon">📖</span>
+                                <span class="kb-category-name">全部笔记</span>
+                                <span class="kb-category-count">({{ kbNotes.length }})</span>
+                            </div>
+                            
+                            <div 
+                                v-for="category in kbCategories" 
+                                :key="category.id"
+                                class="kb-category-item"
+                                :class="{ active: selectedCategory && selectedCategory.id === category.id }"
+                                @click="selectCategory(category)"
+                            >
+                                <span class="kb-category-icon">{{ category.icon }}</span>
+                                <span class="kb-category-name">{{ category.name }}</span>
+                                <span class="kb-category-count">({{ getCategoryNotesCount(category.id) }})</span>
+                                <div class="kb-category-actions">
+                                    <button @click.stop="editCategory(category)" title="编辑">✏️</button>
+                                    <button @click.stop="deleteCategory(category.id)" title="删除">🗑️</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 未分类 -->
+                            <div 
+                                class="kb-category-item"
+                                :class="{ active: selectedCategory === 'uncategorized' }"
+                                @click="selectCategory('uncategorized')"
+                            >
+                                <span class="kb-category-icon">📋</span>
+                                <span class="kb-category-name">未分类</span>
+                                <span class="kb-category-count">({{ getUncategorizedCount() }})</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧内容区 -->
+                    <div class="kb-main">
+                        <!-- 工具栏 -->
+                        <div class="kb-toolbar">
+                            <input 
+                                type="text" 
+                                v-model="kbSearchQuery" 
+                                placeholder="🔍 搜索笔记..."
+                                class="kb-search-input"
+                            >
+                            <button class="btn-primary" @click="showNoteEditor = true">
+                                ✨ 新建笔记
+                            </button>
+                        </div>
+                        
+                        <!-- 笔记列表 -->
+                        <div class="kb-notes-list">
+                            <div v-if="filteredKbNotes.length === 0" class="kb-empty">
+                                <div class="kb-empty-icon">📝</div>
+                                <p>暂无笔记，点击"新建笔记"开始记录吧！</p>
+                            </div>
+                            
+                            <div 
+                                v-for="note in filteredKbNotes" 
+                                :key="note.id"
+                                class="kb-note-card"
+                                @click="openNoteDetail(note)"
+                            >
+                                <div class="kb-note-header">
+                                    <h3>{{ note.title }}</h3>
+                                    <span class="kb-note-date">{{ formatDateShort(note.updatedAt || note.createdAt) }}</span>
+                                </div>
+                                <div class="kb-note-preview">{{ getPreviewText(note.content) }}</div>
+                                <div class="kb-note-footer">
+                                    <span v-if="note.categoryId" class="kb-note-category">
+                                        {{ getCategoryIcon(note.categoryId) }} {{ getCategoryName(note.categoryId) }}
+                                    </span>
+                                    <span v-else class="kb-note-category" style="background: #a0a0a0;">
+                                        📋 未分类
+                                    </span>
+                                    <div class="kb-note-actions">
+                                        <button @click.stop="editKbNote(note)" class="kb-action-btn">✏️</button>
+                                        <button @click.stop="deleteKbNote(note.id)" class="kb-action-btn">🗑️</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 统计概览 -->
-                <div class="card" style="margin-top: 40px;">
-                    <h2>成长概览</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-value">{{ totalXpEarned }}</div>
-                            <div class="stat-label">总经验</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value">{{ skills.length }}</div>
-                            <div class="stat-label">技能数</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value">{{ notes.length }}</div>
-                            <div class="stat-label">笔记数</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-value">{{ completedAchievementsCount }}</div>
-                            <div class="stat-label">成就数</div>
+            </div>
+        </div>
+
+        <!-- 新建/编辑分类弹窗 -->
+        <div v-if="showCategoryForm" class="kb-form-overlay" @click.self="closeCategoryForm">
+            <div class="kb-form-modal">
+                <div class="kb-form-header">
+                    <h2>{{ editingCategoryId ? '编辑分类' : '新建分类' }}</h2>
+                    <button class="kb-close-btn" @click="closeCategoryForm">✕</button>
+                </div>
+                <div class="kb-form-body">
+                    <div class="kb-form-group">
+                        <label>分类名称</label>
+                        <input 
+                            type="text" 
+                            v-model="categoryForm.name" 
+                            placeholder="输入分类名称..."
+                            class="kb-form-input"
+                        >
+                    </div>
+                    <div class="kb-form-group">
+                        <label>选择图标</label>
+                        <div class="kb-icon-picker">
+                            <button 
+                                v-for="icon in categoryIcons" 
+                                :key="icon"
+                                class="kb-icon-btn"
+                                :class="{ active: categoryForm.icon === icon }"
+                                @click="categoryForm.icon = icon"
+                            >
+                                {{ icon }}
+                            </button>
                         </div>
                     </div>
+                </div>
+                <div class="kb-form-footer">
+                    <button class="btn-secondary" @click="closeCategoryForm">取消</button>
+                    <button class="btn-primary" @click="saveCategoryForm">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新建/编辑笔记弹窗 -->
+        <div v-if="showNoteEditor" class="kb-form-overlay" @click.self="closeNoteEditor">
+            <div class="kb-form-modal kb-editor-modal">
+                <div class="kb-form-header">
+                    <h2>{{ editingNoteId ? '编辑笔记' : '新建笔记' }}</h2>
+                    <button class="kb-close-btn" @click="closeNoteEditor">✕</button>
+                </div>
+                <div class="kb-form-body">
+                    <div class="kb-form-group">
+                        <label>笔记标题</label>
+                        <input 
+                            type="text" 
+                            v-model="noteForm.title" 
+                            placeholder="输入笔记标题..."
+                            class="kb-form-input"
+                        >
+                    </div>
+                    <div class="kb-form-group">
+                        <label>选择分类</label>
+                        <select v-model="noteForm.categoryId" class="kb-form-select">
+                            <option :value="null">未分类</option>
+                            <option 
+                                v-for="category in kbCategories" 
+                                :key="category.id" 
+                                :value="category.id"
+                            >
+                                {{ category.icon }} {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="kb-form-group">
+                        <label>笔记内容</label>
+                        <textarea 
+                            v-model="noteForm.content" 
+                            placeholder="开始记录..."
+                            class="kb-form-textarea"
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="kb-form-footer">
+                    <button class="btn-secondary" @click="closeNoteEditor">取消</button>
+                    <button class="btn-primary" @click="saveNoteForm">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 笔记详情弹窗 -->
+        <div v-if="viewingNote" class="kb-form-overlay" @click.self="closeNoteDetail">
+            <div class="kb-form-modal kb-detail-modal">
+                <div class="kb-form-header">
+                    <h2>{{ viewingNote.title }}</h2>
+                    <button class="kb-close-btn" @click="closeNoteDetail">✕</button>
+                </div>
+                <div class="kb-form-body">
+                    <div class="kb-detail-meta">
+                        <span v-if="viewingNote.categoryId" class="kb-detail-category">
+                            {{ getCategoryIcon(viewingNote.categoryId) }} {{ getCategoryName(viewingNote.categoryId) }}
+                        </span>
+                        <span v-else class="kb-detail-category" style="background: #a0a0a0;">
+                            📋 未分类
+                        </span>
+                        <span class="kb-detail-date">
+                            创建于: {{ formatDate(viewingNote.createdAt) }}
+                        </span>
+                        <span v-if="viewingNote.updatedAt" class="kb-detail-date">
+                            更新于: {{ formatDate(viewingNote.updatedAt) }}
+                        </span>
+                    </div>
+                    <div class="kb-detail-content">
+                        {{ viewingNote.content }}
+                    </div>
+                </div>
+                <div class="kb-form-footer">
+                    <button class="btn-secondary" @click="closeNoteDetail">关闭</button>
+                    <button class="btn-primary" @click="editKbNote(viewingNote); closeNoteDetail()">编辑</button>
                 </div>
             </div>
         </div>
     </div>
-    <script type="module">
+    <script>
+        const SUPABASE_URL = 'https://zqmgigcnruvvdcholbuj.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI';
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
         const { createApp } = Vue;
-        const sb = supabase.createClient(
-            'https://zqmgigcnruvvdcholbuj.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI'
-        );
         
         createApp({
             data() {
@@ -959,7 +1643,7 @@
                     saving: false,
                     message: '',
                     messageType: 'success',
-                    collapsed: { status: false, skills: false, achievements: false, notes: false },
+                    collapsed: { status: false, skills: false, achievements: false, notes: false, filterExpanded: false },
                     playerData: { level: 1, xp: 0, nextLevelXp: 100 },
                     skills: [],
                     achievements: [
@@ -971,7 +1655,6 @@
                     notes: [],
                     activeNoteTab: 'all',
                     newNote: { title: '', content: '', tags: '' },
-                    // 成就相关的新增数据
                     showAchievementForm: false,
                     newAchievement: {
                         name: '',
@@ -983,87 +1666,89 @@
                     },
                     achievementIcons: ['🏆', '⭐', '🎯', '🚀', '💡', '🔥', '✨', '🎖️', '🏅', '👑', '💎', '📚', '🎨', '🎵', '🏃', '🧠', '💪', '❤️', '🌟', '🌈'],
                     editingAchievementId: null,
-                    // 笔记筛选相关数据
                     noteFilters: {
                         search: '',
                         selectedTags: [],
-                        sortBy: 'newest' // 'newest', 'oldest', 'title'
-                    }
+                        sortBy: 'newest'
+                    },
+                    showKnowledgeBase: false,
+                    kbCategories: [],
+                    kbNotes: [],
+                    selectedCategory: 'all',
+                    kbSearchQuery: '',
+                    showCategoryForm: false,
+                    editingCategoryId: null,
+                    categoryForm: { name: '', icon: '📁' },
+                    categoryIcons: ['📁', '📂', '📚', '📖', '📝', '✏️', '💡', '🎯', '🎨', '💻', '🔬', '📊', '🎵', '🎬', '🏋️', '🍳', '✈️', '🌟', '❤️', '🎓', '💼', '🏠', '🌱', '⚡'],
+                    showNoteEditor: false,
+                    editingNoteId: null,
+                    noteForm: { title: '', content: '', categoryId: null },
+                    viewingNote: null
                 };
             },
+            
             computed: {
                 xpPercentage() {
                     return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100);
                 },
-                totalXpEarned() {
-                    return this.playerData.xp;
-                },
                 completedAchievementsCount() {
                     return this.achievements.filter(a => a.unlocked).length;
                 },
-                // 所有笔记中的标签（去重）
                 allTags() {
                     const allTags = [];
                     this.notes.forEach(note => {
                         if (note.tags && Array.isArray(note.tags)) {
                             note.tags.forEach(tag => {
-                                if (!allTags.includes(tag)) {
-                                    allTags.push(tag);
-                                }
+                                if (!allTags.includes(tag)) allTags.push(tag);
                             });
                         }
                     });
                     return allTags.sort();
                 },
-                // 筛选后的笔记
                 filteredNotes() {
                     let filtered = [...this.notes];
-                    
-                    // 搜索筛选
                     if (this.noteFilters.search.trim()) {
                         const searchTerm = this.noteFilters.search.toLowerCase().trim();
-                        filtered = filtered.filter(note => {
-                            return note.title.toLowerCase().includes(searchTerm) || 
-                                   note.content.toLowerCase().includes(searchTerm);
-                        });
+                        filtered = filtered.filter(note => note.title.toLowerCase().includes(searchTerm) || note.content.toLowerCase().includes(searchTerm));
                     }
-                    
-                    // 标签筛选
                     if (this.noteFilters.selectedTags.length > 0) {
                         filtered = filtered.filter(note => {
                             if (!note.tags || !Array.isArray(note.tags)) return false;
-                            return this.noteFilters.selectedTags.some(tag => 
-                                note.tags.includes(tag)
-                            );
+                            return this.noteFilters.selectedTags.some(tag => note.tags.includes(tag));
                         });
                     }
-                    
-                    // 排序
                     filtered.sort((a, b) => {
                         const dateA = new Date(a.createdAt);
                         const dateB = new Date(b.createdAt);
-                        
                         switch (this.noteFilters.sortBy) {
-                            case 'newest':
-                                return dateB - dateA; // 最新的在前
-                            case 'oldest':
-                                return dateA - dateB; // 最早的在前
-                            case 'title':
-                                return a.title.localeCompare(b.title); // 标题排序
-                            default:
-                                return dateB - dateA;
+                            case 'newest': return dateB - dateA;
+                            case 'oldest': return dateA - dateB;
+                            case 'title': return a.title.localeCompare(b.title);
+                            default: return dateB - dateA;
                         }
                     });
-                    
                     return filtered;
                 },
-                // 是否应用了筛选
                 isFilterActive() {
-                    return this.noteFilters.search.trim() !== '' || 
-                           this.noteFilters.selectedTags.length > 0 || 
-                           this.noteFilters.sortBy !== 'newest';
+                    return this.noteFilters.search.trim() !== '' || this.noteFilters.selectedTags.length > 0 || this.noteFilters.sortBy !== 'newest';
+                },
+                filteredKbNotes() {
+                    let filtered = [...this.kbNotes];
+                    if (this.selectedCategory === 'all') {
+                        // 显示全部
+                    } else if (this.selectedCategory === 'uncategorized') {
+                        filtered = filtered.filter(note => !note.categoryId);
+                    } else if (this.selectedCategory && this.selectedCategory.id) {
+                        filtered = filtered.filter(note => note.categoryId === this.selectedCategory.id);
+                    }
+                    if (this.kbSearchQuery.trim()) {
+                        const query = this.kbSearchQuery.toLowerCase();
+                        filtered = filtered.filter(note => note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query));
+                    }
+                    return filtered.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
                 }
             },
+            
             methods: {
                 showMessage(text, type = 'success') {
                     this.message = text;
@@ -1072,20 +1757,11 @@
                 },
                 
                 async register() {
-                    if (!this.email || !this.password) {
-                        this.showMessage('请输入邮箱和密码', 'error');
-                        return;
-                    }
-                    if (this.password.length < 6) {
-                        this.showMessage('密码至少6位', 'error');
-                        return;
-                    }
+                    if (!this.email || !this.password) { this.showMessage('请输入邮箱和密码', 'error'); return; }
+                    if (this.password.length < 6) { this.showMessage('密码至少6位', 'error'); return; }
                     this.loading = true;
                     try {
-                        const { data, error } = await sb.auth.signUp({
-                            email: this.email,
-                            password: this.password
-                        });
+                        const { data, error } = await sb.auth.signUp({ email: this.email, password: this.password });
                         if (error) throw error;
                         if (data.user && data.user.identities && data.user.identities.length === 0) {
                             this.showMessage('邮箱已注册', 'error');
@@ -1101,16 +1777,10 @@
                 },
                 
                 async login() {
-                    if (!this.email || !this.password) {
-                        this.showMessage('请输入邮箱和密码', 'error');
-                        return;
-                    }
+                    if (!this.email || !this.password) { this.showMessage('请输入邮箱和密码', 'error'); return; }
                     this.loading = true;
                     try {
-                        const { data, error } = await sb.auth.signInWithPassword({
-                            email: this.email.trim(),
-                            password: this.password
-                        });
+                        const { data, error } = await sb.auth.signInWithPassword({ email: this.email.trim(), password: this.password });
                         if (error) throw error;
                         this.isLoggedIn = true;
                         this.userId = data.user.id;
@@ -1128,6 +1798,7 @@
                     await sb.auth.signOut();
                     this.isLoggedIn = false;
                     this.userId = null;
+                    this.showKnowledgeBase = false;
                     this.resetData();
                     this.showMessage('已退出', 'success');
                 },
@@ -1143,7 +1814,6 @@
                         
                         const { data: aData } = await sb.from('achievements').select('*').eq('user_id', this.userId);
                         if (aData && aData.length > 0) {
-                            // 合并默认成就和自定义成就
                             const loadedAchievements = aData.map(a => a.data);
                             const defaultAchievements = [
                                 { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
@@ -1151,23 +1821,25 @@
                                 { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
                                 { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
                             ];
-                            
-                            // 合并成就，确保默认成就在前面
                             const customAchievements = loadedAchievements.filter(a => a.isCustom);
                             const defaultWithData = defaultAchievements.map(defaultAch => {
                                 const loadedAch = loadedAchievements.find(a => a.id === defaultAch.id && !a.isCustom);
                                 return loadedAch ? loadedAch : defaultAch;
                             });
-                            
                             this.achievements = [...defaultWithData, ...customAchievements];
                         }
                         
                         const { data: nData } = await sb.from('notes').select('*').eq('user_id', this.userId);
                         if (nData) {
                             this.notes = nData.map(n => n.data);
-                            // 按创建时间排序（最新的在前）
                             this.notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                         }
+                        
+                        const { data: kbCatData } = await sb.from('kb_categories').select('*').eq('user_id', this.userId);
+                        if (kbCatData) this.kbCategories = kbCatData.map(c => c.data);
+                        
+                        const { data: kbNotesData } = await sb.from('kb_notes').select('*').eq('user_id', this.userId);
+                        if (kbNotesData) this.kbNotes = kbNotesData.map(n => n.data);
                         
                         this.updateAchievements();
                         this.showMessage('数据已加载', 'success');
@@ -1178,335 +1850,215 @@
                     }
                 },
                 
+                resetData() {
+                    this.playerData = { level: 1, xp: 0, nextLevelXp: 100 };
+                    this.skills = [];
+                    this.achievements = [
+                        { id: 1, name: '初学者', icon: '🌱', description: '创建第一个技能', requirement: 1, current: 0, unlocked: false, reward: 50, isCustom: false },
+                        { id: 2, name: '多面手', icon: '🔧', description: '拥有5个技能', requirement: 5, current: 0, unlocked: false, reward: 150, isCustom: false },
+                        { id: 3, name: '笔记达人', icon: '📝', description: '创建10条笔记', requirement: 10, current: 0, unlocked: false, reward: 100, isCustom: false },
+                        { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
+                    ];
+                    this.notes = [];
+                    this.kbCategories = [];
+                    this.kbNotes = [];
+                },
+                
+                async syncData() { await this.loadAllData(); },
+                
                 async saveAllData() {
                     if (!this.userId) return;
                     this.saving = true;
                     try {
-                        await sb.from('players').upsert({
-                            user_id: this.userId,
-                            data: this.playerData,
-                            updated_at: new Date().toISOString()
-                        });
-                        
-                        for (const skill of this.skills) {
-                            await sb.from('skills').upsert({
-                                user_id: this.userId,
-                                skill_id: skill.id,
-                                data: skill,
-                                updated_at: new Date().toISOString()
-                            }, { onConflict: 'user_id,skill_id' });
-                        }
-                        
-                        for (const ach of this.achievements) {
-                            await sb.from('achievements').upsert({
-                                user_id: this.userId,
-                                achievement_id: ach.id,
-                                data: ach,
-                                updated_at: new Date().toISOString()
-                            }, { onConflict: 'user_id,achievement_id' });
-                        }
-                        
-                        for (const note of this.notes) {
-                            await sb.from('notes').upsert({
-                                user_id: this.userId,
-                                note_id: note.id,
-                                data: note,
-                                updated_at: new Date().toISOString()
-                            }, { onConflict: 'user_id,note_id' });
-                        }
-                        
-                        this.showMessage('保存成功', 'success');
+                        await sb.from('players').upsert({ user_id: this.userId, data: this.playerData });
+                        await sb.from('skills').delete().eq('user_id', this.userId);
+                        if (this.skills.length > 0) await sb.from('skills').insert(this.skills.map(skill => ({ user_id: this.userId, data: skill })));
+                        await sb.from('achievements').delete().eq('user_id', this.userId);
+                        if (this.achievements.length > 0) await sb.from('achievements').insert(this.achievements.map(ach => ({ user_id: this.userId, data: ach })));
+                        await sb.from('notes').delete().eq('user_id', this.userId);
+                        if (this.notes.length > 0) await sb.from('notes').insert(this.notes.map(note => ({ user_id: this.userId, data: note })));
+                        await sb.from('kb_categories').delete().eq('user_id', this.userId);
+                        if (this.kbCategories.length > 0) await sb.from('kb_categories').insert(this.kbCategories.map(cat => ({ user_id: this.userId, data: cat })));
+                        await sb.from('kb_notes').delete().eq('user_id', this.userId);
+                        if (this.kbNotes.length > 0) await sb.from('kb_notes').insert(this.kbNotes.map(note => ({ user_id: this.userId, data: note })));
                     } catch (error) {
                         console.error('保存失败:', error);
-                        this.showMessage('保存失败', 'error');
                     } finally {
                         this.saving = false;
                     }
                 },
                 
-                async syncData() {
-                    await this.loadAllData();
+                addXp(amount) {
+                    this.playerData.xp += amount;
+                    while (this.playerData.xp >= this.playerData.nextLevelXp) {
+                        this.playerData.xp -= this.playerData.nextLevelXp;
+                        this.playerData.level++;
+                        this.playerData.nextLevelXp = Math.floor(this.playerData.nextLevelXp * 1.5);
+                        this.showMessage('升级了！现在是 Lv.' + this.playerData.level, 'success');
+                    }
+                    this.updateAchievements();
+                    this.saveAllData();
                 },
                 
                 addNewSkill() {
-                    const name = prompt('技能名称:', '例如: Python编程');
+                    const name = prompt('请输入技能名称:');
                     if (!name || !name.trim()) return;
-                    
-                    const category = prompt('技能类别:', '编程');
-                    const icon = prompt('选择图标:', '💻');
-                    
+                    const category = prompt('请输入技能分类 (如: 编程、语言、运动):') || '通用';
+                    const icons = ['💻', '📚', '🎨', '🎵', '🏃', '🍳', '📷', '✍️', '🎯', '🧠'];
                     const newSkill = {
                         id: Date.now(),
                         name: name.trim(),
-                        category: category || '其他',
-                        icon: icon || '⭐',
+                        category: category.trim(),
+                        icon: icons[Math.floor(Math.random() * icons.length)],
                         level: 1,
                         xp: 0,
-                        maxXp: 100,
-                        xpPerPractice: 10,
-                        createdAt: new Date().toISOString()
+                        maxXp: 50
                     };
-                    
                     this.skills.push(newSkill);
-                    this.updateAchievements();
-                    this.saveAllData();
-                    
-                    this.showMessage(`技能 "${name.trim()}" 已添加`, 'success');
+                    this.addXp(10);
+                    this.showMessage('技能已添加！+10 XP', 'success');
                 },
                 
                 practiceSkill(skillId) {
                     const skill = this.skills.find(s => s.id === skillId);
                     if (!skill) return;
-                    
-                    skill.xp += skill.xpPerPractice || 10;
-                    
+                    const xpGain = 10 + Math.floor(Math.random() * 10);
+                    skill.xp += xpGain;
                     if (skill.xp >= skill.maxXp) {
+                        skill.xp -= skill.maxXp;
                         skill.level++;
-                        skill.xp = 0;
-                        skill.maxXp = Math.floor(skill.maxXp * 1.5);
-                        this.showMessage(`${skill.name} 升级到 ${skill.level} 级！`, 'success');
+                        skill.maxXp = Math.floor(skill.maxXp * 1.3);
+                        this.showMessage(skill.name + ' 升级了！Lv.' + skill.level, 'success');
                     }
-                    
-                    this.updateAchievements();
-                    this.saveAllData();
+                    this.addXp(xpGain);
+                    this.showMessage('练习完成！+' + xpGain + ' XP', 'success');
                 },
                 
                 deleteSkill(skillId) {
-                    if (!confirm('确定删除这个技能？')) return;
+                    if (!confirm('确定删除这个技能吗？')) return;
                     const index = this.skills.findIndex(s => s.id === skillId);
                     if (index !== -1) {
                         this.skills.splice(index, 1);
                         this.updateAchievements();
                         this.saveAllData();
-                    }
-                },
-                
-                // 新增：切换成就表单显示
-                toggleAchievementForm() {
-                    this.showAchievementForm = !this.showAchievementForm;
-                    if (!this.showAchievementForm) {
-                        this.cancelNewAchievement();
-                    }
-                },
-                
-                // 新增：添加自定义成就
-                addNewAchievement() {
-                    if (!this.newAchievement.name.trim()) {
-                        this.showMessage('请输入成就名称', 'error');
-                        return;
-                    }
-                    
-                    if (!this.newAchievement.description.trim()) {
-                        this.showMessage('请输入成就描述', 'error');
-                        return;
-                    }
-                    
-                    if (this.newAchievement.requirement < 1) {
-                        this.showMessage('解锁要求必须大于0', 'error');
-                        return;
-                    }
-                    
-                    if (this.newAchievement.reward < 0) {
-                        this.showMessage('经验奖励不能为负数', 'error');
-                        return;
-                    }
-                    
-                    if (this.editingAchievementId) {
-                        // 编辑现有成就
-                        const index = this.achievements.findIndex(a => a.id === this.editingAchievementId);
-                        if (index !== -1) {
-                            this.achievements[index] = {
-                                ...this.achievements[index],
-                                name: this.newAchievement.name.trim(),
-                                description: this.newAchievement.description.trim(),
-                                icon: this.newAchievement.icon,
-                                requirement: this.newAchievement.requirement,
-                                reward: this.newAchievement.reward
-                            };
-                            this.showMessage('成就已更新', 'success');
-                        }
-                        this.editingAchievementId = null;
-                    } else {
-                        // 添加新成就
-                        const newAchievement = {
-                            id: Date.now(),
-                            name: this.newAchievement.name.trim(),
-                            description: this.newAchievement.description.trim(),
-                            icon: this.newAchievement.icon,
-                            requirement: this.newAchievement.requirement,
-                            current: 0,
-                            unlocked: false,
-                            reward: this.newAchievement.reward,
-                            isCustom: true
-                        };
-                        
-                        this.achievements.push(newAchievement);
-                        this.showMessage(`成就 "${this.newAchievement.name.trim()}" 已添加`, 'success');
-                    }
-                    
-                    this.updateAchievements();
-                    this.saveAllData();
-                    this.cancelNewAchievement();
-                    this.showAchievementForm = false;
-                },
-                
-                // 新增：取消添加成就
-                cancelNewAchievement() {
-                    this.newAchievement = {
-                        name: '',
-                        description: '',
-                        icon: '🏆',
-                        requirement: 1,
-                        reward: 50,
-                        isCustom: true
-                    };
-                    this.editingAchievementId = null;
-                },
-                
-                // 新增：编辑成就
-                editAchievement(achievementId) {
-                    const achievement = this.achievements.find(a => a.id === achievementId);
-                    if (!achievement) return;
-                    
-                    this.newAchievement = {
-                        name: achievement.name,
-                        description: achievement.description,
-                        icon: achievement.icon,
-                        requirement: achievement.requirement,
-                        reward: achievement.reward,
-                        isCustom: true
-                    };
-                    this.editingAchievementId = achievementId;
-                    this.showAchievementForm = true;
-                },
-                
-                // 新增：删除成就
-                deleteAchievement(achievementId) {
-                    if (!confirm('确定删除这个成就？')) return;
-                    
-                    const index = this.achievements.findIndex(a => a.id === achievementId);
-                    if (index !== -1) {
-                        this.achievements.splice(index, 1);
-                        this.updateAchievements();
-                        this.saveAllData();
-                        this.showMessage('成就已删除', 'success');
-                    }
-                },
-                
-                saveNote() {
-                    if (!this.newNote.title.trim() || !this.newNote.content.trim()) {
-                        this.showMessage('请填写标题和内容', 'error');
-                        return;
-                    }
-                    
-                    const tags = this.newNote.tags
-                        .split(',')
-                        .map(t => t.trim())
-                        .filter(t => t.length > 0);
-                    
-                    const note = {
-                        id: Date.now(),
-                        title: this.newNote.title,
-                        content: this.newNote.content,
-                        tags: tags,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    this.notes.unshift(note);
-                    this.newNote = { title: '', content: '', tags: '' };
-                    this.activeNoteTab = 'all';
-                    this.updateAchievements();
-                    this.saveAllData();
-                    this.showMessage('笔记已保存', 'success');
-                },
-                
-                deleteNote(noteId) {
-                    if (!confirm('确定删除？')) return;
-                    const index = this.notes.findIndex(n => n.id === noteId);
-                    if (index !== -1) {
-                        this.notes.splice(index, 1);
-                        this.updateAchievements();
-                        this.saveAllData();
-                    }
-                },
-                
-                checkLevelUp() {
-                    while (this.playerData.xp >= this.playerData.nextLevelXp) {
-                        this.playerData.level++;
-                        this.playerData.xp -= this.playerData.nextLevelXp;
-                        this.playerData.nextLevelXp = Math.floor(this.playerData.nextLevelXp * 1.5);
-                        this.showMessage(`恭喜升级到 ${this.playerData.level} 级！`, 'success');
+                        this.showMessage('技能已删除', 'success');
                     }
                 },
                 
                 updateAchievements() {
                     this.achievements.forEach(ach => {
                         if (ach.unlocked) return;
-                        
-                        // 根据成就描述智能判断成就类型
-                        const desc = ach.description.toLowerCase();
-                        if (desc.includes('技能') && desc.includes('第一个')) {
-                            // 初学者类型成就
-                            ach.current = this.skills.length > 0 ? 1 : 0;
-                        } else if (desc.includes('技能') && !desc.includes('第一个')) {
-                            // 技能数量类型成就
-                            ach.current = this.skills.length;
-                        } else if (desc.includes('笔记')) {
-                            // 笔记数量类型成就
-                            ach.current = this.notes.length;
-                        } else if (desc.includes('等级') || desc.includes('级')) {
-                            // 等级类型成就
-                            ach.current = this.playerData.level;
+                        switch (ach.id) {
+                            case 1: ach.current = this.skills.length; break;
+                            case 2: ach.current = this.skills.length; break;
+                            case 3: ach.current = this.notes.length; break;
+                            case 4: ach.current = this.playerData.level; break;
                         }
-                        // 其他自定义成就需要手动设置进度
-                        
-                        if (ach.current >= ach.requirement) {
+                        if (ach.current >= ach.requirement && !ach.unlocked) {
                             ach.unlocked = true;
-                            this.playerData.xp += ach.reward;
-                            this.showMessage(`成就解锁: ${ach.name} (+${ach.reward} XP)`, 'success');
-                            this.checkLevelUp();
+                            this.addXp(ach.reward);
+                            this.showMessage('成就解锁: ' + ach.name + '! +' + ach.reward + ' XP', 'success');
                         }
                     });
                 },
                 
-                formatDate(dateStr) {
-                    const date = new Date(dateStr);
-                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                saveAchievement() {
+                    if (!this.newAchievement.name.trim()) { this.showMessage('请输入成就名称', 'error'); return; }
+                    if (this.editingAchievementId) {
+                        const ach = this.achievements.find(a => a.id === this.editingAchievementId);
+                        if (ach) {
+                            ach.name = this.newAchievement.name.trim();
+                            ach.description = this.newAchievement.description.trim();
+                            ach.icon = this.newAchievement.icon;
+                            ach.requirement = this.newAchievement.requirement || 1;
+                            ach.reward = this.newAchievement.reward || 50;
+                            this.showMessage('成就已更新', 'success');
+                        }
+                    } else {
+                        const newAch = {
+                            id: Date.now(),
+                            name: this.newAchievement.name.trim(),
+                            description: this.newAchievement.description.trim(),
+                            icon: this.newAchievement.icon,
+                            requirement: this.newAchievement.requirement || 1,
+                            current: 0,
+                            unlocked: false,
+                            reward: this.newAchievement.reward || 50,
+                            isCustom: true
+                        };
+                        this.achievements.push(newAch);
+                        this.showMessage('成就已创建', 'success');
+                    }
+                    this.cancelNewAchievement();
+                    this.saveAllData();
                 },
                 
-                formatDateShort(dateStr) {
-                    const date = new Date(dateStr);
-                    const now = new Date();
-                    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays === 0) {
-                        return '今天';
-                    } else if (diffDays === 1) {
-                        return '昨天';
-                    } else if (diffDays < 7) {
-                        return `${diffDays}天前`;
-                    } else {
-                        return `${date.getMonth() + 1}-${date.getDate()}`;
+                editAchievement(achId) {
+                    const ach = this.achievements.find(a => a.id === achId);
+                    if (ach) {
+                        this.newAchievement = { name: ach.name, description: ach.description, icon: ach.icon, requirement: ach.requirement, reward: ach.reward, isCustom: true };
+                        this.editingAchievementId = achId;
+                        this.showAchievementForm = true;
                     }
                 },
                 
-                resetData() {
-                    this.playerData = { level: 1, xp: 0, nextLevelXp: 100 };
-                    this.skills = [];
-                    this.notes = [];
-                    // 重置默认成就
-                    this.achievements = this.achievements.filter(a => !a.isCustom);
-                    this.achievements.forEach(a => {
-                        a.current = 0;
-                        a.unlocked = false;
-                    });
-                    this.showAchievementForm = false;
-                    this.cancelNewAchievement();
-                    // 清除筛选
-                    this.clearFilters();
+                deleteAchievement(achId) {
+                    if (!confirm('确定删除这个成就吗？')) return;
+                    const index = this.achievements.findIndex(a => a.id === achId);
+                    if (index !== -1) {
+                        this.achievements.splice(index, 1);
+                        this.saveAllData();
+                        this.showMessage('成就已删除', 'success');
+                    }
                 },
                 
-                // 笔记筛选相关方法
+                cancelNewAchievement() {
+                    this.newAchievement = { name: '', description: '', icon: '🏆', requirement: 1, reward: 50, isCustom: true };
+                    this.editingAchievementId = null;
+                    this.showAchievementForm = false;
+                },
+                
+                async saveNote() {
+                    if (!this.newNote.title.trim()) { this.showMessage('请输入笔记标题', 'error'); return; }
+                    if (!this.newNote.content.trim()) { this.showMessage('请输入笔记内容', 'error'); return; }
+                    const tags = this.newNote.tags ? this.newNote.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+                    const note = {
+                        id: Date.now(),
+                        title: this.newNote.title.trim(),
+                        content: this.newNote.content.trim(),
+                        tags: tags,
+                        createdAt: new Date().toISOString()
+                    };
+                    this.notes.unshift(note);
+                    this.newNote = { title: '', content: '', tags: '' };
+                    this.activeNoteTab = 'all';
+                    this.addXp(15);
+                    this.showMessage('笔记已保存！+15 XP', 'success');
+                },
+                
+                deleteNote(noteId) {
+                    if (!confirm('确定删除这条笔记吗？')) return;
+                    const index = this.notes.findIndex(n => n.id === noteId);
+                    if (index !== -1) {
+                        this.notes.splice(index, 1);
+                        this.updateAchievements();
+                        this.saveAllData();
+                        this.showMessage('笔记已删除', 'success');
+                    }
+                },
+                
+                formatDate(dateStr) {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    return date.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+                },
+                
+                formatDateShort(dateStr) {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+                },
+                
                 toggleTagFilter(tag) {
                     const index = this.noteFilters.selectedTags.indexOf(tag);
                     if (index === -1) {
@@ -1518,19 +2070,161 @@
                 
                 setTagFilter(tag) {
                     this.noteFilters.selectedTags = [tag];
-                },
-                
-                applyFilters() {
-                    // 这个方法在输入搜索时被调用，但实际筛选是通过计算属性自动进行的
-                    // 这里可以添加一些额外的逻辑，比如防抖
+                    this.collapsed.filterExpanded = false;
                 },
                 
                 clearFilters() {
-                    this.noteFilters = {
-                        search: '',
-                        selectedTags: [],
-                        sortBy: 'newest'
-                    };
+                    this.noteFilters = { search: '', selectedTags: [], sortBy: 'newest' };
+                },
+                
+                applyFilters() {},
+                
+                // 知识库方法
+                openKnowledgeBase() {
+                    this.showKnowledgeBase = true;
+                    this.selectedCategory = 'all';
+                    this.kbSearchQuery = '';
+                },
+                
+                closeKnowledgeBase() {
+                    this.showKnowledgeBase = false;
+                    this.selectedCategory = 'all';
+                    this.kbSearchQuery = '';
+                },
+                
+                selectCategory(category) {
+                    this.selectedCategory = category;
+                },
+                
+                getCategoryNotesCount(categoryId) {
+                    return this.kbNotes.filter(note => note.categoryId === categoryId).length;
+                },
+                
+                getUncategorizedCount() {
+                    return this.kbNotes.filter(note => !note.categoryId).length;
+                },
+                
+                getCategoryName(categoryId) {
+                    const category = this.kbCategories.find(c => c.id === categoryId);
+                    return category ? category.name : '未分类';
+                },
+                
+                getCategoryIcon(categoryId) {
+                    const category = this.kbCategories.find(c => c.id === categoryId);
+                    return category ? category.icon : '📋';
+                },
+                
+                editCategory(category) {
+                    this.categoryForm = { name: category.name, icon: category.icon };
+                    this.editingCategoryId = category.id;
+                    this.showCategoryForm = true;
+                },
+                
+                async saveCategoryForm() {
+                    if (!this.categoryForm.name.trim()) { this.showMessage('请输入分类名称', 'error'); return; }
+                    if (this.editingCategoryId) {
+                        const category = this.kbCategories.find(c => c.id === this.editingCategoryId);
+                        if (category) {
+                            category.name = this.categoryForm.name.trim();
+                            category.icon = this.categoryForm.icon;
+                            this.showMessage('分类已更新', 'success');
+                        }
+                    } else {
+                        const newCategory = {
+                            id: Date.now(),
+                            name: this.categoryForm.name.trim(),
+                            icon: this.categoryForm.icon,
+                            createdAt: new Date().toISOString()
+                        };
+                        this.kbCategories.push(newCategory);
+                        this.showMessage('分类已创建', 'success');
+                    }
+                    await this.saveAllData();
+                    this.closeCategoryForm();
+                },
+                
+                closeCategoryForm() {
+                    this.showCategoryForm = false;
+                    this.editingCategoryId = null;
+                    this.categoryForm = { name: '', icon: '📁' };
+                },
+                
+                async deleteCategory(categoryId) {
+                    if (!confirm('确定删除此分类？该分类下的笔记将变为未分类。')) return;
+                    const index = this.kbCategories.findIndex(c => c.id === categoryId);
+                    if (index !== -1) {
+                        this.kbCategories.splice(index, 1);
+                        this.kbNotes.forEach(note => {
+                            if (note.categoryId === categoryId) note.categoryId = null;
+                        });
+                        if (this.selectedCategory && this.selectedCategory.id === categoryId) {
+                            this.selectedCategory = 'all';
+                        }
+                        await this.saveAllData();
+                        this.showMessage('分类已删除', 'success');
+                    }
+                },
+                
+                editKbNote(note) {
+                    this.noteForm = { title: note.title, content: note.content, categoryId: note.categoryId };
+                    this.editingNoteId = note.id;
+                    this.showNoteEditor = true;
+                },
+                
+                async saveNoteForm() {
+                    if (!this.noteForm.title.trim()) { this.showMessage('请输入笔记标题', 'error'); return; }
+                    if (!this.noteForm.content.trim()) { this.showMessage('请输入笔记内容', 'error'); return; }
+                    if (this.editingNoteId) {
+                        const note = this.kbNotes.find(n => n.id === this.editingNoteId);
+                        if (note) {
+                            note.title = this.noteForm.title.trim();
+                            note.content = this.noteForm.content.trim();
+                            note.categoryId = this.noteForm.categoryId;
+                            note.updatedAt = new Date().toISOString();
+                            this.showMessage('笔记已更新', 'success');
+                        }
+                    } else {
+                        const newNote = {
+                            id: Date.now(),
+                            title: this.noteForm.title.trim(),
+                            content: this.noteForm.content.trim(),
+                            categoryId: this.noteForm.categoryId,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        };
+                        this.kbNotes.unshift(newNote);
+                        this.showMessage('笔记已创建', 'success');
+                    }
+                    await this.saveAllData();
+                    this.closeNoteEditor();
+                },
+                
+                closeNoteEditor() {
+                    this.showNoteEditor = false;
+                    this.editingNoteId = null;
+                    this.noteForm = { title: '', content: '', categoryId: null };
+                },
+                
+                async deleteKbNote(noteId) {
+                    if (!confirm('确定删除这篇笔记？')) return;
+                    const index = this.kbNotes.findIndex(n => n.id === noteId);
+                    if (index !== -1) {
+                        this.kbNotes.splice(index, 1);
+                        await this.saveAllData();
+                        this.showMessage('笔记已删除', 'success');
+                    }
+                },
+                
+                openNoteDetail(note) {
+                    this.viewingNote = note;
+                },
+                
+                closeNoteDetail() {
+                    this.viewingNote = null;
+                },
+                
+                getPreviewText(content) {
+                    return content.length > 100 ? content.substring(0, 100) + '...' : content;
                 }
             },
             
@@ -1553,6 +2247,7 @@
                         } else if (event === 'SIGNED_OUT') {
                             this.isLoggedIn = false;
                             this.userId = null;
+                            this.showKnowledgeBase = false;
                             this.resetData();
                         }
                     });
