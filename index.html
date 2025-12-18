@@ -2499,76 +2499,108 @@
                     this.kbNotes = [];
                 },
                 
-               async saveAllData() {
-    if (!this.userId) return;
-    this.saving = true;
-    
-    try {
-        await Promise.all([
-            // 玩家数据
-            sb.from('players').upsert(
-                { user_id: this.userId, data: this.playerData },
-                { onConflict: 'user_id' }
-            ),
-            
-            // 技能数据
-            ...this.skills.map(skill => 
-                sb.from('skills').upsert(
-                    { user_id: this.userId, data: skill },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            ),
-            
-            // 成就数据
-            ...this.achievements.map(ach => 
-                sb.from('achievements').upsert(
-                    { user_id: this.userId, data: ach },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            ),
-            
-            // 笔记数据
-            ...this.notes.map(note => 
-                sb.from('notes').upsert(
-                    { user_id: this.userId, data: note },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            ),
-            
-            // 读书笔记
-            ...this.books.map(book => 
-                sb.from('books').upsert(
-                    { user_id: this.userId, data: book },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            ),
-            
-            // 知识库分类
-            ...this.kbCategories.map(cat => 
-                sb.from('kb_categories').upsert(
-                    { user_id: this.userId, data: cat },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            ),
-            
-            // 知识库笔记
-            ...this.kbNotes.map(note => 
-                sb.from('kb_notes').upsert(
-                    { user_id: this.userId, data: note },
-                    { onConflict: 'user_id, (data->>\'id\')' }
-                )
-            )
-        ]);
-        
-        this.showMessage('✅ 数据已保存！', 'success');
-        
-    } catch (error) {
-        console.error('保存失败:', error);
-        this.showMessage('❌ 保存失败: ' + error.message, 'error');
-    } finally {
-        this.saving = false;
-    }
-},
+                async saveAllData() {
+                    if (!this.userId) return;
+                    this.saving = true;
+                    
+                    try {
+                        // 1. 先删除该用户的所有旧数据（players 表除外）
+                        await Promise.all([
+                            sb.from('skills').delete().eq('user_id', this.userId),
+                            sb.from('achievements').delete().eq('user_id', this.userId),
+                            sb.from('notes').delete().eq('user_id', this.userId),
+                            sb.from('books').delete().eq('user_id', this.userId),
+                            sb.from('kb_categories').delete().eq('user_id', this.userId),
+                            sb.from('kb_notes').delete().eq('user_id', this.userId)
+                        ]);
+                        
+                        // 2. 再插入新数据
+                        const insertPromises = [
+                            // 玩家数据（使用 upsert，一个用户只有一条记录）
+                            sb.from('players').upsert({ 
+                                user_id: this.userId, 
+                                data: this.playerData 
+                            })
+                        ];
+                        
+                        // 只有当数组不为空时才插入
+                        if (this.skills.length > 0) {
+                            insertPromises.push(
+                                sb.from('skills').insert(
+                                    this.skills.map(skill => ({ 
+                                        user_id: this.userId, 
+                                        data: skill 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        if (this.achievements.length > 0) {
+                            insertPromises.push(
+                                sb.from('achievements').insert(
+                                    this.achievements.map(ach => ({ 
+                                        user_id: this.userId, 
+                                        data: ach 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        if (this.notes.length > 0) {
+                            insertPromises.push(
+                                sb.from('notes').insert(
+                                    this.notes.map(note => ({ 
+                                        user_id: this.userId, 
+                                        data: note 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        if (this.books.length > 0) {
+                            insertPromises.push(
+                                sb.from('books').insert(
+                                    this.books.map(book => ({ 
+                                        user_id: this.userId, 
+                                        data: book 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        if (this.kbCategories.length > 0) {
+                            insertPromises.push(
+                                sb.from('kb_categories').insert(
+                                    this.kbCategories.map(cat => ({ 
+                                        user_id: this.userId, 
+                                        data: cat 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        if (this.kbNotes.length > 0) {
+                            insertPromises.push(
+                                sb.from('kb_notes').insert(
+                                    this.kbNotes.map(note => ({ 
+                                        user_id: this.userId, 
+                                        data: note 
+                                    }))
+                                )
+                            );
+                        }
+                        
+                        await Promise.all(insertPromises);
+                        
+                        this.showMessage('✅ 数据已保存！', 'success');
+                        
+                    } catch (error) {
+                        console.error('保存失败:', error);
+                        this.showMessage('❌ 保存失败: ' + error.message, 'error');
+                    } finally {
+                        this.saving = false;
+                    }
+                },
                 
                 addXp(amount) {
                     this.playerData.xp += amount;
@@ -3063,4 +3095,3 @@
     </script>
 </body>
 </html>
-
