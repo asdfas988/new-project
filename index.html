@@ -2499,55 +2499,64 @@
                     this.kbNotes = [];
                 },
                 
-                async saveAllData() {
+               async saveAllData() {
     if (!this.userId) return;
     this.saving = true;
     
     try {
-        // 并行执行所有 upsert 操作
         await Promise.all([
-            // 玩家数据（总是保存）
-            sb.from('players').upsert({ 
-                user_id: this.userId, 
-                data: this.playerData 
-            }),
+            // 玩家数据
+            sb.from('players').upsert(
+                { user_id: this.userId, data: this.playerData },
+                { onConflict: 'user_id' }
+            ),
             
-            // 其他数据（批量 upsert）
-            sb.from('skills').upsert(
-                this.skills.map(skill => ({ 
-                    user_id: this.userId, 
-                    data: skill 
-                }))
+            // 技能数据
+            ...this.skills.map(skill => 
+                sb.from('skills').upsert(
+                    { user_id: this.userId, data: skill },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             ),
-            sb.from('achievements').upsert(
-                this.achievements.map(ach => ({ 
-                    user_id: this.userId, 
-                    data: ach 
-                }))
+            
+            // 成就数据
+            ...this.achievements.map(ach => 
+                sb.from('achievements').upsert(
+                    { user_id: this.userId, data: ach },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             ),
-            sb.from('notes').upsert(
-                this.notes.map(note => ({ 
-                    user_id: this.userId, 
-                    data: note 
-                }))
+            
+            // 笔记数据
+            ...this.notes.map(note => 
+                sb.from('notes').upsert(
+                    { user_id: this.userId, data: note },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             ),
-            sb.from('books').upsert(
-                this.books.map(book => ({ 
-                    user_id: this.userId, 
-                    data: book 
-                }))
+            
+            // 读书笔记
+            ...this.books.map(book => 
+                sb.from('books').upsert(
+                    { user_id: this.userId, data: book },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             ),
-            sb.from('kb_categories').upsert(
-                this.kbCategories.map(cat => ({ 
-                    user_id: this.userId, 
-                    data: cat 
-                }))
+            
+            // 知识库分类
+            ...this.kbCategories.map(cat => 
+                sb.from('kb_categories').upsert(
+                    { user_id: this.userId, data: cat },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             ),
-            sb.from('kb_notes').upsert(
-                this.kbNotes.map(note => ({ 
-                    user_id: this.userId, 
-                    data: note 
-                }))
+            
+            // 知识库笔记
+            ...this.kbNotes.map(note => 
+                sb.from('kb_notes').upsert(
+                    { user_id: this.userId, data: note },
+                    { onConflict: 'user_id, (data->>\'id\')' }
+                )
             )
         ]);
         
