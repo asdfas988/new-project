@@ -2044,7 +2044,7 @@
         </div>
 
         <!-- 新建/编辑分类弹窗 -->
-        <div v-if="showCategoryForm" class="kb-form-overlay" @click.self="closeCategoryForm">
+        <div v-if="isLoggedIn && showCategoryForm" class="kb-form-overlay" @click.self="closeCategoryForm">
             <div class="kb-form-modal">
                 <div class="kb-form-header">
                     <h2>{{ editingCategoryId ? '编辑分类' : '新建分类' }}</h2>
@@ -2083,7 +2083,7 @@
         </div>
 
         <!-- 新建/编辑笔记弹窗 -->
-        <div v-if="showNoteEditor" class="kb-form-overlay" @click.self="closeNoteEditor">
+        <div v-if="isLoggedIn && showNoteEditor" class="kb-form-overlay" @click.self="closeNoteEditor">
             <div class="kb-form-modal kb-editor-modal">
                 <div class="kb-form-header">
                     <h2>{{ editingNoteId ? '编辑笔记' : '新建笔记' }}</h2>
@@ -2129,7 +2129,7 @@
         </div>
 
         <!-- 笔记详情弹窗 -->
-        <div v-if="viewingNote" class="kb-form-overlay" @click.self="closeNoteDetail">
+        <div v-if="isLoggedIn && viewingNote" class="kb-form-overlay" @click.self="closeNoteDetail">
             <div class="kb-form-modal kb-detail-modal">
                 <div class="kb-form-header">
                     <h2>{{ viewingNote.title }}</h2>
@@ -2179,7 +2179,7 @@
                     loading: false,
                     syncing: false,
                     saving: false,
-                    dataLoaded: false,  // 新增：数据加载完成标志，防止数据丢失
+                    dataLoaded: false,
                     message: '',
                     messageType: 'success',
                     collapsed: { 
@@ -2434,19 +2434,16 @@
                 async loadAllData() {
                     if (!this.userId) return;
                     this.syncing = true;
-                    this.dataLoaded = false;  // 开始加载时设为false
+                    this.dataLoaded = false;
                     try {
                         const { data: pData } = await sb.from('players').select('*').eq('user_id', this.userId).single();
                         if (pData && pData.data) this.playerData = pData.data;
                         
                         const { data: sData } = await sb.from('skills').select('*').eq('user_id', this.userId);
                         if (sData) {
-                            // 使用Map去重，以id为key
                             const skillMap = new Map();
                             sData.forEach(s => {
-                                if (s.data && s.data.id) {
-                                    skillMap.set(s.data.id, s.data);
-                                }
+                                if (s.data && s.data.id) skillMap.set(s.data.id, s.data);
                             });
                             this.skills = Array.from(skillMap.values());
                         }
@@ -2461,7 +2458,6 @@
                                 { id: 4, name: '成长之路', icon: '🚀', description: '达到10级', requirement: 10, current: 0, unlocked: false, reward: 500, isCustom: false },
                             ];
                             const customAchievements = loadedAchievements.filter(a => a.isCustom);
-                            // 自定义成就也去重
                             const customMap = new Map();
                             customAchievements.forEach(a => {
                                 if (a && a.id) customMap.set(a.id, a);
@@ -2475,7 +2471,6 @@
                         
                         const { data: nData } = await sb.from('notes').select('*').eq('user_id', this.userId);
                         if (nData) {
-                            // 笔记去重
                             const noteMap = new Map();
                             nData.forEach(n => {
                                 if (n.data && n.data.id) noteMap.set(n.data.id, n.data);
@@ -2484,10 +2479,8 @@
                             this.notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                         }
                         
-                        // 加载读书笔记数据
                         const { data: bData } = await sb.from('books').select('*').eq('user_id', this.userId);
                         if (bData) {
-                            // 读书笔记去重
                             const bookMap = new Map();
                             bData.forEach(b => {
                                 if (b.data && b.data.id) bookMap.set(b.data.id, b.data);
@@ -2498,7 +2491,6 @@
                         
                         const { data: kbCatData } = await sb.from('kb_categories').select('*').eq('user_id', this.userId);
                         if (kbCatData) {
-                            // 分类去重
                             const catMap = new Map();
                             kbCatData.forEach(c => {
                                 if (c.data && c.data.id) catMap.set(c.data.id, c.data);
@@ -2508,7 +2500,6 @@
                         
                         const { data: kbNotesData } = await sb.from('kb_notes').select('*').eq('user_id', this.userId);
                         if (kbNotesData) {
-                            // 知识库笔记去重
                             const kbNoteMap = new Map();
                             kbNotesData.forEach(n => {
                                 if (n.data && n.data.id) kbNoteMap.set(n.data.id, n.data);
@@ -2516,7 +2507,7 @@
                             this.kbNotes = Array.from(kbNoteMap.values());
                         }
                         
-                        this.dataLoaded = true;  // 数据加载完成
+                        this.dataLoaded = true;
                         this.updateAchievements();
                         this.showMessage('数据已加载', 'success');
                     } catch (error) {
@@ -2528,7 +2519,7 @@
                 },
                 
                 resetData() {
-                    this.dataLoaded = false;  // 重置加载标志
+                    this.dataLoaded = false;
                     this.playerData = { level: 1, xp: 0, nextLevelXp: 100 };
                     this.skills = [];
                     this.achievements = [
@@ -2545,25 +2536,16 @@
                 
                 async saveAllData() {
                     if (!this.userId) return;
-                    
-                    // 🔒 关键保护：如果数据尚未加载完成，禁止保存（防止清空数据库）
                     if (!this.dataLoaded) {
-                        console.warn('数据尚未加载完成，跳过保存操作');
+                        console.warn('数据尚未加载完成，跳过保存');
                         return;
                     }
-                    
-                    // 防止重复保存
-                    if (this.saving) {
-                        console.warn('正在保存中，跳过重复保存');
-                        return;
-                    }
-                    
+                    if (this.saving) return;
                     this.saving = true;
                     
                     try {
                         // 1. 先删除该用户的所有旧数据（players 表除外）
-                        // 使用顺序执行而非并行，确保删除完成后再插入
-                        const deleteResults = await Promise.all([
+                        await Promise.all([
                             sb.from('skills').delete().eq('user_id', this.userId),
                             sb.from('achievements').delete().eq('user_id', this.userId),
                             sb.from('notes').delete().eq('user_id', this.userId),
@@ -2571,13 +2553,6 @@
                             sb.from('kb_categories').delete().eq('user_id', this.userId),
                             sb.from('kb_notes').delete().eq('user_id', this.userId)
                         ]);
-                        
-                        // 检查删除是否有错误
-                        const deleteErrors = deleteResults.filter(r => r.error);
-                        if (deleteErrors.length > 0) {
-                            console.error('删除数据时出错:', deleteErrors);
-                            throw new Error('删除旧数据失败');
-                        }
                         
                         // 2. 再插入新数据
                         const insertPromises = [
@@ -2655,14 +2630,7 @@
                             );
                         }
                         
-                        const insertResults = await Promise.all(insertPromises);
-                        
-                        // 检查插入是否有错误
-                        const insertErrors = insertResults.filter(r => r.error);
-                        if (insertErrors.length > 0) {
-                            console.error('插入数据时出错:', insertErrors);
-                            throw new Error('保存新数据失败');
-                        }
+                        await Promise.all(insertPromises);
                         
                         this.showMessage('✅ 数据已保存！', 'success');
                         
@@ -2689,29 +2657,16 @@
                 addNewSkill() {
                     const name = prompt('请输入技能名称:');
                     if (!name || !name.trim()) return;
-                    
-                    // 检查是否已存在同名技能
-                    const existingSkill = this.skills.find(s => s.name.toLowerCase() === name.trim().toLowerCase());
-                    if (existingSkill) {
-                        this.showMessage('该技能已存在！', 'error');
-                        return;
-                    }
-                    
                     const category = prompt('请输入技能分类 (如: 编程、语言、运动):') || '通用';
                     const icons = ['💻', '📚', '🎨', '🎵', '🏃', '🍳', '📷', '✍️', '🎯', '🧠'];
-                    
-                    // 使用更唯一的ID：时间戳 + 随机数
-                    const uniqueId = Date.now() + Math.floor(Math.random() * 10000);
-                    
                     const newSkill = {
-                        id: uniqueId,
+                        id: Date.now(),
                         name: name.trim(),
                         category: category.trim(),
                         icon: icons[Math.floor(Math.random() * icons.length)],
                         level: 1,
                         xp: 0,
-                        maxXp: 50,
-                        createdAt: new Date().toISOString()
+                        maxXp: 50
                     };
                     this.skills.push(newSkill);
                     this.addXp(10);
@@ -3159,13 +3114,12 @@
                         await this.loadAllData();
                     }
                     
-                    sb.auth.onAuthStateChange(async (event, session) => {
+                    sb.auth.onAuthStateChange((event, session) => {
                         if (event === 'SIGNED_IN' && session) {
                             this.isLoggedIn = true;
                             this.userId = session.user.id;
                             this.userEmail = session.user.email;
-                            this.dataLoaded = false;  // 重置加载标志
-                            await this.loadAllData();
+                            this.loadAllData();
                         } else if (event === 'SIGNED_OUT') {
                             this.isLoggedIn = false;
                             this.userId = null;
