@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间</title>
+    <title>成长手账 - 目标进化版</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -162,20 +162,20 @@
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
-                <h2 style="justify-content: center;">个人空间</h2>
-                <p style="margin-bottom: 20px; color: #7a6a62;">记录 </p>
+                <h2 style="justify-content: center;">成长手账</h2>
+                <p style="margin-bottom: 20px; color: #7a6a62;">记录 · 交易 · 易学 · 进化</p>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
-                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入 }}</button>
+                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
-                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在后台已创建该用户</p>
+                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在 Supabase 后台已创建该用户</p>
             </div>
         </div>
 
         <!-- 主界面 -->
         <div v-else class="container">
             <div class="header">
-                <h1>👋 {{ userEmail.split('@')[0] }} 的空间</h1>
+                <h1>👋 {{ userEmail.split('@')[0] }} 的修身空间</h1>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}</button>
                     <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
