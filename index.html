@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 量化目标版</title>
+    <title>个人空间</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -78,7 +78,14 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* ========== 目标管理 (量化升级版) ========== */
+        /* ========== 目标管理 (双模式版) ========== */
+        .goal-mode-switch { display: flex; gap: 10px; margin-bottom: 15px; }
+        .mode-btn { 
+            flex: 1; padding: 8px; text-align: center; border: 2px solid #e0c9b8; border-radius: 10px; cursor: pointer; font-weight: bold; color: #999;
+            background: #fff; transition: all 0.2s;
+        }
+        .mode-btn.active { border-color: #ff9a8b; color: #ff6b6b; background: #fff0eb; }
+
         .goal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .goal-item {
             background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 20px;
@@ -86,8 +93,8 @@
         }
         .goal-item.completed { background: #e8f5e9; border-color: #a3de83; box-shadow: inset 0 0 10px rgba(163, 222, 131, 0.2); }
         
-        .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; }
-        .goal-meta { font-size: 0.9em; color: #7a6a62; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; }
+        .goal-desc { font-size: 0.9em; color: #7a6a62; margin-bottom: 8px; }
         
         .goal-progress-bg { height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; position: relative; margin: 10px 0; }
         .goal-progress-fill { height: 100%; transition: width 0.5s, background-color 0.3s; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; }
@@ -155,20 +162,20 @@
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
-                <h2 style="justify-content: center;">成长手账</h2>
-                <p style="margin-bottom: 20px; color: #7a6a62;">记录 · 交易 · 易学 · 进化</p>
+                <h2 style="justify-content: center;">个人空间</h2>
+                <p style="margin-bottom: 20px; color: #7a6a62;">记录 </p>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
-                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
+                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入 }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
-                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在 Supabase 后台已创建该用户</p>
+                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在后台已创建该用户</p>
             </div>
         </div>
 
         <!-- 主界面 -->
         <div v-else class="container">
             <div class="header">
-                <h1>👋 {{ userEmail.split('@')[0] }} 的修身空间</h1>
+                <h1>👋 {{ userEmail.split('@')[0] }} 的空间</h1>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}</button>
                     <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
@@ -187,49 +194,82 @@
                     </div>
                 </div>
 
-                <!-- 模块2：目标管理 (量化升级版) -->
+                <!-- 模块2：目标管理 (量化 + 定性 双模式) -->
                 <div class="card">
                     <h2>🎯 阶段目标 (OKR) <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.goals">
                         <!-- 添加目标 -->
                         <div style="background: #fffaf5; padding: 15px; border: 2px dashed #e0c9b8; border-radius: 12px; margin-bottom: 20px;">
-                            <h3 style="font-size: 1em; margin-bottom: 10px;">🚩 新建立个Flag</h3>
-                            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center;">
-                                <input v-model="newGoal.title" placeholder="目标内容 (如: 赚50万)" class="note-input" style="margin: 0;">
-                                <input v-model.number="newGoal.target" type="number" placeholder="目标数" class="note-input" style="margin: 0;">
-                                <input v-model="newGoal.unit" placeholder="单位 (元/本)" class="note-input" style="margin: 0;">
-                                <button class="btn-sm" @click="addGoal" style="height: 42px;">添加</button>
+                            <div class="goal-mode-switch">
+                                <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值进度</div>
+                                <div class="mode-btn" :class="{active: newGoal.mode === 'text'}" @click="newGoal.mode = 'text'">🚩 关键成果</div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <input v-model="newGoal.title" placeholder="目标内容 (如: 赚50万 / 拿到驾照)" class="note-input" style="flex: 2; margin: 0;">
+                                
+                                <!-- 数值模式输入 -->
+                                <template v-if="newGoal.mode === 'numeric'">
+                                    <input v-model.number="newGoal.target" type="number" placeholder="目标数" class="note-input" style="flex: 1; margin: 0;">
+                                    <input v-model="newGoal.unit" placeholder="单位 (元/本)" class="note-input" style="flex: 1; margin: 0;">
+                                </template>
+                                
+                                <!-- 定性模式输入 -->
+                                <template v-else>
+                                    <input disabled placeholder="手动拖拽进度" class="note-input" style="flex: 2; margin: 0; background: #eee; color: #999; cursor: not-allowed;">
+                                </template>
+
+                                <button class="btn-sm" @click="addGoal" style="height: 42px; width: 80px;">添加</button>
                             </div>
                         </div>
 
                         <!-- 目标列表 -->
                         <div class="goal-list">
                             <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: calculateProgress(goal) >= 100}">
+                                
+                                <!-- 标题行 -->
                                 <div class="goal-header">
-                                    <span class="goal-title" :class="{done: calculateProgress(goal) >= 100}">{{ goal.title }}</span>
+                                    <span :style="{textDecoration: calculateProgress(goal) >= 100 ? 'line-through' : 'none', color: calculateProgress(goal) >= 100 ? '#aaa' : 'inherit'}">
+                                        {{ goal.title }}
+                                    </span>
                                     <span :style="{color: getProgressColor(calculateProgress(goal))}">{{ calculateProgress(goal) }}%</span>
                                 </div>
                                 
-                                <div class="goal-meta">
+                                <!-- 数值模式显示 -->
+                                <div v-if="goal.mode === 'numeric' || !goal.mode" class="goal-meta">
                                     <span>🎯 目标: {{ goal.target }} {{ goal.unit }}</span>
                                     <span>🚀 当前: {{ goal.current }} {{ goal.unit }}</span>
                                 </div>
+                                <!-- 定性模式显示 -->
+                                <div v-else class="goal-desc">
+                                    关键成果：{{ goal.targetText || '完成任务' }}
+                                </div>
 
+                                <!-- 进度条 -->
                                 <div class="goal-progress-bg">
-                                    <div class="goal-progress-fill" :class="getProgressClass(calculateProgress(goal))" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}">
-                                        <span class="goal-progress-text" v-if="calculateProgress(goal) > 20">{{ calculateProgress(goal) }}%</span>
-                                    </div>
+                                    <div class="goal-progress-fill" :class="getProgressClass(calculateProgress(goal))" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}"></div>
                                 </div>
                                 
+                                <!-- 进度更新操作 -->
                                 <div class="goal-input-group">
-                                    <label style="font-size: 0.8em; color: #999;">更新进度:</label>
-                                    <input type="number" v-model.number="goal.current" class="goal-input-small" @change="saveAll" placeholder="输入当前值">
-                                    <span style="font-size: 0.8em;">{{ goal.unit }}</span>
+                                    <label style="font-size: 0.8em; color: #999;">进度:</label>
+                                    
+                                    <!-- 数值模式：输入当前值 -->
+                                    <template v-if="goal.mode === 'numeric' || !goal.mode">
+                                        <input type="number" v-model.number="goal.current" class="goal-input-small" @change="saveAll">
+                                        <span style="font-size: 0.8em;">{{ goal.unit }}</span>
+                                    </template>
+                                    
+                                    <!-- 定性模式：滑块 -->
+                                    <template v-else>
+                                        <input type="range" v-model.number="goal.current" min="0" max="100" style="flex: 1;" @change="saveAll">
+                                    </template>
+
                                     <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="margin-left: auto;">✕</button>
                                 </div>
                                 
                                 <div v-if="calculateProgress(goal) >= 100" style="text-align: center; margin-top: 10px; color: #a3de83; font-weight: bold; border-top: 1px dashed #a3de83; padding-top: 5px;">
-                                    🎉 目标达成！你真棒！
+                                    🎉 目标达成！
                                 </div>
                             </div>
                         </div>
@@ -481,7 +521,7 @@
                     collapsed: { goals: false, stats: false, skills: false, achievements: true, reviews: false, books: true, cases: false },
                     playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [] },
                     
-                    newGoal: { title: '', target: null, current: 0, unit: '' },
+                    newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric', targetText: '' },
                     newSkillName: '',
                     
                     skills: [], achievements: [
@@ -506,7 +546,6 @@
                 xpPercentage() { return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100); },
                 filteredNotes() {
                     let res = this.notes.filter(n => {
-                        // 逻辑修正：如果没有类型，或者是当前选中的类型
                         if (!n.type && this.activeReviewTab === 'daily') return true; 
                         if (n.type === this.activeReviewTab) return true;
                         return false;
@@ -527,6 +566,7 @@
                 
                 // Visualization Helpers
                 calculateProgress(goal) {
+                    if (goal.mode === 'text') return goal.current || 0; // 手动进度
                     if (!goal.target || goal.target === 0) return 0;
                     return Math.round((goal.current / goal.target) * 100);
                 },
@@ -589,23 +629,31 @@
                 },
                 async syncData() { await this.saveAll(); this.showMessage('同步成功！'); },
 
-                // OKR
+                // OKR (Updated)
                 addGoal() { 
                     if(!this.newGoal.title) return; 
                     if(!this.playerData.goals) this.playerData.goals=[];
-                    // 确保是数字
-                    this.playerData.goals.push({
+                    
+                    const goal = {
                         title: this.newGoal.title, 
-                        target: parseFloat(this.newGoal.target) || 100, 
+                        mode: this.newGoal.mode,
                         current: 0, 
                         unit: this.newGoal.unit || ''
-                    });
-                    this.newGoal = { title: '', target: null, current: 0, unit: '' };
+                    };
+
+                    if (this.newGoal.mode === 'numeric') {
+                        goal.target = parseFloat(this.newGoal.target) || 100;
+                    } else {
+                        goal.targetText = this.newGoal.targetText || '完成';
+                    }
+
+                    this.playerData.goals.push(goal);
+                    this.newGoal = { title: '', target: null, current: 0, unit: '', mode: 'numeric' };
                     this.saveAll(); 
                 },
                 deleteGoal(i) { if(confirm('删除?')) { this.playerData.goals.splice(i,1); this.saveAll(); } },
 
-                // XP & Skills (Inline)
+                // XP & Skills
                 addXp(amount) { this.playerData.xp+=amount; if(this.playerData.xp>=this.playerData.nextLevelXp) { this.playerData.xp-=this.playerData.nextLevelXp; this.playerData.level++; this.showMessage('升级了!'); } },
                 addNewSkillInline() { if(this.newSkillName) { this.skills.push({id:Date.now(), name:this.newSkillName, icon:'✨', level:1, xp:0, maxXp:50}); this.newSkillName=''; this.addXp(10); this.saveAll(); } },
                 practiceSkill(id) { const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=s.maxXp){ s.xp=0; s.level++; s.maxXp=Math.floor(s.maxXp*1.5); } this.addXp(5); this.saveAll(); } },
@@ -628,7 +676,7 @@
                 },
                 deleteNote(id) { if(confirm('删除?')) { this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
 
-                // Cases (Images)
+                // Cases
                 handleImageUpload(e) { const file = e.target.files[0]; if(!file)return; const reader = new FileReader(); reader.onload = (evt) => { this.newCase.image = evt.target.result; }; reader.readAsDataURL(file); },
                 saveCase() { if(!this.newCase.title) return; this.cases.unshift({ id: Date.now(), type: 'case', createdAt: new Date().toISOString(), ...this.newCase }); this.newCase = { title: '', content: '', image: null }; this.showCaseForm = false; this.addXp(30); this.saveAll(); },
 
