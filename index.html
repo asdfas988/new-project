@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 终极进化版</title>
+    <title>成长手账 - 完美形态</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -78,42 +78,46 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* ========== 目标管理 (OKR) 优化版 ========== */
-        .goal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        /* ========== 目标管理 (独立板块) ========== */
+        .goal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .goal-item {
-            background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px;
-            transition: all 0.3s;
+            background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 20px;
+            transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .goal-item.completed { background: #e8f5e9; border-color: #a3de83; }
+        .goal-item.completed { background: #e8f5e9; border-color: #a3de83; box-shadow: inset 0 0 10px rgba(163, 222, 131, 0.2); }
         
-        .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; }
+        .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; font-size: 1.1em; }
         .goal-title.done { text-decoration: line-through; color: #aaa; }
         
-        .goal-progress-bg { height: 12px; background: #eee; border-radius: 6px; margin: 10px 0; overflow: hidden; border: 1px solid #ddd; }
-        .goal-progress-fill { height: 100%; transition: width 0.3s, background-color 0.3s; }
+        .goal-progress-container { margin-bottom: 10px; }
+        .goal-progress-bg { height: 14px; background: #eee; border-radius: 7px; overflow: hidden; border: 1px solid #ddd; position: relative; }
+        .goal-progress-fill { height: 100%; transition: width 0.3s, background-color 0.3s; border-radius: 7px; }
         
-        /* 进度条颜色类 */
+        /* 进度条颜色 */
         .p-low { background: #ff6b6b; }
         .p-mid { background: #ffcc00; }
         .p-high { background: #a3de83; }
 
         /* ========== 游戏化核心 ========== */
-        .level-display { font-size: 3.5em; font-weight: 800; text-align: center; color: #ff6b6b; text-shadow: 3px 3px 0px #ffd6cc; margin: 10px 0; }
-        .xp-progress { height: 20px; background: #ffe8d6; border-radius: 10px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
+        .level-display { font-size: 4em; font-weight: 800; text-align: center; color: #ff6b6b; text-shadow: 3px 3px 0px #ffd6cc; margin: 10px 0; }
+        .xp-progress { height: 24px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
         
+        /* 独立排版的技能条 */
         .skill-item {
-            padding: 12px; background: #fffaf5; border-radius: 15px; margin: 10px 0;
+            padding: 15px; background: #fffaf5; border-radius: 15px; margin: 15px 0;
             border: 2px solid #e0c9b8; display: flex; justify-content: space-between; align-items: center;
         }
-        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+        /* 独立排版的成就网格 */
+        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
         .achievement-card {
-            background: #fffefc; border-radius: 15px; padding: 15px; text-align: center;
+            background: #fffefc; border-radius: 15px; padding: 20px; text-align: center;
             box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #5a4a42;
         }
         .achievement-card.locked { opacity: 0.6; filter: grayscale(0.8); }
+        .achievement-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
 
-        /* ========== 复盘系统 (含股票) ========== */
+        /* ========== 复盘系统 ========== */
         .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0c9b8; padding-bottom: 10px; overflow-x: auto; }
         .review-tab {
             padding: 8px 18px; border: 2px solid #e0c9b8; background: #fffaf5; border-radius: 15px 15px 0 0;
@@ -126,8 +130,14 @@
         .bg-red { background: #e53935; }
         .bg-green { background: #43a047; }
         
-        .note-card { background: #fffaf5; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; position: relative; }
-        .note-type-badge { position: absolute; top: 15px; right: 15px; font-size: 0.8em; color: #ff6b6b; font-weight: bold; border: 1px solid #ff6b6b; padding: 2px 6px; border-radius: 6px; }
+        .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; position: relative; }
+        
+        /* 类型切换下拉框 (新功能) */
+        .type-switcher {
+            position: absolute; top: 15px; right: 15px;
+            padding: 4px; border-radius: 6px; border: 1px solid #e0c9b8; background: white;
+            font-size: 0.8em; color: #5a4a42; cursor: pointer;
+        }
 
         /* ========== 易学命例 ========== */
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
@@ -175,19 +185,19 @@
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
                 <h2 style="justify-content: center;">成长手账</h2>
-                <p style="margin-bottom: 20px; color: #7a6a62;">记录 </p>
+                <p style="margin-bottom: 20px; color: #7a6a62;">记录 · 交易 · 易学 · 进化</p>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
-                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入' }}</button>
+                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
-                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在后台已创建该用户</p>
+                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在 Supabase 后台已创建该用户</p>
             </div>
         </div>
 
         <!-- 主界面 -->
         <div v-else class="container">
             <div class="header">
-                <h1>👋 {{ userEmail.split('@')[0] }} 的个人空间</h1>
+                <h1>👋 {{ userEmail.split('@')[0] }} 的修身空间</h1>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中' : '🔄 同步数据' }}</button>
                     <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
@@ -196,99 +206,102 @@
             </div>
 
             <div class="grid">
-                <!-- 模块：状态与目标 (优化版) -->
+                <!-- 模块1：状态 (Level & XP) -->
                 <div class="card">
-                    <h2>🎯 目标与状态 <button class="collapse-btn" @click="collapsed.stats = !collapsed.stats">{{ collapsed.stats ? '展开' : '收起' }}</button></h2>
+                    <h2>📊 角色状态 <button class="collapse-btn" @click="collapsed.stats = !collapsed.stats">{{ collapsed.stats ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.stats">
-                        <div style="display: flex; flex-wrap: wrap; gap: 30px;">
-                            <!-- 等级展示 -->
-                            <div style="flex: 1; min-width: 250px; text-align: center;">
-                                <div class="level-display">Lv.{{ playerData.level }}</div>
-                                <div class="xp-progress"><div class="xp-fill" :style="{width: xpPercentage + '%'}"></div></div>
-                                <div style="font-weight: bold; color: #7a6a62;">{{ playerData.xp }} / {{ playerData.nextLevelXp }} XP</div>
-                            </div>
-                            <!-- 目标管理 (可视化升级) -->
-                            <div style="flex: 2; min-width: 300px;">
-                                <h3 style="margin-bottom: 15px;">🚩 阶段目标 (OKR)</h3>
-                                
-                                <!-- 统一的添加目标交互 -->
-                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                                    <input v-model="newGoal.title" placeholder="设定一个Flag (如: 资产翻倍)..." class="note-input" style="margin-bottom: 0;">
-                                    <button class="btn-sm" @click="addGoal" style="width: 80px;">立Flag</button>
-                                </div>
-
-                                <div class="goal-list">
-                                    <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: goal.progress == 100}">
-                                        <div class="goal-header">
-                                            <span class="goal-title" :class="{done: goal.progress == 100}">
-                                                {{ goal.title }}
-                                                <span v-if="goal.progress == 100" style="font-size:0.8em; margin-left:5px;">🎉 已达成</span>
-                                            </span>
-                                            <span :style="{color: getProgressColor(goal.progress)}">{{ goal.progress }}%</span>
-                                        </div>
-                                        <div class="goal-progress-bg">
-                                            <div class="goal-progress-fill" :class="getProgressClass(goal.progress)" :style="{width: goal.progress + '%'}"></div>
-                                        </div>
-                                        <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                                            <input type="range" v-model="goal.progress" min="0" max="100" style="flex: 1;">
-                                            <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="padding: 2px 8px; font-size: 0.8em;">✕</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="level-display">Lv.{{ playerData.level }}</div>
+                        <div class="xp-progress"><div class="xp-fill" :style="{width: xpPercentage + '%'}"></div></div>
+                        <div style="text-align: center; font-weight: bold; color: #7a6a62;">{{ playerData.xp }} / {{ playerData.nextLevelXp }} XP</div>
                     </div>
                 </div>
 
-                <!-- 模块：技能 & 成就 (位置调整 + 交互优化) -->
+                <!-- 模块2：目标管理 (独立、可视化升级) -->
                 <div class="card">
-                    <h2>⚡ 技能与成就 <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">{{ collapsed.skills ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.skills">
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 250px;">
-                                <h3 style="margin-bottom: 10px;">我的技能树</h3>
-                                
-                                <!-- 统一的添加技能交互 (同目标管理) -->
-                                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                                    <input v-model="newSkillName" placeholder="新技能名称 (如: 八字排盘)..." class="note-input" style="margin-bottom: 0;">
-                                    <button class="btn-sm" @click="addNewSkillInline" style="width: 80px;">习得</button>
-                                </div>
+                    <h2>🎯 阶段目标 (OKR) <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.goals">
+                        <!-- 添加目标 -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <input v-model="newGoal.title" placeholder="设定一个新的阶段目标 (如: 今年资产翻倍)..." class="note-input" style="margin-bottom: 0;">
+                            <button class="btn" @click="addGoal" style="width: 120px;">🚩 立Flag</button>
+                        </div>
 
-                                <div v-for="skill in skills" :key="skill.id" class="skill-item">
-                                    <div style="flex: 1;">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <strong>{{ skill.icon }} {{ skill.name }}</strong>
-                                            <small style="color: #888;">Lv.{{ skill.level }}</small>
-                                        </div>
-                                        <div class="xp-progress" style="width: 100%; height: 6px; margin: 5px 0;"><div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div></div>
-                                    </div>
-                                    <div style="margin-left: 10px; display: flex; gap: 5px;">
-                                        <button class="btn-sm" @click="practiceSkill(skill.id)">练</button>
-                                        <button class="btn-sm btn-danger" @click="deleteSkill(skill.id)" style="padding: 2px 8px;">✕</button>
+                        <!-- 目标列表 -->
+                        <div class="goal-list">
+                            <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: goal.progress == 100}">
+                                <div class="goal-header">
+                                    <span class="goal-title" :class="{done: goal.progress == 100}">
+                                        {{ goal.title }}
+                                    </span>
+                                    <span :style="{color: getProgressColor(goal.progress)}">{{ goal.progress }}%</span>
+                                </div>
+                                <div class="goal-progress-container">
+                                    <div class="goal-progress-bg">
+                                        <div class="goal-progress-fill" :class="getProgressClass(goal.progress)" :style="{width: goal.progress + '%'}"></div>
                                     </div>
                                 </div>
-                            </div>
-                            <div style="flex: 1; min-width: 250px;">
-                                <h3 style="margin-bottom: 10px;">最近成就</h3>
-                                <div class="achievement-grid" style="margin-top: 0;">
-                                    <div v-for="ach in achievements.slice(0, 4)" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
-                                        <div style="font-size: 1.5em;">{{ ach.icon }}</div>
-                                        <div style="font-size: 0.9em; font-weight: bold;">{{ ach.name }}</div>
-                                    </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: auto;">
+                                    <span style="font-size: 0.8em; color: #999;">拖动更新:</span>
+                                    <input type="range" v-model="goal.progress" min="0" max="100" style="flex: 1;" @change="saveAll">
+                                    <button class="btn-sm btn-danger" @click="deleteGoal(index)">删</button>
                                 </div>
+                                <div v-if="goal.progress == 100" style="text-align: center; margin-top: 10px; color: #a3de83; font-weight: bold;">🎉 已达成！</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块：复盘系统 (含股票复盘) -->
+                <!-- 模块3：技能树 (独立排版) -->
+                <div class="card">
+                    <h2>⚡ 技能修炼 <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">{{ collapsed.skills ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.skills">
+                        <!-- 添加技能 -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <input v-model="newSkillName" placeholder="新技能名称 (如: 八字排盘)..." class="note-input" style="margin-bottom: 0;">
+                            <button class="btn" @click="addNewSkillInline" style="width: 120px;">✨ 习得</button>
+                        </div>
+                        
+                        <!-- 技能列表 -->
+                        <div v-if="skills.length === 0" style="text-align: center; color: #999; padding: 20px;">暂无技能，快去添加吧！</div>
+                        <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                            <div style="flex: 1; padding-right: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <strong style="font-size: 1.1em;">{{ skill.icon }} {{ skill.name }}</strong>
+                                    <span style="color: #999; font-size: 0.9em;">Lv.{{ skill.level }}</span>
+                                </div>
+                                <div class="xp-progress" style="height: 8px; margin: 0;"><div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div></div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-sm" @click="practiceSkill(skill.id)">🔥 练习</button>
+                                <button class="btn-sm btn-danger" @click="deleteSkill(skill.id)">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块4：成就墙 (独立排版) -->
+                <div class="card">
+                    <h2>🏆 成就荣耀 <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">{{ collapsed.achievements ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.achievements">
+                        <div class="achievement-grid">
+                            <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
+                                <span class="achievement-icon">{{ ach.icon }}</span>
+                                <h3>{{ ach.name }}</h3>
+                                <p style="font-size: 0.8em; color: #7a6a62; margin: 5px 0;">{{ ach.description }}</p>
+                                <div style="font-size: 0.8em; font-weight: bold; color: #ff6b6b;">{{ ach.current }} / {{ ach.requirement }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块5：复盘笔记 (含分类修正功能) -->
                 <div class="card">
                     <h2>🔄 复盘笔记 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.reviews">
                         <div class="review-tabs">
                             <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
                             <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'">📈 股票复盘</div>
+                            <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
                             <div class="review-tab" :class="{active: activeReviewTab === 'yearly'}" @click="activeReviewTab = 'yearly'">🏆 年总结</div>
                             <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                         </div>
@@ -296,7 +309,7 @@
                         <!-- 表单 -->
                         <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #ff9a8b; border-radius: 15px; margin-bottom: 20px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <strong>记录 {{ getReviewTypeName(activeReviewTab) }}</strong>
+                                <strong>新建 {{ getReviewTypeName(activeReviewTab) }}</strong>
                                 <button v-if="activeReviewTab !== 'stock'" class="btn-sm" style="background: #e0c9b8; border: none;" @click="applyTemplate(activeReviewTab)">📄 插入模板</button>
                             </div>
 
@@ -319,8 +332,15 @@
 
                         <!-- 列表 -->
                         <div v-for="note in filteredNotes" :key="note.id" class="note-card">
-                            <div class="note-type-badge">{{ getReviewTypeName(note.type || 'daily') }}</div>
-                            <div style="font-size: 0.85em; color: #999; margin-bottom: 5px;">{{ formatDate(note.createdAt) }}</div>
+                            <!-- 类型切换器 (关键新功能) -->
+                            <select v-model="note.type" @change="saveAll()" class="type-switcher" title="修改分类">
+                                <option value="daily">📝 日常</option>
+                                <option value="stock">📈 股票</option>
+                                <option value="weekly">📅 周报</option>
+                                <option value="yearly">🏆 年报</option>
+                            </select>
+
+                            <div style="font-size: 0.85em; color: #999; margin-bottom: 5px; margin-right: 60px;">{{ formatDate(note.createdAt) }}</div>
                             
                             <!-- 股票展示逻辑 -->
                             <div v-if="note.type === 'stock'" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e0c9b8;">
@@ -343,7 +363,7 @@
                     </div>
                 </div>
 
-                <!-- 模块：易学命例 -->
+                <!-- 模块6：易学命例 -->
                 <div class="card">
                     <h2>☯️ 易学命例 <button class="collapse-btn" @click="collapsed.cases = !collapsed.cases">{{ collapsed.cases ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.cases">
@@ -383,7 +403,7 @@
                     </div>
                 </div>
 
-                <!-- 模块：知识库 & 读书 -->
+                <!-- 模块7：知识库 & 读书 -->
                 <div class="card">
                     <h2>🧠 知识库 & 读书</h2>
                     <div style="display: flex; gap: 10px;">
@@ -529,7 +549,7 @@
                 getReviewTypeName(t) { const map={stock:'股票',daily:'日常',weekly:'周复盘',yearly:'年终'}; return map[t]||'记录'; },
                 
                 // Visualization Helpers
-                getProgressColor(p) { if(p < 30) return '#ff6b6b'; if(p < 80) return '#ff9f43'; return '#2e7d32'; },
+                getProgressColor(p) { if(p < 30) return '#ff6b6b'; if(p < 80) return '#ffcc00'; return '#a3de83'; },
                 getProgressClass(p) { if(p < 30) return 'p-low'; if(p < 80) return 'p-mid'; return 'p-high'; },
 
                 // Auth & Data
@@ -590,7 +610,7 @@
 
                 // OKR
                 addGoal() { if(!this.newGoal.title) return; if(!this.playerData.goals) this.playerData.goals=[]; this.playerData.goals.push({title:this.newGoal.title, progress:0}); this.newGoal.title=''; this.saveAll(); },
-                deleteGoal(i) { this.playerData.goals.splice(i,1); this.saveAll(); },
+                deleteGoal(i) { if(confirm('删除?')) { this.playerData.goals.splice(i,1); this.saveAll(); } },
 
                 // XP & Skills (Inline)
                 addXp(amount) { this.playerData.xp+=amount; if(this.playerData.xp>=this.playerData.nextLevelXp) { this.playerData.xp-=this.playerData.nextLevelXp; this.playerData.level++; this.showMessage('升级了!'); } },
