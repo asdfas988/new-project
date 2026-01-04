@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 你的个人成长系统</title>
+    <title>成长手账 - 个人独享版</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ========== 全局基础样式 ========== */
+        /* ========== 全局配置 ========== */
         :root {
-            --primary-gradient: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 55%, #ff99ac 100%);
-            --secondary-gradient: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 更沉稳的紫蓝渐变 */
             --accent-color: #5a4a42;
-            --bg-color: #fef9f3;
-            --card-bg: #fffefc;
-            --border-color: #e0c9b8;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,463 +25,354 @@
             color: var(--accent-color);
             padding: 20px;
         }
-        
-        /* 滚动条美化 */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #dccdc3; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #c0b0a3; }
 
+        /* 登录页专用样式 */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .login-logo { font-size: 3em; margin-bottom: 20px; }
+        
+        /* 布局与容器 */
         .container { max-width: 1400px; margin: 0 auto; }
-        
-        /* 头部样式 */
-        .header {
-            text-align: center; margin-bottom: 30px; padding: 30px;
-            background: #fffaf0; border-radius: 24px;
-            box-shadow: 8px 8px 0px var(--border-color);
-            border: 3px solid var(--accent-color);
-            position: relative;
-        }
-        .header h1 { font-size: 2.5em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; }
-
         .grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
-        
-        /* 卡片通用样式 */
         .card {
-            background: var(--card-bg); border-radius: 20px; padding: 30px;
-            box-shadow: 6px 6px 0px #d4b8a7; border: 2.5px solid var(--accent-color);
-            transition: transform 0.3s;
+            background: var(--card-bg); border-radius: 16px; padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
         .card h2 {
-            margin-bottom: 20px; padding-bottom: 15px;
-            border-bottom: 3px dotted #ff9a8b;
-            font-size: 1.4em; font-weight: 700;
+            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px dashed var(--border-color);
+            font-size: 1.3em; font-weight: 700; color: #2d3748;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* 按钮体系 */
+        /* 按钮与输入框 */
         .btn {
-            background: var(--primary-gradient); border: none; padding: 12px 30px;
-            border-radius: 50px; color: white; cursor: pointer;
-            font-size: 16px; font-weight: 700; transition: all 0.3s;
-            box-shadow: 4px 4px 0px #d45d5d; width: 100%;
+            background: var(--primary-gradient); border: none; padding: 12px 24px;
+            border-radius: 8px; color: white; cursor: pointer; font-size: 15px; font-weight: 600;
+            width: 100%; transition: opacity 0.2s; box-shadow: 0 4px 6px rgba(118, 75, 162, 0.3);
         }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 6px 6px 0px #d45d5d; }
-        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .btn-sm {
-            padding: 6px 16px; font-size: 0.9em; border-radius: 20px;
-            background: var(--secondary-gradient); color: #2d5a27;
-            box-shadow: 2px 2px 0px #2ba69b; border: none; font-weight: bold; cursor: pointer;
+            padding: 6px 14px; font-size: 0.85em; border-radius: 6px;
+            background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0;
+            cursor: pointer; font-weight: 600;
         }
-        .btn-danger { background: #ff6b6b; color: white; box-shadow: 2px 2px 0px #c0392b; }
+        .btn-sm:hover { background: #e2e8f0; }
+        .btn-danger { background: #fff5f5; color: #c53030; border-color: #fc8181; }
         
-        .collapse-btn {
-            background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b;
-            padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; cursor: pointer;
+        .note-input, .note-textarea {
+            width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px;
+            font-size: 14px; margin-bottom: 15px; transition: border 0.2s;
+            font-family: inherit; background: #f8fafc;
         }
-
-        /* 输入框体系 */
-        .note-input, .note-textarea, .filter-input {
-            width: 100%; padding: 12px; border: 2px solid var(--border-color);
-            border-radius: 12px; font-size: 15px; font-family: inherit;
-            background: #fffaf9; transition: all 0.3s; margin-bottom: 15px;
+        .note-input:focus, .note-textarea:focus { outline: none; border-color: #667eea; background: white; }
+        
+        /* 状态提示 */
+        .status-message { 
+            padding: 12px; border-radius: 8px; margin: 15px 0; font-size: 0.9em; 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .note-textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
-        .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 0 0 0 3px rgba(255, 154, 139, 0.2); }
+        .status-success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
+        .status-error { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
 
-        /* 状态与加载 */
-        .status-message { padding: 12px 20px; border-radius: 12px; margin: 15px 0; font-weight: bold; text-align: center; }
-        .status-success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
-        .status-error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
-        .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ========== 特色模块：热力图 & 游戏化 ========== */
-        .heatmap-container { display: flex; gap: 4px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
-        .heatmap-day { width: 18px; height: 18px; border-radius: 4px; background: #eee; border: 1px solid #ddd; position: relative; }
-        .heatmap-day.level-1 { background: #d6e685; border-color: #bedb39; }
-        .heatmap-day.level-2 { background: #8cc665; border-color: #7bc96f; }
-        .heatmap-day.level-3 { background: #44a340; border-color: #30923c; }
-        .heatmap-day.level-4 { background: #1e6823; border-color: #196127; }
-        .heatmap-legend { display: flex; gap: 5px; font-size: 0.8em; color: #888; align-items: center; justify-content: center; margin-top: 5px; }
-
-        .level-display { font-size: 3.5em; font-weight: 800; text-align: center; color: #ff6b6b; margin: 10px 0; }
-        .xp-progress { height: 20px; background: #ffe8d6; border-radius: 10px; overflow: hidden; border: 2px solid var(--accent-color); }
-        .xp-fill { height: 100%; background: var(--secondary-gradient); transition: width 0.5s ease; }
-
-        /* ========== 复盘系统 (原笔记本) ========== */
-        .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; overflow-x: auto; }
+        /* 复盘系统 */
+        .review-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
         .review-tab {
-            padding: 8px 18px; border: 2px solid transparent; border-radius: 20px;
-            cursor: pointer; font-weight: 600; font-size: 0.95em; white-space: nowrap;
-            background: #fff; border-color: var(--border-color);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.9em; font-weight: 600;
+            cursor: pointer; background: #edf2f7; color: #718096; transition: all 0.2s;
+            white-space: nowrap;
         }
-        .review-tab.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
-        .review-tab.active-special { background: var(--primary-gradient); color: white; border: none; }
-
-        .template-btn { font-size: 0.85em; padding: 4px 10px; background: #fffaf5; border: 1px dashed #ff9a8b; color: #ff6b6b; border-radius: 6px; cursor: pointer; margin-bottom: 8px; display: inline-block; }
-        .template-btn:hover { background: #fff0eb; }
-
-        /* 筛选容器通用 */
-        .filter-panel { background: #fffaf5; border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-        .filter-tag { padding: 4px 12px; background: #fff; border: 1px solid var(--border-color); border-radius: 15px; cursor: pointer; font-size: 0.9em; }
-        .filter-tag.active { background: #ff9a8b; color: white; border-color: #ff9a8b; }
+        .review-tab.active { background: #667eea; color: white; }
         
-        /* 笔记卡片 */
-        .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid var(--border-color); position: relative; }
-        .note-date { font-size: 0.85em; color: #999; margin-bottom: 8px; display: block; }
-        .note-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
-        .note-tag-pill { background: #e0f2f1; color: #00695c; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
-        .note-type-pill { position: absolute; top: 20px; right: 20px; font-size: 0.8em; padding: 2px 8px; border-radius: 4px; background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
-
-        /* ========== 读书笔记 ========== */
-        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .book-card {
-            background: #fff; border: 2px solid var(--border-color); border-radius: 16px;
-            padding: 20px; cursor: pointer; transition: all 0.3s;
-            display: flex; flex-direction: column; height: 100%;
+        /* 列表项 */
+        .item-card { 
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; 
+            margin-bottom: 15px; transition: all 0.2s; 
         }
-        .book-card:hover { transform: translateY(-5px); border-color: #667eea; box-shadow: 0 10px 20px rgba(102,126,234,0.1); }
-        .book-status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; margin-bottom: 10px; width: fit-content; }
-        .status-planning { background: #eee; color: #666; }
-        .status-reading { background: #fff3cd; color: #856404; }
-        .status-finished { background: #d4edda; color: #155724; }
+        .item-card:hover { border-color: #667eea; }
+        .tag-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; background: #edf2f7; color: #4a5568; font-size: 0.75em; margin-right: 5px; }
 
-        /* ========== 知识库（语雀风格） ========== */
-        .kb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; }
-        .kb-window { width: 95%; max-width: 1400px; height: 92vh; background: #fff; border-radius: 12px; display: flex; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        /* 知识库弹窗 (语雀风格) */
+        .kb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .kb-window { width: 95%; max-width: 1400px; height: 90vh; background: white; border-radius: 12px; display: flex; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); overflow: hidden; }
+        .kb-sidebar { width: 240px; background: #f8fafc; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .kb-main { flex: 1; display: flex; flex-direction: column; background: white; }
+        .kb-toolbar { height: 60px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .kb-content { flex: 1; padding: 40px; overflow-y: auto; }
         
-        .kb-sidebar { width: 260px; background: #fafafa; border-right: 1px solid #eee; display: flex; flex-direction: column; flex-shrink: 0; }
-        .kb-sidebar-head { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .kb-nav-item { padding: 10px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #444; font-size: 14px; }
-        .kb-nav-item:hover { background: #eee; }
-        .kb-nav-item.active { background: #e6f7ff; color: #1890ff; border-right: 3px solid #1890ff; }
-        
-        .kb-main { flex: 1; display: flex; flex-direction: column; background: #fff; }
-        .kb-toolbar { padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .kb-breadcrumbs { color: #888; font-size: 14px; }
-        
-        .kb-content { flex: 1; overflow-y: auto; padding: 40px; }
-        .kb-doc-list-item { padding: 15px 0; border-bottom: 1px solid #f5f5f5; cursor: pointer; display: flex; justify-content: space-between; }
-        .kb-doc-list-item:hover { background: #fafafa; padding-left: 10px; padding-right: 10px; border-radius: 6px; }
-        
-        /* 详情弹窗通用 */
-        .modal-body { padding: 20px; overflow-y: auto; max-height: 70vh; line-height: 1.8; white-space: pre-wrap; }
-        .modal-footer { padding: 20px; border-top: 1px solid #eee; text-align: right; }
+        .kb-nav-item { padding: 10px 20px; font-size: 0.9em; color: #4a5568; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .kb-nav-item:hover { background: #edf2f7; }
+        .kb-nav-item.active { background: #ebf4ff; color: #4299e1; border-right: 3px solid #4299e1; }
+
+        /* 仪表盘 */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-box { background: white; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; }
+        .stat-num { font-size: 2em; font-weight: 700; color: #667eea; }
+        .stat-label { font-size: 0.9em; color: #718096; }
 
         @media (max-width: 768px) {
-            .kb-window { width: 100%; height: 100%; border-radius: 0; }
+            .grid { grid-template-columns: 1fr; }
+            .kb-window { width: 100%; height: 100vh; border-radius: 0; }
             .kb-sidebar { width: 60px; }
             .kb-nav-item span:not(.icon) { display: none; }
-            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div id="app" class="container">
-        <!-- 登录界面 (保持不变) -->
-        <div v-if="!isLoggedIn" style="max-width: 500px; margin: 100px auto;">
-            <div class="header">
-                <h1>🌱 成长手账</h1>
-                <p>记录 · 复盘 · 进化</p>
+    <div id="app">
+        <!-- 登录界面 -->
+        <div v-if="!isLoggedIn" class="login-container">
+            <div class="login-logo">🚀</div>
+            <h2 style="margin-bottom: 10px; color: #2d3748;">成长手账</h2>
+            <p style="color: #718096; margin-bottom: 30px; font-size: 0.9em;">个人独享 · 知识管理 · 复盘系统</p>
+            
+            <input type="email" v-model="email" placeholder="输入您的 Supabase 邮箱" class="note-input" @keyup.enter="login">
+            <input type="password" v-model="password" placeholder="输入密码" class="note-input" @keyup.enter="login">
+            
+            <button class="btn" @click="login" :disabled="loading">
+                {{ loading ? '验证中...' : '进入系统' }}
+            </button>
+            
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
+                {{ message }}
             </div>
-            <div class="card">
-                <input type="email" v-model="email" placeholder="邮箱" class="note-input">
-                <input type="password" v-model="password" placeholder="密码 (至少6位)" class="note-input">
-                <button class="btn" @click="login" :disabled="loading">{{ loading ? '处理中...' : '登录 / 注册' }}</button>
-                <div style="text-align:center; margin-top:15px; font-size:0.9em; color:#888;">
-                    新用户输入邮箱密码后点击按钮自动注册
-                </div>
+
+            <div style="margin-top: 20px; font-size: 0.8em; color: #a0aec0; line-height: 1.5;">
+                <p>⚠️ 提示：显示 Invalid login credentials？</p>
+                <p>请确保您已在 Supabase 后台 Authentication 栏目中<br>手动创建了该用户。</p>
             </div>
-            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
         </div>
 
         <!-- 主界面 -->
-        <div v-else>
-            <div class="header" style="display:flex; justify-content:space-between; align-items:center; padding: 20px 40px;">
-                <div style="text-align:left;">
-                    <h1 style="font-size:1.8em; margin:0;">🚀 {{ userEmail.split('@')[0] }}的成长空间</h1>
-                    <div style="margin-top:5px; font-size:0.9em; opacity:0.8;">保持热爱，奔赴山海</div>
+        <div v-else class="container" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h1 style="font-size: 1.5em; color: #2d3748;">👋 你好，{{ userEmail.split('@')[0] }}</h1>
+                    <p style="color: #718096; font-size: 0.9em;">今天也要保持进步</p>
                 </div>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">
-                        <span v-if="syncing" class="loading-spinner"></span> {{ syncing ? '同步中' : '🔄 同步数据' }}
+                        {{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}
                     </button>
-                    <button class="btn-sm btn-danger" @click="logout" style="margin-left:10px;">退出</button>
+                    <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
                 </div>
             </div>
 
-            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
+            <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">
+                {{ message }}
+            </div>
 
-            <!-- 仪表盘：热力图与等级 -->
-            <div class="card" style="margin-bottom:30px;">
-                <h2>📊 成长概览 <button class="collapse-btn" @click="collapsed.stats = !collapsed.stats">{{ collapsed.stats ? '展开' : '收起' }}</button></h2>
-                <div v-show="!collapsed.stats">
-                    <div style="display:flex; align-items:center; gap:30px; flex-wrap:wrap;">
-                        <div style="flex:1; min-width:200px; text-align:center;">
-                            <div class="level-display">Lv.{{ playerData.level }}</div>
-                            <div class="xp-progress"><div class="xp-fill" :style="{width: xpPercentage + '%'}"></div></div>
-                            <div style="margin-top:5px; font-size:0.9em; color:#888;">{{ playerData.xp }} / {{ playerData.nextLevelXp }} XP</div>
-                        </div>
-                        <div style="flex:2; min-width:300px;">
-                            <h3 style="font-size:1em; margin-bottom:10px; color:#888;">📝 近14天活跃度 (连续记录挑战)</h3>
-                            <div class="heatmap-container">
-                                <div v-for="(day, index) in activityHeatmap" :key="index" 
-                                     class="heatmap-day" 
-                                     :class="'level-' + day.level" 
-                                     :title="day.date + ': ' + day.count + '次活动'">
-                                </div>
-                            </div>
-                            <div class="heatmap-legend">
-                                <span>少</span>
-                                <div class="heatmap-day level-1" style="width:12px;height:12px;"></div>
-                                <div class="heatmap-day level-2" style="width:12px;height:12px;"></div>
-                                <div class="heatmap-day level-3" style="width:12px;height:12px;"></div>
-                                <div class="heatmap-day level-4" style="width:12px;height:12px;"></div>
-                                <span>多</span>
-                            </div>
-                        </div>
-                    </div>
+            <!-- 数据概览 -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-num">{{ playerData.level }}</div>
+                    <div class="stat-label">当前等级</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">{{ notes.length }}</div>
+                    <div class="stat-label">复盘记录</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">{{ books.filter(b=>b.status==='finished').length }}</div>
+                    <div class="stat-label">已读书籍</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">{{ kbDocs.length }}</div>
+                    <div class="stat-label">知识文档</div>
                 </div>
             </div>
 
             <div class="grid">
-                <!-- 模块一：复盘系统 (原笔记本升级版) -->
+                <!-- 模块一：复盘系统 -->
                 <div class="card">
-                    <h2>🔄 复盘系统 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.reviews">
-                        <div class="review-tabs">
-                            <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常记录</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'yearly'}" @click="activeReviewTab = 'yearly'">🏆 年终总结</div>
-                            <div class="review-tab active-special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建记录' }}</div>
+                    <h2>
+                        🔄 复盘系统
+                        <div style="font-size: 0.8em; font-weight: normal; color: #718096;">
+                            {{ filteredNotes.length }} 条记录
                         </div>
+                    </h2>
+                    
+                    <div class="review-tabs">
+                        <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
+                        <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
+                        <div class="review-tab" :class="{active: activeReviewTab === 'yearly'}" @click="activeReviewTab = 'yearly'">🏆 年总结</div>
+                    </div>
 
-                        <!-- 新建复盘表单 -->
-                        <div v-if="showReviewForm" style="background:#fffaf9; padding:20px; border-radius:15px; border:2px dashed #ff9a8b; margin-bottom:20px;">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                <h3 style="font-size:1.1em;">新建 {{ getReviewTypeName(activeReviewTab) }}</h3>
-                                <div>
-                                    <span v-if="activeReviewTab === 'weekly'" class="template-btn" @click="applyTemplate('weekly')">📄 插入周复盘模板 (KPT)</span>
-                                    <span v-if="activeReviewTab === 'yearly'" class="template-btn" @click="applyTemplate('yearly')">📄 插入年终复盘模板</span>
-                                </div>
+                    <!-- 输入区 -->
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <input v-model="newNote.title" placeholder="标题..." class="note-input" style="background: white;">
+                        <textarea v-model="newNote.content" placeholder="写下你的思考..." class="note-textarea" style="background: white; height: 100px;"></textarea>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 0.85em; color: #718096;">
+                                <span v-if="activeReviewTab === 'weekly'" style="cursor: pointer; color: #667eea;" @click="applyTemplate('weekly')">📄 插入周复盘模板</span>
+                                <span v-if="activeReviewTab === 'yearly'" style="cursor: pointer; color: #667eea; margin-left: 10px;" @click="applyTemplate('yearly')">📄 插入年终模板</span>
                             </div>
-                            <input type="text" v-model="newNote.title" placeholder="标题 (例如: 2023年第4周复盘)" class="note-input">
-                            <textarea v-model="newNote.content" placeholder="记录内容..." class="note-textarea" style="height:200px;"></textarea>
-                            <input type="text" v-model="newNote.tags" placeholder="标签 (用逗号分隔，如: 复盘, 学习, 计划)" class="note-input">
-                            <button class="btn" @click="saveNote">💾 保存记录 (+15 XP)</button>
+                            <button class="btn-sm" style="background: #667eea; color: white; border: none;" @click="saveNote">发布</button>
                         </div>
+                    </div>
 
-                        <!-- 筛选工具栏 (修复版) -->
-                        <div class="filter-panel">
-                            <div class="filter-row">
-                                <input type="text" v-model="noteFilters.search" placeholder="🔍 搜索标题或内容..." class="filter-input" style="width:200px; margin-bottom:0;">
-                                <select v-model="noteFilters.sortBy" class="filter-input" style="width:150px; margin-bottom:0;">
-                                    <option value="newest">📅 最新优先</option>
-                                    <option value="oldest">📅 最早优先</option>
-                                </select>
-                                <button v-if="activeReviewTab !== 'daily'" @click="noteFilters = {search:'', sortBy:'newest', selectedTags:[]}" style="background:none; border:none; color:#ff6b6b; cursor:pointer;">清除筛选</button>
-                            </div>
-                            <div class="filter-row" v-if="allNoteTags.length > 0">
-                                <span style="font-size:0.9em; font-weight:bold;">标签筛选:</span>
-                                <span v-for="tag in allNoteTags" :key="tag" 
-                                      class="filter-tag" 
-                                      :class="{active: noteFilters.selectedTags.includes(tag)}"
-                                      @click="toggleNoteTagFilter(tag)">
-                                    {{ tag }}
-                                </span>
-                            </div>
-                        </div>
+                    <!-- 筛选 -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input v-model="noteFilters.search" placeholder="🔍 搜索..." class="note-input" style="margin-bottom: 0;">
+                        <select v-model="noteFilters.sortBy" class="note-input" style="width: 120px; margin-bottom: 0;">
+                            <option value="newest">最新</option>
+                            <option value="oldest">最早</option>
+                        </select>
+                    </div>
 
-                        <!-- 列表展示 -->
-                        <div v-if="filteredNotes.length === 0" style="text-align:center; padding:30px; color:#aaa;">
-                            没有找到相关记录，开始写第一篇吧！
+                    <!-- 列表 -->
+                    <div v-for="note in filteredNotes" :key="note.id" class="item-card">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <strong style="color: #2d3748;">{{ note.title }}</strong>
+                            <small style="color: #a0aec0;">{{ formatDateShort(note.createdAt) }}</small>
                         </div>
-                        <div v-for="note in filteredNotes" :key="note.id" class="note-card">
-                            <div class="note-type-pill">{{ getReviewTypeName(note.type || 'daily') }}</div>
-                            <span class="note-date">📅 {{ formatDate(note.createdAt) }}</span>
-                            <h3 style="margin-bottom:10px;">{{ note.title }}</h3>
-                            <div style="white-space: pre-wrap; color:#555; line-height:1.6; max-height:150px; overflow:hidden; mask-image: linear-gradient(180deg, #000 60%, transparent);">{{ note.content }}</div>
-                            
-                            <div class="note-tags">
-                                <span v-for="tag in note.tags" :key="tag" class="note-tag-pill">#{{ tag }}</span>
+                        <p style="color: #4a5568; font-size: 0.95em; line-height: 1.6; white-space: pre-wrap;">{{ note.content }}</p>
+                        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span v-for="tag in note.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
                             </div>
-                            
-                            <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button class="btn-sm" style="background:#eee; color:#333; box-shadow:none; border:1px solid #ccc;" @click="viewNoteDetail(note)">查看全文</button>
-                                <button class="btn-sm btn-danger" @click="deleteNote(note.id)">删除</button>
-                            </div>
+                            <button class="btn-sm btn-danger" @click="deleteNote(note.id)">删除</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块二：读书笔记 (修复筛选与交互) -->
+                <!-- 模块二：读书笔记 -->
                 <div class="card">
-                    <h2>📚 读书笔记 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.books">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                            <div class="review-tabs" style="margin-bottom:0; border-bottom:none;">
-                                <div class="review-tab active-special" @click="showBookForm = !showBookForm">{{ showBookForm ? '✖️ 取消' : '➕ 添加新书' }}</div>
-                            </div>
-                        </div>
+                    <h2>📚 读书笔记</h2>
+                    
+                    <button class="btn-sm" style="width: 100%; margin-bottom: 15px; border-style: dashed;" @click="showBookForm = !showBookForm">
+                        {{ showBookForm ? '收起表单' : '+ 添加新书' }}
+                    </button>
 
-                        <!-- 添加书籍表单 -->
-                        <div v-if="showBookForm" style="background:#fffaf9; padding:20px; border-radius:15px; border:2px dashed #667eea; margin-bottom:20px;">
-                            <div class="grid" style="grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                                <input v-model="newBook.title" placeholder="书名" class="note-input" style="margin:0;">
-                                <input v-model="newBook.author" placeholder="作者" class="note-input" style="margin:0;">
-                            </div>
-                            <div style="display:flex; gap:15px; margin-bottom:15px;">
-                                <select v-model="newBook.status" class="note-input" style="margin:0;">
-                                    <option value="planning">📅 计划阅读</option>
-                                    <option value="reading">📖 正在阅读</option>
-                                    <option value="finished">✅ 已读完</option>
-                                </select>
-                                <div style="display:flex; align-items:center; gap:5px;">
-                                    <span>评分:</span>
-                                    <span v-for="s in 5" :key="s" style="cursor:pointer; font-size:1.5em; color:#ffd700;" @click="newBook.rating = s">
-                                        {{ s <= newBook.rating ? '★' : '☆' }}
-                                    </span>
-                                </div>
-                            </div>
-                            <textarea v-model="newBook.notes" placeholder="核心笔记..." class="note-textarea" style="height:100px;"></textarea>
-                            <textarea v-model="newBook.insights" placeholder="个人感悟..." class="note-textarea" style="height:80px;"></textarea>
-                            <input v-model="newBook.tags" placeholder="标签 (如: 心理学, 传记)..." class="note-input">
-                            <button class="btn" style="background: linear-gradient(90deg, #667eea, #764ba2);" @click="saveBook">💾 保存读书笔记 (+20 XP)</button>
+                    <div v-if="showBookForm" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input v-model="newBook.title" placeholder="书名" class="note-input">
+                            <input v-model="newBook.author" placeholder="作者" class="note-input">
                         </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <select v-model="newBook.status" class="note-input" style="margin-bottom: 0;">
+                                <option value="planning">📅 计划</option>
+                                <option value="reading">📖 在读</option>
+                                <option value="finished">✅ 已读</option>
+                            </select>
+                            <select v-model="newBook.rating" class="note-input" style="margin-bottom: 0;">
+                                <option :value="0">评分</option>
+                                <option :value="5">⭐⭐⭐⭐⭐</option>
+                                <option :value="4">⭐⭐⭐⭐</option>
+                                <option :value="3">⭐⭐⭐</option>
+                            </select>
+                        </div>
+                        <textarea v-model="newBook.notes" placeholder="笔记..." class="note-textarea" style="height: 80px;"></textarea>
+                        <button class="btn-sm" style="background: #667eea; color: white; border: none; width: 100%;" @click="saveBook">保存书籍</button>
+                    </div>
 
-                        <!-- 书籍筛选 (修复版) -->
-                        <div class="filter-panel">
-                            <div class="filter-row">
-                                <input type="text" v-model="bookFilters.search" placeholder="🔍 搜书名或作者..." class="filter-input" style="width:200px; margin:0;">
-                                <select v-model="bookFilters.status" class="filter-input" style="width:120px; margin:0;">
-                                    <option value="all">全部状态</option>
-                                    <option value="planning">📅 计划中</option>
-                                    <option value="reading">📖 阅读中</option>
-                                    <option value="finished">✅ 已读完</option>
-                                </select>
-                                <button v-if="bookFilters.status !== 'all' || bookFilters.search" @click="bookFilters={search:'', status:'all', selectedTags:[]}" style="background:none; border:none; color:#667eea; cursor:pointer;">重置</button>
-                            </div>
-                            <div class="filter-row" v-if="allBookTags.length > 0">
-                                <span style="font-size:0.9em; font-weight:bold;">类型:</span>
-                                <span v-for="tag in allBookTags" :key="tag" 
-                                      class="filter-tag" 
-                                      :class="{active: bookFilters.selectedTags.includes(tag)}"
-                                      @click="toggleBookTagFilter(tag)">
-                                    {{ tag }}
+                    <!-- 书籍筛选 -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                         <select v-model="bookFilters.status" class="note-input" style="margin-bottom: 0;">
+                            <option value="all">全部状态</option>
+                            <option value="reading">在读</option>
+                            <option value="finished">已读</option>
+                        </select>
+                        <input v-model="bookFilters.search" placeholder="🔍 搜书名..." class="note-input" style="margin-bottom: 0;">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                        <div v-for="book in filteredBooks" :key="book.id" class="item-card" @click="viewBookDetail(book)" style="cursor: pointer; height: 100%;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <span class="tag-pill" :style="{background: book.status==='reading'?'#fefcbf':'#edf2f7'}">
+                                    {{ book.status === 'planning' ? '计划' : book.status === 'reading' ? '在读' : '已读' }}
                                 </span>
+                                <span style="color: #ecc94b;">{{ '★'.repeat(book.rating) }}</span>
                             </div>
-                        </div>
-
-                        <!-- 书籍列表 -->
-                        <div class="book-grid">
-                            <div v-for="book in filteredBooks" :key="book.id" class="book-card" @click="viewBookDetail(book)">
-                                <div :class="['book-status-badge', 'status-' + book.status]">
-                                    {{ book.status === 'planning' ? '计划中' : book.status === 'reading' ? '阅读中' : '已完成' }}
-                                </div>
-                                <h3 style="font-size:1.1em; margin-bottom:5px;">{{ book.title }}</h3>
-                                <div style="font-size:0.9em; color:#888; font-style:italic; margin-bottom:10px;">{{ book.author }}</div>
-                                <div style="color:#ffd700; margin-bottom:10px;">
-                                    <span v-for="s in 5" :key="s">{{ s <= book.rating ? '★' : '☆' }}</span>
-                                </div>
-                                <div v-if="book.notes" style="font-size:0.9em; color:#555; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; margin-bottom:auto;">
-                                    {{ book.notes }}
-                                </div>
-                                <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                    <div style="font-size:0.8em; color:#999;">{{ book.tags ? book.tags.join(', ') : '' }}</div>
-                                    <button class="btn-sm btn-danger" @click.stop="deleteBook(book.id)" style="padding:4px 10px; font-size:0.8em;">🗑️</button>
-                                </div>
-                            </div>
+                            <h3 style="font-size: 1.1em; margin: 10px 0 5px 0;">{{ book.title }}</h3>
+                            <p style="font-size: 0.9em; color: #718096; margin-bottom: 10px;">{{ book.author }}</p>
+                            <p v-if="book.notes" style="font-size: 0.85em; color: #a0aec0; line-height: 1.4; height: 40px; overflow: hidden;">{{ book.notes }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块三：知识库 (语雀风格) -->
+                <!-- 模块三：知识库 -->
                 <div class="card">
-                    <h2>🧠 知识库 <button class="collapse-btn" @click="collapsed.kb = !collapsed.kb">{{ collapsed.kb ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.kb">
-                        <p style="color:#666; margin-bottom:15px;">构建你的第二大脑，支持Markdown风格的沉浸式写作。</p>
-                        <button class="btn" style="background: linear-gradient(120deg, #2681ff, #00b9ff); box-shadow: 4px 4px 0px #005a9e;" @click="openKnowledgeBase">
-                            📂 打开知识库工作台
-                        </button>
-                    </div>
+                    <h2>🧠 知识库</h2>
+                    <p style="color: #718096; font-size: 0.9em; margin-bottom: 15px;">
+                        语雀风格文档管理，目前已有 {{ kbDocs.length }} 篇文档。
+                    </p>
+                    <button class="btn" @click="showKnowledgeBase = true">📂 进入知识库工作台</button>
                 </div>
             </div>
         </div>
 
-        <!-- 知识库全屏弹窗 (语雀风格) -->
-        <div v-if="showKnowledgeBase" class="kb-overlay" @click.self="closeKnowledgeBase">
+        <!-- 知识库弹窗 -->
+        <div v-if="showKnowledgeBase" class="kb-overlay" @click.self="showKnowledgeBase = false">
             <div class="kb-window">
-                <!-- 侧边栏 -->
                 <div class="kb-sidebar">
-                    <div class="kb-sidebar-head">
-                        <h3 style="font-weight:700;">我的知识库</h3>
-                        <button @click="createKbCategory" style="background:none; border:none; font-size:1.2em; cursor:pointer; color:#666;">+</button>
+                    <div style="padding: 20px; font-weight: bold; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between;">
+                        <span>知识库</span>
+                        <span style="cursor: pointer; color: #667eea;" @click="addCategory">+</span>
                     </div>
-                    <div style="flex:1; overflow-y:auto; padding:10px 0;">
+                    <div style="flex: 1; overflow-y: auto; padding: 10px 0;">
                         <div class="kb-nav-item" :class="{active: kbCurrentCategory === 'all'}" @click="kbCurrentCategory = 'all'">
-                            <span class="icon">📑</span> <span>全部文档</span>
+                            <span>📂 全部文档</span>
                         </div>
                         <div v-for="cat in kbCategories" :key="cat.id" 
                              class="kb-nav-item" 
                              :class="{active: kbCurrentCategory && kbCurrentCategory.id === cat.id}"
                              @click="kbCurrentCategory = cat">
-                            <span class="icon">{{ cat.icon }}</span> 
-                            <span>{{ cat.name }}</span>
-                            <span style="margin-left:auto; font-size:0.8em; color:#999;">{{ getKbCount(cat.id) }}</span>
+                            <span>📁 {{ cat.name }}</span>
+                            <small style="color: #cbd5e0;">{{ kbDocs.filter(d=>d.categoryId===cat.id).length }}</small>
                         </div>
                     </div>
                 </div>
-
-                <!-- 主区域 -->
                 <div class="kb-main">
-                    <!-- 顶部工具栏 -->
                     <div class="kb-toolbar">
-                        <div class="kb-breadcrumbs">
-                            首页 / {{ kbCurrentCategory === 'all' ? '全部文档' : kbCurrentCategory.name }}
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <input v-model="kbSearch" placeholder="🔍 搜索文档..." style="padding:6px 12px; border:1px solid #ddd; border-radius:4px;">
-                            <button class="btn-sm" style="background:#2681ff; color:white; box-shadow:none;" @click="openKbEditor()">+ 新建文档</button>
-                            <button @click="closeKnowledgeBase" style="background:none; border:none; font-size:1.2em; cursor:pointer;">✕</button>
+                        <span style="color: #718096;">
+                            {{ kbCurrentCategory === 'all' ? '全部文档' : kbCurrentCategory.name }}
+                        </span>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-sm" style="background: #667eea; color: white; border: none;" @click="openKbEditor()">+ 新建文档</button>
+                            <button class="btn-sm" @click="showKnowledgeBase = false">关闭</button>
                         </div>
                     </div>
-
-                    <!-- 内容列表 -->
+                    
                     <div class="kb-content">
-                        <div v-if="kbEditorMode">
-                            <input v-model="kbEditorData.title" placeholder="无标题文档" style="width:100%; font-size:2em; font-weight:700; border:none; outline:none; margin-bottom:20px;">
-                            <select v-model="kbEditorData.categoryId" style="margin-bottom:20px; padding:5px;">
-                                <option :value="null">无分类</option>
+                        <!-- 编辑模式 -->
+                        <div v-if="kbEditorMode" style="height: 100%; display: flex; flex-direction: column;">
+                            <input v-model="kbEditorData.title" placeholder="无标题文档" style="font-size: 2em; border: none; outline: none; font-weight: bold; margin-bottom: 20px;">
+                            <select v-model="kbEditorData.categoryId" style="border: none; outline: none; margin-bottom: 20px; color: #718096;">
+                                <option :value="null">选择分类...</option>
                                 <option v-for="cat in kbCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
                             </select>
-                            <textarea v-model="kbEditorData.content" placeholder="开始写作..." style="width:100%; height:60vh; border:none; outline:none; font-size:1.1em; line-height:1.8; resize:none;"></textarea>
-                            <div style="text-align:right; margin-top:20px;">
-                                <button class="btn-sm" style="background:#eee; color:#333; box-shadow:none; margin-right:10px;" @click="kbEditorMode = false">取消</button>
-                                <button class="btn-sm" style="background:#2681ff; color:white; box-shadow:none;" @click="saveKbDoc">发布文档</button>
+                            <textarea v-model="kbEditorData.content" placeholder="开始写作..." style="flex: 1; border: none; outline: none; resize: none; font-size: 1.1em; line-height: 1.8;"></textarea>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button class="btn-sm" @click="saveKbDoc" style="background: #667eea; color: white; border: none;">保存发布</button>
+                                <button class="btn-sm" @click="kbEditorMode = false" style="margin-left: 10px;">取消</button>
                             </div>
                         </div>
 
+                        <!-- 列表模式 -->
                         <div v-else>
-                            <div v-if="filteredKbDocs.length === 0" style="text-align:center; margin-top:100px; color:#999;">
-                                此分类下暂无文档
+                            <div v-if="filteredKbDocs.length === 0" style="text-align: center; color: #cbd5e0; margin-top: 50px;">
+                                暂无文档
                             </div>
-                            <div v-for="doc in filteredKbDocs" :key="doc.id" class="kb-doc-list-item" @click="viewKbDoc(doc)">
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <span style="font-size:1.2em;">📄</span>
-                                    <div>
-                                        <div style="font-weight:600; font-size:1.1em;">{{ doc.title }}</div>
-                                        <div style="font-size:0.85em; color:#999; margin-top:4px;">
-                                            {{ formatDateShort(doc.updatedAt) }} · {{ (doc.content || '').substring(0, 30) }}...
-                                        </div>
-                                    </div>
+                            <div v-for="doc in filteredKbDocs" :key="doc.id" class="item-card" @click="editKbDoc(doc)" style="cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <strong style="font-size: 1.1em;">📄 {{ doc.title }}</strong>
+                                    <span style="font-size: 0.8em; color: #a0aec0;">{{ formatDateShort(doc.updatedAt) }}</span>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:10px;">
-                                    <button class="btn-sm" style="background:none; color:#2681ff; box-shadow:none; padding:0;" @click.stop="editKbDoc(doc)">编辑</button>
-                                    <button class="btn-sm" style="background:none; color:#ff6b6b; box-shadow:none; padding:0;" @click.stop="deleteKbDoc(doc.id)">删除</button>
-                                </div>
+                                <p style="color: #718096; font-size: 0.9em; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ doc.content }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -492,27 +382,24 @@
 
         <!-- 详情弹窗 (通用) -->
         <div v-if="viewingItem" class="kb-overlay" @click.self="viewingItem = null">
-            <div class="card" style="width:90%; max-width:800px; padding:0; overflow:hidden;">
-                <div style="padding:20px; background:#fffaf0; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                    <h2 style="margin:0; font-size:1.5em;">{{ viewingItem.title }}</h2>
-                    <button @click="viewingItem = null" style="background:none; border:none; font-size:1.5em; cursor:pointer;">✕</button>
+            <div class="card" style="width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 15px;">
+                    <h2>{{ viewingItem.title }}</h2>
+                    <span style="cursor: pointer;" @click="viewingItem = null">✕</span>
                 </div>
-                <div class="modal-body">
-                    <div v-if="viewingItem.type === 'book'" style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:8px;">
-                        <div><strong>作者:</strong> {{ viewingItem.author }}</div>
-                        <div><strong>状态:</strong> {{ viewingItem.status }}</div>
-                        <div><strong>评分:</strong> {{ viewingItem.rating }}星</div>
+                <div style="overflow-y: auto; flex: 1; line-height: 1.8; white-space: pre-wrap;">
+                    <div v-if="viewingItem.type === 'book'" style="background: #f7fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9em;">
+                        作者：{{ viewingItem.author }} | 状态：{{ viewingItem.status }} | 评分：{{ viewingItem.rating }}
                     </div>
-                    <div style="font-size:1.1em;">
-                        {{ viewingItem.content || viewingItem.notes }}
-                    </div>
-                    <div v-if="viewingItem.insights" style="margin-top:20px; padding-top:20px; border-top:1px dashed #ccc;">
-                        <strong>💡 感悟:</strong>
-                        <p>{{ viewingItem.insights }}</p>
+                    {{ viewingItem.content || viewingItem.notes }}
+                    <div v-if="viewingItem.insights" style="margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 10px;">
+                        <strong>💡 感悟：</strong>
+                        {{ viewingItem.insights }}
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-sm" @click="viewingItem = null">关闭</button>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button class="btn-sm btn-danger" @click="deleteItem(viewingItem)">删除</button>
+                    <button class="btn-sm" @click="viewingItem = null" style="margin-left: 10px;">关闭</button>
                 </div>
             </div>
         </div>
@@ -521,173 +408,88 @@
 
     <script>
         const SUPABASE_URL = 'https://zqmgigcnruvvdcholbuj.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI'; // 你的 Key
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxbWdpZ2NucnV2dmRjaG9sYnVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4NjgzNjEsImV4cCI6MjA4MTQ0NDM2MX0.IHzDp7o5M9QM8IBWy2ri5gS9h9nm0zk3AaPTNveDqXI';
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { createApp } = Vue;
 
         createApp({
             data() {
                 return {
-                    // 用户与状态
                     isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
-                    loading: false, syncing: false, message: '', messageType: 'success',
+                    loading: false, syncing: false, message: '', messageType: '',
                     
-                    // UI状态
-                    collapsed: { stats: false, reviews: false, books: false, kb: true },
-                    showReviewForm: false, showBookForm: false, viewingItem: null,
-                    
-                    // 数据模型
                     playerData: { level: 1, xp: 0, nextLevelXp: 100 },
                     
-                    // 复盘系统 (Reviews/Notes)
-                    notes: [], 
-                    activeReviewTab: 'daily', // daily, weekly, yearly
-                    newNote: { title: '', content: '', tags: '' },
-                    noteFilters: { search: '', sortBy: 'newest', selectedTags: [] },
+                    // 复盘
+                    notes: [], activeReviewTab: 'daily', newNote: { title: '', content: '', tags: '' },
+                    noteFilters: { search: '', sortBy: 'newest' },
                     
-                    // 读书笔记
-                    books: [],
-                    newBook: { title: '', author: '', status: 'reading', rating: 0, notes: '', insights: '', tags: '' },
-                    bookFilters: { search: '', status: 'all', selectedTags: [] },
+                    // 书籍
+                    books: [], showBookForm: false, 
+                    newBook: { title: '', author: '', status: 'planning', rating: 0, notes: '', tags: '' },
+                    bookFilters: { status: 'all', search: '' },
                     
-                    // 知识库 (Knowledge Base)
-                    showKnowledgeBase: false, kbEditorMode: false,
-                    kbCategories: [], kbDocs: [],
-                    kbCurrentCategory: 'all', kbSearch: '',
-                    kbEditorData: { id: null, title: '', content: '', categoryId: null }
+                    // 知识库
+                    showKnowledgeBase: false, kbCategories: [], kbDocs: [],
+                    kbCurrentCategory: 'all', kbEditorMode: false,
+                    kbEditorData: { id: null, title: '', content: '', categoryId: null },
+                    
+                    viewingItem: null
                 };
             },
             computed: {
-                xpPercentage() { return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100); },
-                
-                // 热力图计算 (Mock logic for display, real logic would process dates)
-                activityHeatmap() {
-                    // 这里简单模拟最近14天的数据，实际应该遍历 notes, books, kbDocs 的创建时间
-                    const days = [];
-                    const today = new Date();
-                    for(let i=13; i>=0; i--) {
-                        const d = new Date(today);
-                        d.setDate(today.getDate() - i);
-                        const dateStr = d.toISOString().split('T')[0];
-                        // 简单统计当天的记录数
-                        let count = this.notes.filter(n => n.createdAt.startsWith(dateStr)).length;
-                        count += this.books.filter(b => b.createdAt && b.createdAt.startsWith(dateStr)).length;
-                        
-                        let level = 0;
-                        if(count > 0) level = 1;
-                        if(count > 2) level = 2;
-                        if(count > 4) level = 3;
-                        if(count > 6) level = 4;
-                        
-                        days.push({ date: dateStr, count, level });
-                    }
-                    return days;
-                },
-
-                // 复盘筛选逻辑
-                allNoteTags() {
-                    const tags = new Set();
-                    this.notes.forEach(n => {
-                        if(n.tags && Array.isArray(n.tags)) n.tags.forEach(t => tags.add(t));
-                    });
-                    return Array.from(tags);
-                },
                 filteredNotes() {
                     let res = this.notes.filter(n => {
-                        // 类型筛选
-                        const type = n.type || 'daily';
-                        if (type !== this.activeReviewTab) return false;
+                        if (n.type && n.type !== this.activeReviewTab) return false;
+                        if (!n.type && this.activeReviewTab !== 'daily') return false; // 兼容旧数据
                         return true;
                     });
-                    
-                    // 搜索
-                    if(this.noteFilters.search) {
-                        const q = this.noteFilters.search.toLowerCase();
-                        res = res.filter(n => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q));
+                    if (this.noteFilters.search) {
+                        res = res.filter(n => n.title.includes(this.noteFilters.search) || n.content.includes(this.noteFilters.search));
                     }
-                    // 标签
-                    if(this.noteFilters.selectedTags.length > 0) {
-                        res = res.filter(n => n.tags && n.tags.some(t => this.noteFilters.selectedTags.includes(t)));
-                    }
-                    // 排序
-                    res.sort((a,b) => {
-                        const da = new Date(a.createdAt), db = new Date(b.createdAt);
-                        return this.noteFilters.sortBy === 'newest' ? db - da : da - db;
-                    });
-                    return res;
-                },
-
-                // 书籍筛选逻辑
-                allBookTags() {
-                    const tags = new Set();
-                    this.books.forEach(b => {
-                        if(b.tags && Array.isArray(b.tags)) b.tags.forEach(t => tags.add(t));
-                    });
-                    return Array.from(tags);
+                    return res.sort((a,b) => this.noteFilters.sortBy === 'newest' ? new Date(b.createdAt)-new Date(a.createdAt) : new Date(a.createdAt)-new Date(b.createdAt));
                 },
                 filteredBooks() {
-                    let res = [...this.books];
-                    // 状态
-                    if(this.bookFilters.status !== 'all') {
-                        res = res.filter(b => b.status === this.bookFilters.status);
-                    }
-                    // 搜索
-                    if(this.bookFilters.search) {
-                        const q = this.bookFilters.search.toLowerCase();
-                        res = res.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q));
-                    }
-                    // 标签
-                    if(this.bookFilters.selectedTags.length > 0) {
-                        res = res.filter(b => b.tags && b.tags.some(t => this.bookFilters.selectedTags.includes(t)));
-                    }
+                    let res = this.books;
+                    if (this.bookFilters.status !== 'all') res = res.filter(b => b.status === this.bookFilters.status);
+                    if (this.bookFilters.search) res = res.filter(b => b.title.includes(this.bookFilters.search));
                     return res;
                 },
-
-                // 知识库筛选
                 filteredKbDocs() {
-                    let res = [...this.kbDocs];
-                    if (this.kbCurrentCategory !== 'all') {
-                        res = res.filter(d => d.categoryId === this.kbCurrentCategory.id);
-                    }
-                    if (this.kbSearch) {
-                        const q = this.kbSearch.toLowerCase();
-                        res = res.filter(d => d.title.toLowerCase().includes(q));
-                    }
+                    let res = this.kbDocs;
+                    if (this.kbCurrentCategory !== 'all') res = res.filter(d => d.categoryId === this.kbCurrentCategory.id);
                     return res.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                 }
             },
             methods: {
-                // 工具函数
-                showMessage(text, type='success') { this.message = text; this.messageType = type; setTimeout(()=>this.message='', 3000); },
-                formatDate(str) { if(!str) return ''; return new Date(str).toLocaleString('zh-CN'); },
-                formatDateShort(str) { if(!str) return ''; return new Date(str).toLocaleDateString('zh-CN'); },
-                getReviewTypeName(type) {
-                    const map = { daily: '日常记录', weekly: '周复盘', yearly: '年终总结' };
-                    return map[type] || '记录';
-                },
-
-                // Auth
+                showMessage(txt, type='success') { this.message = txt; this.messageType = type; setTimeout(()=>this.message='', 4000); },
+                formatDateShort(str) { return new Date(str).toLocaleDateString(); },
+                
                 async login() {
-                    if(!this.email || !this.password) return this.showMessage('请输入邮箱密码', 'error');
+                    if (!this.email || !this.password) return this.showMessage('请输入邮箱和密码', 'error');
                     this.loading = true;
+                    // 纯粹的登录逻辑
                     const { data, error } = await sb.auth.signInWithPassword({ email: this.email, password: this.password });
-                    if(error) {
-                        // 尝试注册
-                        const { error: regError } = await sb.auth.signUp({ email: this.email, password: this.password });
-                        this.loading = false;
-                        if(regError) return this.showMessage(error.message, 'error');
-                        return this.showMessage('注册成功，请登录', 'success');
-                    }
-                    this.isLoggedIn = true; this.userId = data.user.id; this.userEmail = data.user.email;
                     this.loading = false;
+                    
+                    if (error) {
+                        console.error(error);
+                        return this.showMessage(error.message === 'Invalid login credentials' ? '登录失败：请确保在Supabase Authentication中创建了用户' : error.message, 'error');
+                    }
+                    
+                    this.isLoggedIn = true;
+                    this.userId = data.user.id;
+                    this.userEmail = data.user.email;
                     this.loadData();
                 },
-                async logout() { await sb.auth.signOut(); this.isLoggedIn = false; window.location.reload(); },
-
-                // 数据加载
+                async logout() {
+                    await sb.auth.signOut();
+                    this.isLoggedIn = false;
+                    this.userId = null;
+                },
+                
                 async loadData() {
                     this.syncing = true;
-                    // 并行加载 (简化逻辑)
                     const [p, n, b, kc, kd] = await Promise.all([
                         sb.from('players').select('*').eq('user_id', this.userId).single(),
                         sb.from('notes').select('*').eq('user_id', this.userId),
@@ -695,126 +497,65 @@
                         sb.from('kb_categories').select('*').eq('user_id', this.userId),
                         sb.from('kb_notes').select('*').eq('user_id', this.userId)
                     ]);
-                    
                     if(p.data) this.playerData = p.data.data;
                     if(n.data) this.notes = n.data.map(i => i.data);
                     if(b.data) this.books = b.data.map(i => i.data);
                     if(kc.data) this.kbCategories = kc.data.map(i => i.data);
                     if(kd.data) this.kbDocs = kd.data.map(i => i.data);
-                    
                     this.syncing = false;
                 },
-                async syncData() { await this.saveAll(); this.loadData(); },
+                
                 async saveAll() {
-                    this.syncing = true;
-                    // 删除旧数据 (简化方案，实际应增量更新)
+                    // 简化的全量同步
+                    const wrap = (list) => list.map(d => ({ user_id: this.userId, data: d }));
                     await Promise.all([
                         sb.from('notes').delete().eq('user_id', this.userId),
                         sb.from('books').delete().eq('user_id', this.userId),
                         sb.from('kb_categories').delete().eq('user_id', this.userId),
                         sb.from('kb_notes').delete().eq('user_id', this.userId)
                     ]);
-                    
-                    // 写入新数据
-                    const wrap = (list) => list.map(d => ({ user_id: this.userId, data: d }));
                     await sb.from('players').upsert({ user_id: this.userId, data: this.playerData });
                     if(this.notes.length) await sb.from('notes').insert(wrap(this.notes));
                     if(this.books.length) await sb.from('books').insert(wrap(this.books));
                     if(this.kbCategories.length) await sb.from('kb_categories').insert(wrap(this.kbCategories));
                     if(this.kbDocs.length) await sb.from('kb_notes').insert(wrap(this.kbDocs));
-                    
-                    this.syncing = false; this.showMessage('云端同步完成');
                 },
-
-                // 游戏化
-                addXp(amount) {
-                    this.playerData.xp += amount;
-                    if(this.playerData.xp >= this.playerData.nextLevelXp) {
-                        this.playerData.xp -= this.playerData.nextLevelXp;
-                        this.playerData.level++;
-                        this.playerData.nextLevelXp = Math.floor(this.playerData.nextLevelXp * 1.5);
-                        this.showMessage(`升级了！Lv.${this.playerData.level} 🎉`);
-                    }
-                },
-
-                // 复盘系统逻辑
+                
+                async syncData() { await this.saveAll(); this.loadData(); },
+                
+                // 功能逻辑
                 applyTemplate(type) {
-                    if (type === 'weekly') {
-                        this.newNote.content = "## 本周目标完成情况\n- \n\n## KPT复盘\n**Keep (保持):**\n- \n\n**Problem (问题):**\n- \n\n**Try (尝试):**\n- \n\n## 下周计划\n- ";
-                        this.newNote.tags = "周复盘, KPT";
-                    } else if (type === 'yearly') {
-                        this.newNote.content = "## 年度关键词\n\n## 关键成就 (Highlights)\n1. \n2. \n\n## 遗憾与教训\n- \n\n## 明年规划\n- ";
-                        this.newNote.tags = "年终总结, 规划";
-                    }
+                    if (type === 'weekly') this.newNote.content = "## 本周完成\n- \n\n## KPT复盘\n- Keep: \n- Problem: \n- Try: ";
+                    if (type === 'yearly') this.newNote.content = "## 年度关键词\n\n## 成就\n\n## 遗憾\n\n## 明年规划";
                 },
                 saveNote() {
-                    if(!this.newNote.title) return this.showMessage('请输入标题', 'error');
-                    const tagsArr = this.newNote.tags.split(/[,，]/).map(t => t.trim()).filter(t => t);
+                    if(!this.newNote.title) return;
                     this.notes.unshift({
-                        id: Date.now(),
-                        title: this.newNote.title,
-                        content: this.newNote.content,
-                        tags: tagsArr,
-                        type: this.activeReviewTab, // 关键：保存类型
-                        createdAt: new Date().toISOString()
+                        id: Date.now(), title: this.newNote.title, content: this.newNote.content,
+                        type: this.activeReviewTab, createdAt: new Date().toISOString(), tags: []
                     });
-                    this.addXp(15);
-                    this.newNote = { title: '', content: '', tags: '' };
-                    this.showReviewForm = false;
+                    this.newNote = { title: '', content: '' };
+                    this.playerData.xp += 10;
                     this.saveAll();
                 },
                 deleteNote(id) {
-                    if(confirm('确定删除此记录?')) {
-                        this.notes = this.notes.filter(n => n.id !== id);
-                        this.saveAll();
-                    }
+                    if(confirm('删除?')) { this.notes = this.notes.filter(n => n.id !== id); this.saveAll(); }
                 },
-                toggleNoteTagFilter(tag) {
-                    const idx = this.noteFilters.selectedTags.indexOf(tag);
-                    if(idx > -1) this.noteFilters.selectedTags.splice(idx, 1);
-                    else this.noteFilters.selectedTags.push(tag);
-                },
-                viewNoteDetail(note) { this.viewingItem = { ...note, type: 'note' }; },
-
-                // 读书笔记逻辑
                 saveBook() {
-                    if(!this.newBook.title) return this.showMessage('请输入书名', 'error');
-                    const tagsArr = this.newBook.tags.split(/[,，]/).map(t => t.trim()).filter(t => t);
-                    this.books.unshift({
-                        id: Date.now(),
-                        ...this.newBook,
-                        tags: tagsArr,
-                        createdAt: new Date().toISOString()
-                    });
-                    this.addXp(20);
-                    this.newBook = { title: '', author: '', status: 'reading', rating: 0, notes: '', insights: '', tags: '' };
+                    if(!this.newBook.title) return;
+                    this.books.unshift({ id: Date.now(), ...this.newBook, createdAt: new Date().toISOString() });
+                    this.newBook = { title: '', author: '', status: 'planning', rating: 0, notes: '' };
                     this.showBookForm = false;
+                    this.playerData.xp += 15;
                     this.saveAll();
                 },
-                deleteBook(id) {
-                    if(confirm('删除此书?')) {
-                        this.books = this.books.filter(b => b.id !== id);
-                        this.saveAll();
-                    }
-                },
-                toggleBookTagFilter(tag) {
-                    const idx = this.bookFilters.selectedTags.indexOf(tag);
-                    if(idx > -1) this.bookFilters.selectedTags.splice(idx, 1);
-                    else this.bookFilters.selectedTags.push(tag);
-                },
                 viewBookDetail(book) { this.viewingItem = { ...book, type: 'book', content: book.notes }; },
-
-                // 知识库逻辑
-                openKnowledgeBase() { this.showKnowledgeBase = true; },
-                closeKnowledgeBase() { this.showKnowledgeBase = false; },
-                createKbCategory() {
-                    const name = prompt('输入分类名称:');
-                    if(name) {
-                        this.kbCategories.push({ id: Date.now(), name, icon: '📁' });
-                        this.saveAll();
-                    }
+                
+                // 知识库
+                addCategory() {
+                    const name = prompt('分类名称');
+                    if(name) { this.kbCategories.push({ id: Date.now(), name }); this.saveAll(); }
                 },
-                getKbCount(catId) { return this.kbDocs.filter(d => d.categoryId === catId).length; },
                 openKbEditor() { 
                     this.kbEditorData = { id: null, title: '', content: '', categoryId: this.kbCurrentCategory.id || null };
                     this.kbEditorMode = true; 
@@ -824,46 +565,29 @@
                     this.kbEditorMode = true;
                 },
                 saveKbDoc() {
-                    if(!this.kbEditorData.title) return alert('标题不能为空');
+                    if(!this.kbEditorData.title) return;
                     const now = new Date().toISOString();
                     if(this.kbEditorData.id) {
-                        // Update
                         const idx = this.kbDocs.findIndex(d => d.id === this.kbEditorData.id);
                         this.kbDocs[idx] = { ...this.kbEditorData, updatedAt: now };
                     } else {
-                        // Create
-                        this.kbDocs.unshift({
-                            id: Date.now(),
-                            ...this.kbEditorData,
-                            createdAt: now,
-                            updatedAt: now
-                        });
-                        this.addXp(10);
+                        this.kbDocs.unshift({ id: Date.now(), ...this.kbEditorData, createdAt: now, updatedAt: now });
+                        this.playerData.xp += 20;
                     }
                     this.kbEditorMode = false;
                     this.saveAll();
                 },
-                deleteKbDoc(id) {
-                    if(confirm('删除文档?')) {
-                        this.kbDocs = this.kbDocs.filter(d => d.id !== id);
-                        this.saveAll();
-                    }
-                },
-                viewKbDoc(doc) {
-                    // 在知识库内，直接复用编辑模式作为查看模式（简化逻辑），或者新建查看逻辑
-                    // 这里为了体验，我们进入编辑模式但可以作为查看
-                    this.editKbDoc(doc);
+                deleteItem(item) {
+                    if(!confirm('确认删除？')) return;
+                    if(item.type === 'book') this.books = this.books.filter(b => b.id !== item.id);
+                    else this.kbDocs = this.kbDocs.filter(d => d.id !== item.id); // 简单处理，实际应区分类型
+                    this.viewingItem = null;
+                    this.saveAll();
                 }
             },
             mounted() {
-                // 检查登录会话
                 sb.auth.getSession().then(({ data: { session } }) => {
-                    if(session) {
-                        this.isLoggedIn = true;
-                        this.userId = session.user.id;
-                        this.userEmail = session.user.email;
-                        this.loadData();
-                    }
+                    if(session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadData(); }
                 });
             }
         }).mount('#app');
