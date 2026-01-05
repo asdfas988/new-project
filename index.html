@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 进化完全版</title>
+    <title>成长手账 </title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -84,7 +84,7 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* ========== ⚔️ 每日委托 ========== */
+        /* ========== 每日任务 ========== */
         .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .quest-item {
             background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px;
@@ -223,7 +223,7 @@
 
                 <!-- 🆕 模块：每日委托 (Habit Tracker) -->
                 <div class="card">
-                    <h2>⚔️ 每日委托 <button class="collapse-btn" @click="collapsed.quests = !collapsed.quests">{{ collapsed.quests ? '展开' : '收起' }}</button></h2>
+                    <h2>⚔️ 每日任务 <button class="collapse-btn" @click="collapsed.quests = !collapsed.quests">{{ collapsed.quests ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.quests">
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <input v-model="newQuestTitle" placeholder="添加每日任务 (如: 早起/看盘)..." class="note-input" style="margin-bottom: 0;">
@@ -780,3 +780,4 @@
     </script>
 </body>
 </html>
+
