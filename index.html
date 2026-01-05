@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 修复版</title>
-    <!-- 换用更稳定的 CDN 源 -->
-    <script src="https://npm.elemecdn.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="https://npm.elemecdn.com/@supabase/supabase-js@2"></script>
-    <script src="https://npm.elemecdn.com/chart.js/dist/chart.umd.js"></script>
+    <title>成长手账 - 稳定运行版</title>
+    <!-- 1. 更换为最稳定的国际 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/chart.js/dist/chart.umd.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* 2. 核心修复：防止 Vue 未加载时显示乱码 */
+        [v-cloak] { display: none !important; }
+
         /* ========== 全局样式 ========== */
         :root {
             --bg-color: #fef9f3;
@@ -74,6 +77,10 @@
             box-shadow: 3px 3px 0px #2ba69b; border: none; color: white; font-weight: bold; cursor: pointer;
         }
         .btn-danger { background: #ff6b6b; box-shadow: 3px 3px 0px #c0392b; }
+        .collapse-btn {
+            background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b;
+            padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; cursor: pointer;
+        }
         
         /* 输入框 */
         .note-input, .note-textarea {
@@ -94,6 +101,7 @@
             text-align: center; padding: 10px; border: 2px solid #e0c9b8; border-radius: 10px; 
             cursor: pointer; background: white; transition: all 0.2s;
         }
+        .shop-item:hover { background: #fff0eb; border-color: #ff9a8b; }
         
         .goal-item { background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 10px; }
         .tag-badge { display: inline-block; background: #9fa8da; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px; }
@@ -112,6 +120,14 @@
         .status-error { background: #ffe5e5; color: #d32f2f; border: 2px solid #ffcdd2; }
         .status-success { background: #e8f5e9; color: #2e7d32; border: 2px solid #c8e6c9; }
 
+        /* 模态框修复：默认隐藏，防止乱码覆盖页面 */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999;
+            display: none; /* 默认隐藏，由 Vue 控制显示 */
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .search-bar { position: static; margin-bottom: 15px; }
@@ -120,11 +136,12 @@
     </style>
 </head>
 <body>
-    <div id="app">
+    <!-- 3. v-cloak 属性：在 Vue 加载前隐藏整个 App -->
+    <div id="app" v-cloak>
         <!-- 全局消息 -->
         <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
 
-        <!-- 1. 登录界面 -->
+        <!-- 登录界面 -->
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
@@ -135,13 +152,13 @@
             </div>
         </div>
 
-        <!-- 2. 数据加载中界面 (防止白屏的关键) -->
+        <!-- 数据加载中界面 -->
         <div v-else-if="isLoadingData" class="loading-screen">
             <div class="spinner">☯️</div>
             <h2>正在读取命运档案...</h2>
         </div>
 
-        <!-- 3. 主界面 (只有数据准备好才渲染) -->
+        <!-- 主界面 -->
         <div v-else class="container">
             <div class="header">
                 <div class="search-bar">
@@ -169,7 +186,6 @@
                 <!-- 模块1：状态 -->
                 <div class="card">
                     <h2>📊 角色状态</h2>
-                    <!-- 安全渲染: 只有 playerData 存在才显示 -->
                     <div v-if="playerData">
                         <div style="font-size: 3em; font-weight: 800; text-align: center; color: #ff6b6b;">Lv.{{ playerData.level }}</div>
                         <div style="height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0;">
@@ -305,15 +321,17 @@
             </div>
         </div>
 
-        <!-- 详情弹窗 -->
-        <div v-if="viewingItem" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;" @click.self="viewingItem = null">
+        <!-- 4. 详情弹窗修复：使用 class 控制显示，防止 CSS 提前加载覆盖页面 -->
+        <div class="modal-overlay" :class="{ active: !!viewingItem }" @click.self="viewingItem = null">
             <div class="card" style="width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <h2>详情</h2> <span @click="viewingItem = null" style="cursor: pointer; font-size: 1.5em;">&times;</span>
+                <div v-if="viewingItem">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <h2>详情</h2> <span @click="viewingItem = null" style="cursor: pointer; font-size: 1.5em;">&times;</span>
+                    </div>
+                    <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
+                    <h3>{{ viewingItem.title || viewingItem.code }}</h3>
+                    <p style="white-space: pre-wrap;">{{ viewingItem.content || viewingItem.notes }}</p>
                 </div>
-                <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
-                <h3>{{ viewingItem.title || viewingItem.code }}</h3>
-                <p style="white-space: pre-wrap;">{{ viewingItem.content || viewingItem.notes }}</p>
             </div>
         </div>
     </div>
@@ -328,13 +346,12 @@
             data() {
                 return {
                     isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
-                    loading: false, syncing: false, isLoadingData: false, // 新增：数据加载状态
+                    loading: false, syncing: false, isLoadingData: false, 
                     message: '', messageType: '',
                     
                     activeReviewTab: 'stock', showReviewForm: false, showCaseForm: false, viewingItem: null,
                     searchQuery: '', chartInstance: null,
 
-                    // 默认数据，防止 undefined 报错
                     playerData: { 
                         level: 1, xp: 0, nextLevelXp: 100, 
                         goals: [], dailyQuests: [], shopItems: [], assetsHistory: [],
@@ -386,9 +403,8 @@
                 async logout() { await sb.auth.signOut(); this.isLoggedIn = false; },
 
                 async loadData() {
-                    this.isLoadingData = true; // 开启加载遮罩
+                    this.isLoadingData = true; 
                     try {
-                        // 使用 maybeSingle 避免空数据报错
                         const [p, n, c] = await Promise.all([
                             sb.from('players').select('*').eq('user_id', this.userId).maybeSingle(),
                             sb.from('notes').select('*').eq('user_id', this.userId),
@@ -396,10 +412,7 @@
                         ]);
 
                         if (p.data && p.data.data) {
-                            // 深度合并，保留默认结构
                             this.playerData = { ...this.playerData, ...p.data.data };
-                        } else {
-                            console.log("新用户，使用默认数据");
                         }
 
                         // 确保数组不为 undefined
@@ -407,7 +420,7 @@
                             if (!this.playerData[k]) this.playerData[k] = [];
                         });
                         
-                        // 设置默认任务（如果是空的）
+                        // 初始化默认数据
                         if (this.playerData.dailyQuests.length === 0) {
                             this.playerData.dailyQuests = [
                                 { id: 1, text: '🧘‍♂️ 冥想/站桩', done: false, xp: 10 },
@@ -430,8 +443,8 @@
                         console.error("加载失败:", e);
                         this.showMessage("数据加载异常", "error");
                     } finally {
-                        this.isLoadingData = false; // 关闭加载遮罩
-                        this.$nextTick(() => { this.initChart(); }); // 渲染图表
+                        this.isLoadingData = false; 
+                        this.$nextTick(() => { this.initChart(); }); 
                     }
                 },
 
@@ -563,12 +576,6 @@
                 });
             }
         });
-
-        // 全局错误捕获，防止白屏
-        app.config.errorHandler = (err) => {
-            console.error("Vue Error:", err);
-            alert("发生错误，应用已重启渲染");
-        };
 
         app.mount('#app');
     </script>
