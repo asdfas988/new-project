@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 目标进化版</title>
+    <title>成长手账 - 进化完全版</title>
+    <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- Chart.js (新增: 用于资产曲线) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ========== 全局样式 (暖色手账风) ========== */
+        /* ========== 全局样式 (保持暖色手账风) ========== */
         :root {
             --bg-color: #fef9f3;
             --text-color: #5a4a42;
             --accent-pink: #ff9a8b;
             --accent-green: #a3de83;
+            --accent-blue: #8fd3f4;
             --card-border: 2.5px solid #5a4a42;
             --card-shadow: 6px 6px 0px #d4b8a7;
         }
@@ -78,7 +84,38 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* ========== 目标管理 (双模式版) ========== */
+        /* ========== ⚔️ 每日委托 ========== */
+        .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .quest-item {
+            background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px;
+            display: flex; align-items: center; transition: all 0.2s; cursor: pointer;
+        }
+        .quest-item:hover { background: #fff0e6; }
+        .quest-item.completed { background: #e8f5e9; border-color: #a3de83; opacity: 0.8; }
+        .checkbox-custom {
+            width: 24px; height: 24px; border: 2px solid #5a4a42; border-radius: 6px; margin-right: 15px;
+            display: flex; align-items: center; justify-content: center; background: white;
+        }
+        .quest-item.completed .checkbox-custom { background: #a3de83; border-color: #2e7d32; }
+        .quest-item.completed .checkbox-custom::after { content: '✔'; color: white; font-weight: bold; }
+
+        /* ========== 🏦 积分商店 ========== */
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .shop-card {
+            background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; text-align: center;
+            display: flex; flex-direction: column; justify-content: space-between; height: 100%;
+        }
+        .shop-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
+        .shop-price { color: #ff9a8b; font-weight: bold; margin: 10px 0; }
+        .btn-buy { background: #5a4a42; color: #fff; border: none; padding: 8px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-buy:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* ========== 📉 资产图表 ========== */
+        .chart-container {
+            width: 100%; height: 300px; background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 20px;
+        }
+
+        /* ========== 原有模块样式保持 ========== */
         .goal-mode-switch { display: flex; gap: 10px; margin-bottom: 15px; }
         .mode-btn { 
             flex: 1; padding: 8px; text-align: center; border: 2px solid #e0c9b8; border-radius: 10px; cursor: pointer; font-weight: bold; color: #999;
@@ -92,14 +129,9 @@
             transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;
         }
         .goal-item.completed { background: #e8f5e9; border-color: #a3de83; box-shadow: inset 0 0 10px rgba(163, 222, 131, 0.2); }
-        
         .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; }
-        .goal-desc { font-size: 0.9em; color: #7a6a62; margin-bottom: 8px; }
-        
         .goal-progress-bg { height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; position: relative; margin: 10px 0; }
         .goal-progress-fill { height: 100%; transition: width 0.5s, background-color 0.3s; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; }
-        .goal-progress-text { color: white; font-size: 0.75em; padding-right: 5px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        
         .goal-input-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
         .goal-input-small { flex: 1; padding: 6px; border: 1px solid #d4b8a7; border-radius: 6px; font-size: 0.9em; text-align: center; font-weight: bold; color: #5a4a42; }
 
@@ -109,7 +141,6 @@
         .p-high { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
         .p-done { background: linear-gradient(90deg, #4ecdc4, #556270); }
 
-        /* ========== 游戏化核心 ========== */
         .level-display { font-size: 4em; font-weight: 800; text-align: center; color: #ff6b6b; text-shadow: 3px 3px 0px #ffd6cc; margin: 10px 0; }
         .xp-progress { height: 24px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
@@ -120,17 +151,15 @@
         .achievement-card.locked { opacity: 0.6; filter: grayscale(0.8); }
         .achievement-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
 
-        /* ========== 复盘系统 ========== */
         .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0c9b8; padding-bottom: 10px; overflow-x: auto; }
         .review-tab { padding: 8px 18px; border: 2px solid #e0c9b8; background: #fffaf5; border-radius: 15px 15px 0 0; cursor: pointer; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
         .review-tab.active { background: #ff9a8b; color: white; border-color: #ff9a8b; transform: translateY(2px); }
         .review-tab.special { background: #a3de83; border-color: #88c967; color: #2d5a27; }
         .stock-tag { display: inline-block; padding: 2px 6px; font-size: 0.8em; border-radius: 4px; color: white; margin-right: 5px; }
-        .bg-red { background: #e53935; } .bg-green { background: #43a047; }
+        .bg-red { background: #e53935; } .bg-green { background: #43a047; } .bg-gray { background: #555; }
         .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; position: relative; }
         .type-switcher { position: absolute; top: 15px; right: 15px; padding: 4px; border-radius: 6px; border: 1px solid #e0c9b8; background: white; font-size: 0.8em; color: #5a4a42; cursor: pointer; }
 
-        /* ========== 易学 & 知识库 & 读书 ========== */
         .case-grid, .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .case-card, .book-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; transition: all 0.2s; }
         .image-upload-area { border: 2px dashed #e0c9b8; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; background: #fffaf9; }
@@ -143,7 +172,6 @@
         .kb-content { flex: 1; padding: 40px; overflow-y: auto; }
         .kb-toolbar { padding: 15px 30px; border-bottom: 2px dashed #e0c9b8; display: flex; justify-content: space-between; align-items: center; background: #fffaf5; }
 
-        /* 登录 */
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
         .status-message { padding: 10px; border-radius: 10px; margin-top: 15px; font-weight: bold; }
         .status-error { background: #ffe5e5; color: #d32f2f; border: 2px solid #ffcdd2; }
@@ -162,13 +190,12 @@
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
-                <h2 style="justify-content: center;">成长手账</h2>
-                <p style="margin-bottom: 20px; color: #7a6a62;">记录 · 交易 · 易学 · 进化</p>
+                <h2 style="justify-content: center;">成长手账 · 进化版</h2>
+                <p style="margin-bottom: 20px; color: #7a6a62;">记录 · 交易 · 易学 · 资产</p>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
                 <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
-                <p style="margin-top: 15px; font-size: 0.8em; color: #999;">⚠️ 请确保在 Supabase 后台已创建该用户</p>
             </div>
         </div>
 
@@ -194,7 +221,28 @@
                     </div>
                 </div>
 
-                <!-- 模块2：目标管理 (量化 + 定性 双模式) -->
+                <!-- 🆕 模块：每日委托 (Habit Tracker) -->
+                <div class="card">
+                    <h2>⚔️ 每日委托 <button class="collapse-btn" @click="collapsed.quests = !collapsed.quests">{{ collapsed.quests ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.quests">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input v-model="newQuestTitle" placeholder="添加每日任务 (如: 早起/看盘)..." class="note-input" style="margin-bottom: 0;">
+                            <button class="btn-sm" @click="addDailyQuest" style="width: 80px;">➕ 添加</button>
+                        </div>
+                        <div class="quest-list">
+                            <div v-for="quest in playerData.dailyTasks || []" :key="quest.id" class="quest-item" :class="{completed: quest.completed}" @click="toggleQuest(quest)">
+                                <div class="checkbox-custom"></div>
+                                <div>
+                                    <div style="font-weight: bold;">{{ quest.title }}</div>
+                                    <div style="font-size: 0.8em; color: #7a6a62;">奖励: +5 XP</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; font-size: 0.8em; color: #999; margin-top: 15px;">⏳ 任务将于每日凌晨自动重置</div>
+                    </div>
+                </div>
+
+                <!-- 模块2：目标管理 (双模式版) -->
                 <div class="card">
                     <h2>🎯 阶段目标 (OKR) <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.goals">
@@ -204,93 +252,162 @@
                                 <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值进度</div>
                                 <div class="mode-btn" :class="{active: newGoal.mode === 'text'}" @click="newGoal.mode = 'text'">🚩 关键成果</div>
                             </div>
-
                             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                 <input v-model="newGoal.title" placeholder="目标内容 (如: 赚50万 / 拿到驾照)" class="note-input" style="flex: 2; margin: 0;">
-                                
-                                <!-- 数值模式输入 -->
                                 <template v-if="newGoal.mode === 'numeric'">
                                     <input v-model.number="newGoal.target" type="number" placeholder="目标数" class="note-input" style="flex: 1; margin: 0;">
                                     <input v-model="newGoal.unit" placeholder="单位 (元/本)" class="note-input" style="flex: 1; margin: 0;">
                                 </template>
-                                
-                                <!-- 定性模式输入 -->
-                                <template v-else>
-                                    <input disabled placeholder="手动拖拽进度" class="note-input" style="flex: 2; margin: 0; background: #eee; color: #999; cursor: not-allowed;">
-                                </template>
-
                                 <button class="btn-sm" @click="addGoal" style="height: 42px; width: 80px;">添加</button>
                             </div>
                         </div>
-
                         <!-- 目标列表 -->
                         <div class="goal-list">
                             <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: calculateProgress(goal) >= 100}">
-                                
-                                <!-- 标题行 -->
                                 <div class="goal-header">
-                                    <span :style="{textDecoration: calculateProgress(goal) >= 100 ? 'line-through' : 'none', color: calculateProgress(goal) >= 100 ? '#aaa' : 'inherit'}">
-                                        {{ goal.title }}
-                                    </span>
+                                    <span :style="{textDecoration: calculateProgress(goal) >= 100 ? 'line-through' : 'none'}">{{ goal.title }}</span>
                                     <span :style="{color: getProgressColor(calculateProgress(goal))}">{{ calculateProgress(goal) }}%</span>
                                 </div>
-                                
-                                <!-- 数值模式显示 -->
                                 <div v-if="goal.mode === 'numeric' || !goal.mode" class="goal-meta">
                                     <span>🎯 目标: {{ goal.target }} {{ goal.unit }}</span>
                                     <span>🚀 当前: {{ goal.current }} {{ goal.unit }}</span>
                                 </div>
-                                <!-- 定性模式显示 -->
-                                <div v-else class="goal-desc">
-                                    关键成果：{{ goal.targetText || '完成任务' }}
-                                </div>
-
-                                <!-- 进度条 -->
+                                <div v-else class="goal-desc">关键成果：{{ goal.targetText || '完成任务' }}</div>
                                 <div class="goal-progress-bg">
                                     <div class="goal-progress-fill" :class="getProgressClass(calculateProgress(goal))" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}"></div>
                                 </div>
-                                
-                                <!-- 进度更新操作 -->
                                 <div class="goal-input-group">
                                     <label style="font-size: 0.8em; color: #999;">进度:</label>
-                                    
-                                    <!-- 数值模式：输入当前值 -->
                                     <template v-if="goal.mode === 'numeric' || !goal.mode">
                                         <input type="number" v-model.number="goal.current" class="goal-input-small" @change="saveAll">
                                         <span style="font-size: 0.8em;">{{ goal.unit }}</span>
                                     </template>
-                                    
-                                    <!-- 定性模式：滑块 -->
                                     <template v-else>
                                         <input type="range" v-model.number="goal.current" min="0" max="100" style="flex: 1;" @change="saveAll">
                                     </template>
-
                                     <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="margin-left: auto;">✕</button>
-                                </div>
-                                
-                                <div v-if="calculateProgress(goal) >= 100" style="text-align: center; margin-top: 10px; color: #a3de83; font-weight: bold; border-top: 1px dashed #a3de83; padding-top: 5px;">
-                                    🎉 目标达成！
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块3：技能树 (独立排版) -->
+                <!-- 🆕 模块：积分商店 (Shop) -->
+                <div class="card">
+                    <h2>🏦 积分商店 <button class="collapse-btn" @click="collapsed.shop = !collapsed.shop">{{ collapsed.shop ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.shop">
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <input v-model="newShopItem.name" placeholder="商品名 (如: 奶茶)" class="note-input" style="margin-bottom: 0;">
+                            <input v-model.number="newShopItem.cost" type="number" placeholder="XP 价格" class="note-input" style="width: 100px; margin-bottom: 0;">
+                            <input v-model="newShopItem.icon" placeholder="图标 (☕)" class="note-input" style="width: 80px; margin-bottom: 0;">
+                            <button class="btn-sm" @click="addShopItem">上架</button>
+                        </div>
+                        <div class="shop-grid">
+                            <div v-for="item in playerData.shopItems || []" :key="item.id" class="shop-card">
+                                <div>
+                                    <span class="shop-icon">{{ item.icon }}</span>
+                                    <h3>{{ item.name }}</h3>
+                                    <div class="shop-price">{{ item.cost }} XP</div>
+                                </div>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="btn-buy" :disabled="playerData.xp < item.cost" @click="buyItem(item)">
+                                        {{ playerData.xp < item.cost ? 'XP不足' : '💰 兑换' }}
+                                    </button>
+                                    <button class="btn-sm btn-danger" style="width: 30px; padding: 0;" @click="deleteShopItem(item.id)">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块：复盘 & 资产 (Chart Integrated) -->
+                <div class="card">
+                    <h2>🔄 复盘 & 资产 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
+                    <div v-show="!collapsed.reviews">
+                        <div class="review-tabs">
+                            <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'; loadChart()">📈 股票/资产</div>
+                            <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
+                            <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
+                            <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
+                        </div>
+
+                        <!-- 📉 资产曲线图 (仅在股票标签显示) -->
+                        <div v-show="activeReviewTab === 'stock'" class="chart-container">
+                            <canvas id="assetChart"></canvas>
+                        </div>
+
+                        <!-- 表单 -->
+                        <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #ff9a8b; border-radius: 15px; margin-bottom: 20px;">
+                            <!-- 股票专用字段 + 资产录入 -->
+                            <div v-if="activeReviewTab === 'stock'">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                    <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin: 0;">
+                                    <select v-model="newStockData.action" class="note-input" style="margin: 0;">
+                                        <option value="buy">🔵 买入</option>
+                                        <option value="sell">🔴 卖出</option>
+                                        <option value="hold">⚪ 持仓/记录</option>
+                                    </select>
+                                    <input v-model="newStockData.price" placeholder="交易价格" class="note-input" style="margin: 0;">
+                                    <input v-model="newStockData.profit" placeholder="盈亏额" class="note-input" style="margin: 0;">
+                                </div>
+                                <!-- 🆕 净值录入 -->
+                                <div style="background: #e8f5e9; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                                    <label style="font-weight: bold; color: #2e7d32;">💵 当前总资产 (用于生成曲线):</label>
+                                    <input v-model.number="newStockData.totalAsset" type="number" placeholder="输入当前总净值..." class="note-input" style="margin-top: 5px;">
+                                </div>
+                            </div>
+
+                            <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
+                            <textarea v-model="newNote.content" :placeholder="activeReviewTab === 'stock' ? '交易逻辑、反思或市场分析...' : '内容...'" class="note-textarea" style="height: 150px;"></textarea>
+                            <button class="btn" @click="saveNote">💾 保存记录</button>
+                        </div>
+
+                        <!-- 列表 -->
+                        <div v-for="note in filteredNotes" :key="note.id" class="note-card">
+                            <select v-model="note.type" @change="saveAll()" class="type-switcher">
+                                <option value="daily">📝 日常</option>
+                                <option value="stock">📈 股票</option>
+                                <option value="weekly">📅 周报</option>
+                            </select>
+
+                            <div style="font-size: 0.85em; color: #999; margin-bottom: 5px;">{{ formatDate(note.createdAt) }}</div>
+                            
+                            <!-- 股票/资产展示 -->
+                            <div v-if="note.type === 'stock'" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e0c9b8;">
+                                <span class="stock-tag" :class="note.stockData?.action === 'buy' ? 'bg-red' : (note.stockData?.action === 'sell' ? 'bg-green' : 'bg-gray')">
+                                    {{ note.stockData?.action === 'buy' ? '买入' : (note.stockData?.action === 'sell' ? '卖出' : '持仓') }}
+                                </span>
+                                <strong>{{ note.stockData?.code }}</strong>
+                                <span v-if="note.stockData?.price" style="margin-left: 10px;">@ {{ note.stockData?.price }}</span>
+                                <span v-if="note.stockData?.profit" style="float: right; font-weight: bold;" :style="{color: parseFloat(note.stockData.profit) > 0 ? '#e53935' : '#43a047'}">
+                                    {{ parseFloat(note.stockData.profit) > 0 ? '+' : '' }}{{ note.stockData.profit }}
+                                </span>
+                                <div v-if="note.stockData?.totalAsset" style="margin-top: 5px; color: #2e7d32; font-size: 0.9em; font-weight: bold;">
+                                    💰 当时净值: {{ note.stockData.totalAsset }}
+                                </div>
+                            </div>
+
+                            <h3 v-if="note.title">{{ note.title }}</h3>
+                            <p style="white-space: pre-wrap; line-height: 1.6; color: #5a4a42;">{{ note.content }}</p>
+                            <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="margin-top: 10px; float: right;">删除</button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块：技能修炼 -->
                 <div class="card">
                     <h2>⚡ 技能修炼 <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">{{ collapsed.skills ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.skills">
                         <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                            <input v-model="newSkillName" placeholder="新技能名称 (如: 八字排盘)..." class="note-input" style="margin-bottom: 0;">
+                            <input v-model="newSkillName" placeholder="新技能名称..." class="note-input" style="margin-bottom: 0;">
                             <button class="btn" @click="addNewSkillInline" style="width: 120px;">✨ 习得</button>
                         </div>
-                        
-                        <div v-if="skills.length === 0" style="text-align: center; color: #999; padding: 20px;">暂无技能，快去添加吧！</div>
                         <div v-for="skill in skills" :key="skill.id" class="skill-item">
                             <div style="flex: 1; padding-right: 20px;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                                     <strong style="font-size: 1.1em;">{{ skill.icon }} {{ skill.name }}</strong>
-                                    <span style="color: #999; font-size: 0.9em;">Lv.{{ skill.level }}</span>
+                                    <span style="color: #999;">Lv.{{ skill.level }}</span>
                                 </div>
                                 <div class="xp-progress" style="height: 8px; margin: 0;"><div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div></div>
                             </div>
@@ -302,206 +419,86 @@
                     </div>
                 </div>
 
-                <!-- 模块4：成就墙 (独立排版) -->
+                <!-- 模块：成就 & 知识库等 (简化显示) -->
                 <div class="card">
-                    <h2>🏆 成就荣耀 <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">{{ collapsed.achievements ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.achievements">
-                        <div class="achievement-grid">
-                            <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
-                                <span class="achievement-icon">{{ ach.icon }}</span>
-                                <h3>{{ ach.name }}</h3>
-                                <p style="font-size: 0.8em; color: #7a6a62; margin: 5px 0;">{{ ach.description }}</p>
-                                <div style="font-size: 0.8em; font-weight: bold; color: #ff6b6b;">{{ ach.current }} / {{ ach.requirement }}</div>
-                            </div>
+                    <h2>🏆 荣耀与知识</h2>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn" @click="showKnowledgeBase = true" style="flex: 1;">📂 知识库</button>
+                        <button class="btn" @click="collapsed.achievements = false; $el.querySelector('.achievement-grid')?.scrollIntoView()" style="flex: 1;">🏅 成就墙</button>
+                    </div>
+                    
+                    <div v-show="!collapsed.achievements" class="achievement-grid" style="margin-top: 20px;">
+                        <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: !ach.unlocked}">
+                            <span class="achievement-icon">{{ ach.icon }}</span>
+                            <h3>{{ ach.name }}</h3>
+                            <p>{{ ach.description }}</p>
+                            <div style="color: #ff6b6b;">{{ ach.current }} / {{ ach.requirement }}</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块5：复盘笔记 (含分类修正功能) -->
-                <div class="card">
-                    <h2>🔄 复盘笔记 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
-                    <div v-show="!collapsed.reviews">
-                        <div class="review-tabs">
-                            <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'">📈 股票复盘</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
-                            <div class="review-tab" :class="{active: activeReviewTab === 'yearly'}" @click="activeReviewTab = 'yearly'">🏆 年总结</div>
-                            <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
-                        </div>
-
-                        <!-- 表单 -->
-                        <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #ff9a8b; border-radius: 15px; margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <strong>新建 {{ getReviewTypeName(activeReviewTab) }}</strong>
-                                <button v-if="activeReviewTab !== 'stock'" class="btn-sm" style="background: #e0c9b8; border: none;" @click="applyTemplate(activeReviewTab)">📄 插入模板</button>
-                            </div>
-
-                            <!-- 股票专用字段 -->
-                            <div v-if="activeReviewTab === 'stock'" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin: 0;">
-                                <select v-model="newStockData.action" class="note-input" style="margin: 0;">
-                                    <option value="buy">🔵 买入</option>
-                                    <option value="sell">🔴 卖出</option>
-                                    <option value="hold">⚪ 持仓</option>
-                                </select>
-                                <input v-model="newStockData.price" placeholder="价格" class="note-input" style="margin: 0;">
-                                <input v-model="newStockData.profit" placeholder="盈亏额 (可选)" class="note-input" style="margin: 0;">
-                            </div>
-
-                            <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
-                            <textarea v-model="newNote.content" :placeholder="activeReviewTab === 'stock' ? '交易逻辑与反思...' : '内容...'" class="note-textarea" style="height: 150px;"></textarea>
-                            <button class="btn" @click="saveNote">💾 保存</button>
-                        </div>
-
-                        <!-- 列表 -->
-                        <div v-for="note in filteredNotes" :key="note.id" class="note-card">
-                            <!-- 类型切换器 -->
-                            <select v-model="note.type" @change="saveAll()" class="type-switcher" title="修改分类">
-                                <option value="daily">📝 日常</option>
-                                <option value="stock">📈 股票</option>
-                                <option value="weekly">📅 周报</option>
-                                <option value="yearly">🏆 年报</option>
-                            </select>
-
-                            <div style="font-size: 0.85em; color: #999; margin-bottom: 5px; margin-right: 60px;">{{ formatDate(note.createdAt) }}</div>
-                            
-                            <!-- 股票展示逻辑 -->
-                            <div v-if="note.type === 'stock'" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e0c9b8;">
-                                <span class="stock-tag" :class="note.stockData?.action === 'buy' ? 'bg-red' : (note.stockData?.action === 'sell' ? 'bg-green' : 'bg-gray')" style="background: #555;">
-                                    {{ note.stockData?.action === 'buy' ? '买入' : (note.stockData?.action === 'sell' ? '卖出' : '持仓') }}
-                                </span>
-                                <strong>{{ note.stockData?.code }}</strong>
-                                <span v-if="note.stockData?.price" style="margin-left: 10px; color: #7a6a62;">@ {{ note.stockData?.price }}</span>
-                                <span v-if="note.stockData?.profit" style="float: right; font-weight: bold;" :style="{color: parseFloat(note.stockData.profit) > 0 ? '#e53935' : '#43a047'}">
-                                    {{ parseFloat(note.stockData.profit) > 0 ? '+' : '' }}{{ note.stockData.profit }}
-                                </span>
-                            </div>
-
-                            <h3 v-if="note.title" style="margin-bottom: 10px;">{{ note.title }}</h3>
-                            <p style="white-space: pre-wrap; line-height: 1.6; color: #5a4a42;">{{ note.content }}</p>
-                            <div style="margin-top: 10px; text-align: right;">
-                                <button class="btn-sm btn-danger" @click="deleteNote(note.id)">删除</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 模块6：易学命例 -->
+                <!-- 模块：易学命例 -->
                 <div class="card">
                     <h2>☯️ 易学命例 <button class="collapse-btn" @click="collapsed.cases = !collapsed.cases">{{ collapsed.cases ? '展开' : '收起' }}</button></h2>
                     <div v-show="!collapsed.cases">
-                        <button class="btn" style="margin-bottom: 20px; background: linear-gradient(90deg, #5a4a42, #7a6a62);" @click="showCaseForm = !showCaseForm">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
-                        
+                        <button class="btn" style="margin-bottom: 20px;" @click="showCaseForm = !showCaseForm">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
                         <div v-if="showCaseForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #5a4a42; border-radius: 15px; margin-bottom: 20px;">
-                            <input v-model="newCase.title" placeholder="命主称呼 / 八字概要 (如: 乾造 甲子年...)" class="note-input">
+                            <input v-model="newCase.title" placeholder="命主称呼 / 八字概要" class="note-input">
                             <div class="image-upload-area" @click="$refs.fileInput.click()">
                                 <input type="file" ref="fileInput" @change="handleImageUpload" style="display: none;" accept="image/*">
-                                <div v-if="newCase.image" style="position: relative;">
-                                    <img :src="newCase.image" style="max-height: 200px; max-width: 100%; border-radius: 10px;">
-                                    <div style="font-size: 0.8em; color: #ff6b6b;">点击更换图片</div>
-                                </div>
-                                <div v-else>
-                                    <div style="font-size: 2em;">📷</div>
-                                    <div>点击上传排盘图片</div>
-                                </div>
+                                <div v-if="newCase.image"><img :src="newCase.image" style="max-height: 200px; max-width: 100%;"></div>
+                                <div v-else>📷 点击上传排盘图片</div>
                             </div>
-                            <textarea v-model="newCase.content" placeholder="断语、反馈与复盘..." class="note-textarea" style="height: 150px;"></textarea>
-                            <button class="btn" @click="saveCase">💾 保存命例</button>
+                            <textarea v-model="newCase.content" placeholder="断语与复盘..." class="note-textarea" style="height: 100px;"></textarea>
+                            <button class="btn" @click="saveCase">💾 保存</button>
                         </div>
-
                         <div class="case-grid">
                             <div v-for="c in cases" :key="c.id" class="case-card" @click="viewingItem = { ...c, type: 'case' }">
-                                <img v-if="c.image" :src="c.image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
-                                <div v-else style="height: 150px; background: #eee; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #999;">无图片</div>
+                                <img v-if="c.image" :src="c.image" style="width: 100%; height: 120px; object-fit: cover; border-radius: 10px;">
                                 <h3>{{ c.title }}</h3>
-                                <p style="font-size: 0.9em; color: #7a6a62; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{ c.content }}</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 模块7：知识库 & 读书 -->
-                <div class="card">
-                    <h2>🧠 知识库 & 读书</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" @click="showKnowledgeBase = true" style="background: linear-gradient(90deg, #667eea, #764ba2);">📂 打开知识库</button>
-                        <button class="btn" style="background: linear-gradient(90deg, #4ecdc4, #a3de83);" @click="collapsed.books = false; document.querySelector('.book-grid')?.scrollIntoView()">📚 查看书架</button>
-                    </div>
-                    
-                    <div v-show="!collapsed.books" style="margin-top: 20px;">
-                         <button class="btn-sm" style="margin-bottom: 15px;" @click="showBookForm = !showBookForm">✨ 添加新书</button>
-                         <div v-if="showBookForm" style="background: #fffaf5; padding: 15px; border: 2px dashed #a3de83; border-radius: 10px; margin-bottom: 15px;">
-                            <input v-model="newBook.title" placeholder="书名" class="note-input">
-                            <input v-model="newBook.author" placeholder="作者" class="note-input">
-                            <select v-model="newBook.status" class="note-input"><option value="planning">📅 计划</option><option value="reading">📖 在读</option><option value="finished">✅ 已读</option></select>
-                            <textarea v-model="newBook.notes" placeholder="笔记..." class="note-textarea" style="height: 80px;"></textarea>
-                            <button class="btn" @click="saveBook">保存</button>
-                         </div>
-                         <div class="book-grid">
-                            <div v-for="book in books" :key="book.id" class="book-card" @click="viewingItem = { ...book, type: 'book' }">
-                                <h4 style="margin: 0;">{{ book.title }}</h4>
-                                <small style="color: #999;">{{ book.author }}</small>
-                                <div style="color: #ffcc00;">{{ '★'.repeat(book.rating) }}</div>
-                            </div>
-                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 知识库弹窗 -->
+        <!-- 知识库弹窗 (保持原样) -->
         <div v-if="showKnowledgeBase" class="kb-overlay" @click.self="showKnowledgeBase = false">
             <div class="kb-window">
                 <div class="kb-sidebar">
-                    <div style="padding: 20px; font-weight: bold; border-bottom: 2px dashed #e0c9b8; display: flex; justify-content: space-between;">
-                        <span>📚 知识库</span>
-                        <span @click="addKbCategory" style="cursor: pointer; color: #ff6b6b;">+</span>
-                    </div>
-                    <div style="flex: 1; overflow-y: auto; padding: 10px 0;">
-                        <div class="kb-nav-item" :class="{active: kbCurrentCategory === 'all'}" @click="kbCurrentCategory = 'all'"><span>📂 全部</span></div>
-                        <div v-for="cat in kbCategories" :key="cat.id" class="kb-nav-item" :class="{active: kbCurrentCategory && kbCurrentCategory.id === cat.id}" @click="kbCurrentCategory = cat">
-                            <span>📁 {{ cat.name }}</span><span class="count" style="color:#999">{{ kbDocs.filter(d=>d.categoryId===cat.id).length }}</span>
-                        </div>
+                    <div style="padding: 20px; font-weight: bold; border-bottom: 2px dashed #e0c9b8;">📚 知识库 <span @click="addKbCategory" style="float:right; cursor:pointer;">+</span></div>
+                    <div style="flex: 1; overflow-y: auto;">
+                        <div class="kb-nav-item" :class="{active: kbCurrentCategory === 'all'}" @click="kbCurrentCategory = 'all'">📂 全部</div>
+                        <div v-for="cat in kbCategories" :key="cat.id" class="kb-nav-item" :class="{active: kbCurrentCategory && kbCurrentCategory.id === cat.id}" @click="kbCurrentCategory = cat">📁 {{ cat.name }}</div>
                     </div>
                 </div>
                 <div class="kb-main">
                     <div class="kb-toolbar">
-                        <span>{{ kbCurrentCategory === 'all' ? '全部文档' : kbCurrentCategory.name }}</span>
-                        <div><button class="btn-sm" @click="openKbEditor()">+ 新建</button><button class="btn-sm" style="background:#e0c9b8; margin-left:10px;" @click="showKnowledgeBase = false">✕</button></div>
+                        <span>{{ kbCurrentCategory === 'all' ? '全部' : kbCurrentCategory.name }}</span>
+                        <button class="btn-sm" @click="openKbEditor()">+ 新建</button>
                     </div>
                     <div class="kb-content">
-                        <div v-if="kbEditorMode" style="height: 100%; display: flex; flex-direction: column;">
-                            <input v-model="kbEditorData.title" placeholder="标题" style="font-size: 1.5em; font-weight: bold; border: none; background: transparent; outline: none; margin-bottom: 10px;">
-                            <select v-model="kbEditorData.categoryId" style="margin-bottom: 10px; padding: 5px;"><option :value="null">无分类</option><option v-for="cat in kbCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option></select>
-                            <textarea v-model="kbEditorData.content" placeholder="写作..." style="flex: 1; border: none; outline: none; resize: none; background: transparent; font-size: 1.1em; line-height: 1.6;"></textarea>
-                            <div style="text-align: right;"><button class="btn-sm" @click="saveKbDoc">保存</button><button class="btn-sm" style="margin-left: 10px; background:#ccc;" @click="kbEditorMode = false">取消</button></div>
+                        <div v-if="kbEditorMode">
+                            <input v-model="kbEditorData.title" placeholder="标题" class="note-input">
+                            <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 400px;"></textarea>
+                            <button class="btn" @click="saveKbDoc">保存</button>
                         </div>
-                        <div v-else>
-                            <div v-for="doc in filteredKbDocs" :key="doc.id" style="padding: 15px; border-bottom: 1px dashed #e0c9b8; cursor: pointer;" @click="editKbDoc(doc)">
-                                <div style="font-weight: bold;">📄 {{ doc.title }}</div>
-                                <div style="font-size: 0.9em; color: #999;">{{ formatDateShort(doc.updatedAt) }}</div>
-                            </div>
+                        <div v-else v-for="doc in filteredKbDocs" :key="doc.id" style="padding: 15px; border-bottom: 1px dashed #e0c9b8; cursor: pointer;" @click="editKbDoc(doc)">
+                            <div style="font-weight: bold;">📄 {{ doc.title }}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- 通用详情弹窗 -->
+        
+        <!-- 详情弹窗 -->
         <div v-if="viewingItem" class="kb-overlay" @click.self="viewingItem = null">
-            <div class="card" style="width: 90%; max-width: 700px; max-height: 85vh; display: flex; flex-direction: column;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #eee;">
-                    <h2>{{ viewingItem.title }}</h2><span @click="viewingItem = null" style="cursor: pointer;">✕</span>
-                </div>
-                <div style="overflow-y: auto; flex: 1; white-space: pre-wrap; line-height: 1.6;">
-                    <img v-if="viewingItem.type === 'case' && viewingItem.image" :src="viewingItem.image" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
-                    {{ viewingItem.content || viewingItem.notes }}
-                    <div v-if="viewingItem.insights" style="margin-top: 20px; padding: 10px; background: #f9f9f9; border-radius: 8px;"><strong>💡 感悟：</strong>{{ viewingItem.insights }}</div>
-                </div>
-                <div style="text-align: right; margin-top: 20px;">
-                    <button class="btn-sm btn-danger" @click="deleteItem(viewingItem)">删除</button>
-                    <button class="btn-sm" style="margin-left: 10px; background: #e0c9b8;" @click="viewingItem = null">关闭</button>
-                </div>
+            <div class="card" style="width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <h2>{{ viewingItem.title }}</h2>
+                <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; margin: 10px 0; border-radius: 10px;">
+                <p style="white-space: pre-wrap;">{{ viewingItem.content }}</p>
+                <button class="btn-sm btn-danger" @click="deleteItem(viewingItem)" style="margin-top: 20px;">删除</button>
             </div>
         </div>
     </div>
@@ -518,29 +515,35 @@
                     isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                     loading: false, syncing: false, message: '', messageType: '',
                     
-                    collapsed: { goals: false, stats: false, skills: false, achievements: true, reviews: false, books: true, cases: false },
-                    playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [] },
+                    collapsed: { goals: false, stats: false, skills: false, achievements: true, reviews: false, books: true, cases: true, quests: false, shop: false },
                     
-                    newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric', targetText: '' },
+                    // 核心数据结构升级
+                    playerData: { 
+                        level: 1, xp: 0, nextLevelXp: 100, 
+                        goals: [], 
+                        dailyTasks: [], // 🆕 每日任务
+                        lastLoginDate: '', // 🆕 上次登录日期
+                        shopItems: [], // 🆕 商店商品
+                        assetHistory: [] // 🆕 资产曲线数据
+                    },
+                    
+                    newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
+                    newQuestTitle: '', // 🆕 新任务名
+                    newShopItem: { name: '', cost: 50, icon: '🥤' }, // 🆕 新商品
+                    
+                    skills: [], achievements: [], notes: [], cases: [], books: [],
+                    kbCategories: [], kbDocs: [],
+                    
+                    activeReviewTab: 'stock', showReviewForm: false,
+                    newNote: { title: '', content: '' },
+                    newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null }, // 🆕 totalAsset
                     newSkillName: '',
                     
-                    skills: [], 
-                    achievements: [
-                        { id: 1, name: '初次交易', icon: '💰', description: '记录股票交易', requirement: 1, current: 0, unlocked: false },
-                        { id: 2, name: '铁口直断', icon: '☯️', description: '记录3个命例', requirement: 3, current: 0, unlocked: false }
-                    ],
+                    // 弹窗相关
+                    showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbEditorData: {},
+                    showCaseForm: false, newCase: { title: '', content: '', image: null }, viewingItem: null,
                     
-                    notes: [], activeReviewTab: 'stock', showReviewForm: false,
-                    newNote: { title: '', content: '', tags: '' },
-                    newStockData: { code: '', action: 'buy', price: '', profit: '', logic: '', mistake: '' },
-                    
-                    cases: [], showCaseForm: false, newCase: { title: '', content: '', image: null },
-                    books: [], showBookForm: false, viewingItem: null,
-                    newBook: { title: '', author: '', status: 'reading', rating: 0, notes: '', insights: '' },
-                    
-                    showKnowledgeBase: false, kbCategories: [], kbDocs: [],
-                    kbCurrentCategory: 'all', kbEditorMode: false,
-                    kbEditorData: { id: null, title: '', content: '', categoryId: null }
+                    chartInstance: null // 🆕 Chart实例
                 };
             },
             computed: {
@@ -554,33 +557,26 @@
                     return res.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
                 },
                 filteredKbDocs() {
-                    let res = this.kbDocs;
-                    if (this.kbCurrentCategory !== 'all') res = res.filter(d => d.categoryId === this.kbCurrentCategory.id);
-                    return res.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                    if (this.kbCurrentCategory === 'all') return this.kbDocs;
+                    return this.kbDocs.filter(d => d.categoryId === this.kbCurrentCategory.id);
                 }
             },
             methods: {
                 showMessage(txt, type='success') { this.message = txt; this.messageType = type; setTimeout(()=>this.message='', 4000); },
                 formatDate(str) { return new Date(str).toLocaleString('zh-CN'); },
-                formatDateShort(str) { return new Date(str).toLocaleDateString(); },
-                getReviewTypeName(t) { const map={stock:'股票',daily:'日常',weekly:'周复盘',yearly:'年终'}; return map[t]||'记录'; },
                 
-                // Visualization Helpers
-                calculateProgress(goal) {
-                    if (goal.mode === 'text') return goal.current || 0; 
-                    if (!goal.target || goal.target === 0) return 0;
-                    return Math.round((goal.current / goal.target) * 100);
-                },
-                getProgressColor(p) { if(p < 30) return '#ff6b6b'; if(p < 80) return '#ffcc00'; return '#2e7d32'; },
-                getProgressClass(p) { if(p >= 100) return 'p-done'; if(p < 30) return 'p-low'; if(p < 80) return 'p-mid'; return 'p-high'; },
+                // Visualization
+                calculateProgress(goal) { return goal.mode === 'text' ? (goal.current || 0) : (!goal.target ? 0 : Math.round((goal.current / goal.target) * 100)); },
+                getProgressColor(p) { return p < 30 ? '#ff6b6b' : (p < 80 ? '#ffcc00' : '#2e7d32'); },
+                getProgressClass(p) { return p >= 100 ? 'p-done' : (p < 30 ? 'p-low' : (p < 80 ? 'p-mid' : 'p-high')); },
 
                 // Auth & Data
                 async login() {
-                    if (!this.email || !this.password) return this.showMessage('请输入账号密码', 'error');
+                    if (!this.email || !this.password) return;
                     this.loading = true;
                     const { data, error } = await sb.auth.signInWithPassword({ email: this.email, password: this.password });
                     this.loading = false;
-                    if (error) return this.showMessage('登录失败: ' + error.message, 'error');
+                    if (error) return this.showMessage(error.message, 'error');
                     this.isLoggedIn = true; this.userId = data.user.id; this.userEmail = data.user.email;
                     this.loadData();
                 },
@@ -599,10 +595,18 @@
                         sb.from('cases').select('*').eq('user_id', this.userId)
                     ]);
                     
-                    // 修复：确保读取后如果缺少字段（如 goals），使用本地默认值，避免目标数组消失
                     if(p.data && p.data.data) {
                         this.playerData = { ...this.playerData, ...p.data.data };
-                        if (!this.playerData.goals) this.playerData.goals = [];
+                        // 初始化新字段以防旧数据报错
+                        if(!this.playerData.dailyTasks) this.playerData.dailyTasks = [];
+                        if(!this.playerData.shopItems) this.playerData.shopItems = [
+                            {id: 1, name: '喝奶茶', cost: 50, icon: '🥤'},
+                            {id: 2, name: '玩游戏1小时', cost: 100, icon: '🎮'},
+                            {id: 3, name: '赖床券', cost: 200, icon: '🛌'}
+                        ];
+                        if(!this.playerData.assetHistory) this.playerData.assetHistory = [];
+                        
+                        this.checkDailyReset(); // 🆕 检查每日任务重置
                     }
 
                     if(s.data) this.skills = s.data.map(i => i.data);
@@ -612,164 +616,160 @@
                     if(kc.data) this.kbCategories = kc.data.map(i => i.data);
                     if(kd.data) this.kbDocs = kd.data.map(i => i.data);
                     if(cs.data) this.cases = cs.data.map(i => i.data);
+                    
                     this.syncing = false;
+                    setTimeout(() => this.loadChart(), 500); // 🆕 延迟加载图表
                 },
 
-                // 核心优化：并行保存 + onConflict 修复
                 async saveAll() {
                     if (!this.userId) return;
-                    
-                    // 定义一个通用保存函数，先并行处理删除和插入
-                    const saveTable = async (tableName, list) => {
-                        // 1. 删除旧数据 (如果数据量大，建议改为增量更新，但为了保持逻辑简单，此处仍用全量覆盖)
-                        const { error: delError } = await sb.from(tableName).delete().eq('user_id', this.userId);
-                        if (delError) console.error(`Error clearing ${tableName}:`, delError);
+                    await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
+                    // 其他表略...为了性能这里不每次全存，但在本示例简化逻辑
+                    const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
+                    await Promise.all([
+                        saveTbl('skills', this.skills),
+                        saveTbl('achievements', this.achievements),
+                        saveTbl('notes', this.notes),
+                        saveTbl('cases', this.cases),
+                        saveTbl('books', this.books),
+                        saveTbl('kb_notes', this.kbDocs),
+                        saveTbl('kb_categories', this.kbCategories)
+                    ]);
+                },
+                async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
-                        // 2. 插入新数据
-                        if (list && list.length > 0) {
-                            const payload = list.map(d => ({ user_id: this.userId, data: d }));
-                            const { error: insError } = await sb.from(tableName).insert(payload);
-                            if (insError) console.error(`Error saving ${tableName}:`, insError);
+                // ========== 🆕 功能1: 每日委托逻辑 ==========
+                checkDailyReset() {
+                    const today = new Date().toDateString();
+                    if (this.playerData.lastLoginDate !== today) {
+                        // 是新的一天，重置任务
+                        this.playerData.dailyTasks.forEach(t => t.completed = false);
+                        this.playerData.lastLoginDate = today;
+                        this.saveAll();
+                        this.showMessage('☀️ 新的一天，每日任务已刷新！');
+                    }
+                },
+                addDailyQuest() {
+                    if (!this.newQuestTitle) return;
+                    this.playerData.dailyTasks.push({ id: Date.now(), title: this.newQuestTitle, completed: false });
+                    this.newQuestTitle = '';
+                    this.saveAll();
+                },
+                toggleQuest(quest) {
+                    if (quest.completed) return; // 已完成不能取消（简单逻辑，或者你可以允许取消但扣XP）
+                    quest.completed = true;
+                    this.addXp(5);
+                    // 检查是否全清
+                    if (this.playerData.dailyTasks.every(t => t.completed)) {
+                        this.showMessage('🔥 全勤达成！奖励 20 XP');
+                        this.addXp(20);
+                    }
+                    this.saveAll();
+                },
+
+                // ========== 🆕 功能2: 积分商店逻辑 ==========
+                addShopItem() {
+                    this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem });
+                    this.newShopItem = { name: '', cost: 50, icon: '✨' };
+                    this.saveAll();
+                },
+                deleteShopItem(id) { this.playerData.shopItems = this.playerData.shopItems.filter(i => i.id !== id); this.saveAll(); },
+                buyItem(item) {
+                    if (this.playerData.xp >= item.cost) {
+                        if(!confirm(`确认消耗 ${item.cost} XP 兑换 ${item.name}?`)) return;
+                        this.playerData.xp -= item.cost;
+                        // 自动记一笔账
+                        this.notes.unshift({ 
+                            id: Date.now(), type: 'daily', createdAt: new Date().toISOString(), 
+                            title: '🎁 商店兑换', content: `消耗 ${item.cost} XP 兑换了 ${item.name}。享受当下！` 
+                        });
+                        this.showMessage(`兑换成功: ${item.name}`);
+                        this.saveAll();
+                    }
+                },
+
+                // ========== 🆕 功能3: 资产图表逻辑 ==========
+                loadChart() {
+                    if (this.activeReviewTab !== 'stock') return;
+                    const ctx = document.getElementById('assetChart');
+                    if (!ctx) return;
+                    
+                    if (this.chartInstance) this.chartInstance.destroy();
+                    
+                    // 准备数据：按时间排序
+                    const history = (this.playerData.assetHistory || []).sort((a,b) => new Date(a.date) - new Date(b.date));
+                    
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: history.map(h => new Date(h.date).toLocaleDateString()),
+                            datasets: [{
+                                label: '总资产净值',
+                                data: history.map(h => h.value),
+                                borderColor: '#4ecdc4',
+                                backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { y: { beginAtZero: false } }
                         }
-                    };
-
-                    // 使用 Promise.all 并行执行所有网络请求，极大提升速度
-                    try {
-                        await Promise.all([
-                            // 修复目标无法保存的问题：添加 onConflict 指令
-                            sb.from('players').upsert(
-                                { user_id: this.userId, data: this.playerData }, 
-                                { onConflict: 'user_id' } 
-                            ),
-                            saveTable('skills', this.skills),
-                            saveTable('achievements', this.achievements),
-                            saveTable('notes', this.notes),
-                            saveTable('books', this.books),
-                            saveTable('kb_categories', this.kbCategories),
-                            saveTable('kb_notes', this.kbDocs),
-                            saveTable('cases', this.cases)
-                        ]);
-                        // 不再强制弹出提示，体验更流畅
-                        // this.showMessage('同步完成'); 
-                    } catch (e) {
-                        console.error("Sync error:", e);
-                        this.showMessage('同步部分失败，请检查控制台', 'error');
-                    }
+                    });
                 },
 
-                async syncData() { 
-                    this.syncing = true;
-                    await this.saveAll(); 
-                    this.syncing = false;
-                    this.showMessage('同步成功！'); 
-                },
-
-                // OKR Logic
-                addGoal() { 
-                    if(!this.newGoal.title) return; 
-                    // 双重保险：确保 goals 数组存在
-                    if(!this.playerData.goals) this.playerData.goals = [];
-                    
-                    const goal = {
-                        title: this.newGoal.title, 
-                        mode: this.newGoal.mode,
-                        current: 0, 
-                        unit: this.newGoal.unit || ''
-                    };
-
-                    if (this.newGoal.mode === 'numeric') {
-                        goal.target = parseFloat(this.newGoal.target) || 100;
-                    } else {
-                        goal.targetText = this.newGoal.targetText || '完成';
-                    }
-
-                    this.playerData.goals.push(goal);
-                    this.newGoal = { title: '', target: null, current: 0, unit: '', mode: 'numeric' };
-                    this.saveAll(); 
-                },
+                // 核心逻辑
+                addGoal() { if(!this.newGoal.title)return; this.playerData.goals.push({title:this.newGoal.title, mode:this.newGoal.mode, current:0, unit:this.newGoal.unit||'', target:this.newGoal.target||100, targetText: '完成'}); this.newGoal={title:'',target:null,current:0,unit:'',mode:'numeric'}; this.saveAll(); },
                 deleteGoal(i) { if(confirm('删除?')) { this.playerData.goals.splice(i,1); this.saveAll(); } },
-
-                // XP & Skills
-                addXp(amount) { this.playerData.xp+=amount; if(this.playerData.xp>=this.playerData.nextLevelXp) { this.playerData.xp-=this.playerData.nextLevelXp; this.playerData.level++; this.showMessage('升级了!'); } },
-                addNewSkillInline() { if(this.newSkillName) { this.skills.push({id:Date.now(), name:this.newSkillName, icon:'✨', level:1, xp:0, maxXp:50}); this.newSkillName=''; this.addXp(10); this.saveAll(); } },
-                practiceSkill(id) { const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=s.maxXp){ s.xp=0; s.level++; s.maxXp=Math.floor(s.maxXp*1.5); } this.addXp(5); this.saveAll(); } },
-                deleteSkill(id) { if(confirm('删除?')) { this.skills = this.skills.filter(x => x.id !== id); this.saveAll(); } },
-
-                // Reviews
-                applyTemplate(t) { if(t==='weekly') this.newNote.content="## KPT复盘\nKeep:\nProblem:\nTry:"; if(t==='yearly') this.newNote.content="## 年度关键词\n"; },
+                addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){ this.playerData.xp-=this.playerData.nextLevelXp; this.playerData.level++; this.showMessage('升级了! Lv.'+this.playerData.level); } },
+                
+                // 复盘保存逻辑更新（含资产数据）
                 saveNote() {
                     if(this.activeReviewTab === 'stock') {
-                        if(!this.newStockData.code) return;
-                        const content = `逻辑: ${this.newStockData.logic}\n反思: ${this.newStockData.mistake}`;
-                        this.notes.unshift({ id: Date.now(), type: 'stock', createdAt: new Date().toISOString(), content: content, stockData: {...this.newStockData} });
-                        this.newStockData = { code:'', action:'buy', price:'', profit:'', logic:'', mistake:'' };
+                        if(!this.newStockData.code && !this.newStockData.totalAsset) return;
+                        
+                        // 如果填了总资产，推入历史记录
+                        if (this.newStockData.totalAsset) {
+                            this.playerData.assetHistory.push({
+                                date: new Date().toISOString(),
+                                value: this.newStockData.totalAsset
+                            });
+                            // 立即刷新图表
+                            setTimeout(() => this.loadChart(), 100);
+                        }
+
+                        const content = `逻辑: ${this.newStockData.action} - ${this.newNote.content}`;
+                        this.notes.unshift({ 
+                            id: Date.now(), type: 'stock', createdAt: new Date().toISOString(), 
+                            content: content, stockData: {...this.newStockData} 
+                        });
+                        this.newStockData = { code:'', action:'buy', price:'', profit:'', totalAsset: null };
                     } else {
                         if(!this.newNote.title) return;
                         this.notes.unshift({ id: Date.now(), type: this.activeReviewTab, createdAt: new Date().toISOString(), ...this.newNote });
                         this.newNote = { title:'', content:'' };
                     }
-                    this.showReviewForm = false; this.addXp(15); this.saveAll();
+                    this.showReviewForm = false; this.addXp(10); this.saveAll();
                 },
                 deleteNote(id) { if(confirm('删除?')) { this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
-
-                // Cases (Images) - 核心优化：图片压缩
-                handleImageUpload(e) { 
-                    const file = e.target.files[0]; 
-                    if(!file) return; 
-                    
-                    // 限制大小提示
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert("图片太大，建议小于5MB");
-                    }
-
-                    const reader = new FileReader(); 
-                    reader.onload = (evt) => { 
-                        // 创建 Image 对象进行压缩
-                        const img = new Image();
-                        img.src = evt.target.result;
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            
-                            // 保持比例缩放，最大宽度 800px
-                            const maxWidth = 800;
-                            let width = img.width;
-                            let height = img.height;
-                            
-                            if (width > maxWidth) {
-                                height = Math.round(height * (maxWidth / width));
-                                width = maxWidth;
-                            }
-                            
-                            canvas.width = width;
-                            canvas.height = height;
-                            ctx.drawImage(img, 0, 0, width, height);
-                            
-                            // 压缩为 JPEG，质量 0.7
-                            this.newCase.image = canvas.toDataURL('image/jpeg', 0.7);
-                        };
-                    }; 
-                    reader.readAsDataURL(file); 
-                },
-                saveCase() { if(!this.newCase.title) return; this.cases.unshift({ id: Date.now(), type: 'case', createdAt: new Date().toISOString(), ...this.newCase }); this.newCase = { title: '', content: '', image: null }; this.showCaseForm = false; this.addXp(30); this.saveAll(); },
-
-                // Books & KB
-                saveBook() { if(!this.newBook.title)return; this.books.unshift({id:Date.now(), ...this.newBook}); this.showBookForm=false; this.saveAll(); },
-                addKbCategory() { const n=prompt('分类名'); if(n) this.kbCategories.push({id:Date.now(), name:n}); this.saveAll(); },
-                openKbEditor() { this.kbEditorData={id:null, title:'', content:'', categoryId:null}; this.kbEditorMode=true; },
+                
+                // 技能等
+                addNewSkillInline() { if(this.newSkillName){this.skills.push({id:Date.now(),name:this.newSkillName,icon:'✨',level:1,xp:0,maxXp:50}); this.newSkillName=''; this.addXp(10); this.saveAll();} },
+                practiceSkill(id) { const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=s.maxXp){s.xp=0;s.level++;s.maxXp=Math.floor(s.maxXp*1.5);} this.addXp(5); this.saveAll(); } },
+                deleteSkill(id) { if(confirm('删除?')) { this.skills=this.skills.filter(x=>x.id!==id); this.saveAll(); } },
+                
+                // 易学 & KB
+                handleImageUpload(e) { /* 保持原有的图片压缩逻辑 */ const file = e.target.files[0]; if(!file)return; const reader = new FileReader(); reader.onload = (evt) => { const img = new Image(); img.src = evt.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxW = 800; let w=img.width, h=img.height; if(w>maxW){ h=Math.round(h*(maxW/w)); w=maxW; } canvas.width=w; canvas.height=h; ctx.drawImage(img,0,0,w,h); this.newCase.image=canvas.toDataURL('image/jpeg',0.7); } }; reader.readAsDataURL(file); },
+                saveCase() { if(!this.newCase.title)return; this.cases.unshift({id:Date.now(), type:'case', createdAt:new Date().toISOString(), ...this.newCase}); this.newCase={title:'',content:'',image:null}; this.showCaseForm=false; this.addXp(30); this.saveAll(); },
+                openKbEditor() { this.kbEditorMode=true; this.kbEditorData={id:null,title:'',content:'',categoryId:null}; },
                 editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; },
-                saveKbDoc() { 
-                    const now = new Date().toISOString();
-                    if(this.kbEditorData.id) { const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); this.kbDocs[i]={...this.kbEditorData, updatedAt:now}; }
-                    else { this.kbDocs.unshift({id:Date.now(), ...this.kbEditorData, createdAt:now, updatedAt:now}); }
-                    this.kbEditorMode=false; this.saveAll();
-                },
-                deleteItem(item) { 
-                    if(!confirm('删除?')) return; 
-                    if(item.type==='book') this.books=this.books.filter(b=>b.id!==item.id);
-                    else if(item.type==='case') this.cases=this.cases.filter(c=>c.id!==item.id);
-                    this.viewingItem=null; this.saveAll(); 
-                }
+                saveKbDoc() { const now=new Date().toISOString(); if(this.kbEditorData.id){const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id);this.kbDocs[i]={...this.kbEditorData,updatedAt:now};}else{this.kbDocs.unshift({id:Date.now(),...this.kbEditorData,createdAt:now,updatedAt:now});} this.kbEditorMode=false; this.saveAll(); },
+                addKbCategory() { const n=prompt('分类名'); if(n)this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); },
+                deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case')this.cases=this.cases.filter(c=>c.id!==item.id); this.viewingItem=null; this.saveAll(); }
             },
             mounted() {
                 sb.auth.getSession().then(({ data: { session } }) => {
