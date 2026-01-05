@@ -95,6 +95,7 @@
         .checkbox-custom {
             width: 24px; height: 24px; border: 2px solid #5a4a42; border-radius: 6px; margin-right: 15px;
             display: flex; align-items: center; justify-content: center; background: white;
+            flex-shrink: 0; /* 防止被挤压 */
         }
         .quest-item.completed .checkbox-custom { background: #a3de83; border-color: #2e7d32; }
         .quest-item.completed .checkbox-custom::after { content: '✔'; color: white; font-weight: bold; }
@@ -232,10 +233,11 @@
                         <div class="quest-list">
                             <div v-for="quest in playerData.dailyTasks || []" :key="quest.id" class="quest-item" :class="{completed: quest.completed}" @click="toggleQuest(quest)">
                                 <div class="checkbox-custom"></div>
-                                <div>
+                                <div style="flex: 1;">
                                     <div style="font-weight: bold;">{{ quest.title }}</div>
                                     <div style="font-size: 0.8em; color: #7a6a62;">奖励: +5 XP</div>
                                 </div>
+                                <button class="btn-sm btn-danger" @click.stop="deleteDailyQuest(quest.id)" style="width: auto; padding: 5px 10px; margin-left: 10px;">✕</button>
                             </div>
                         </div>
                         <div style="text-align: center; font-size: 0.8em; color: #999; margin-top: 15px;">⏳ 任务将于每日凌晨自动重置</div>
@@ -666,6 +668,13 @@
                     }
                     this.saveAll();
                 },
+                // 新增：删除每日任务
+                deleteDailyQuest(id) {
+                    if (confirm('确定删除这个任务吗？')) {
+                        this.playerData.dailyTasks = this.playerData.dailyTasks.filter(t => t.id !== id);
+                        this.saveAll();
+                    }
+                },
 
                 // ========== 🆕 功能2: 积分商店逻辑 ==========
                 addShopItem() {
@@ -780,7 +789,3 @@
     </script>
 </body>
 </html>
-
-
-
-
