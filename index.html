@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>成长手账 - 稳定修复版</title>
-    <!-- 核心库：使用可靠的 CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>成长手账 - 修复版</title>
+    <!-- 换用更稳定的 CDN 源 -->
+    <script src="https://npm.elemecdn.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://npm.elemecdn.com/@supabase/supabase-js@2"></script>
+    <script src="https://npm.elemecdn.com/chart.js/dist/chart.umd.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ========== 全局样式 (暖色手账风) ========== */
+        /* ========== 全局样式 ========== */
         :root {
             --bg-color: #fef9f3;
             --text-color: #5a4a42;
@@ -48,10 +48,8 @@
         }
         .search-input:focus { width: 220px; border-color: #ff9a8b; }
 
-        /* 布局 */
+        /* 卡片与布局 */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 40px; }
-        
-        /* 通用卡片 */
         .card {
             background: #fffefc; border-radius: 20px; padding: 30px;
             box-shadow: var(--card-shadow); border: var(--card-border);
@@ -76,11 +74,7 @@
             box-shadow: 3px 3px 0px #2ba69b; border: none; color: white; font-weight: bold; cursor: pointer;
         }
         .btn-danger { background: #ff6b6b; box-shadow: 3px 3px 0px #c0392b; }
-        .collapse-btn {
-            background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b;
-            padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; cursor: pointer;
-        }
-
+        
         /* 输入框 */
         .note-input, .note-textarea {
             width: 100%; padding: 12px; border: 2px solid #e0c9b8; border-radius: 12px;
@@ -88,49 +82,49 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* 特殊板块样式 */
-        .quest-list { margin-top: 15px; background: #fffaf5; padding: 10px; border-radius: 12px; border: 1px solid #e0c9b8; }
+        /* 特殊板块 */
         .quest-item {
             display: flex; align-items: center; padding: 10px; margin-bottom: 8px; 
             background: white; border-radius: 8px; border: 1px solid #eee; cursor: pointer; transition: all 0.2s;
         }
-        .quest-item:hover { transform: translateX(5px); border-color: #a3de83; }
         .quest-item.done { background: #e8f5e9; opacity: 0.7; text-decoration: line-through; border-color: #a3de83; }
-
+        
         .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
         .shop-item {
             text-align: center; padding: 10px; border: 2px solid #e0c9b8; border-radius: 10px; 
             cursor: pointer; background: white; transition: all 0.2s;
         }
-        .shop-item:hover { background: #fff0eb; border-color: #ff9a8b; }
-
-        .goal-item {
-            background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 20px;
-            margin-bottom: 15px; transition: all 0.3s;
-        }
-        .goal-progress-bg { height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; margin: 10px 0; }
-        .goal-progress-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s; }
         
-        .tag-badge { 
-            display: inline-block; background: #9fa8da; color: white; 
-            padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px; 
-        }
+        .goal-item { background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 10px; }
+        .tag-badge { display: inline-block; background: #9fa8da; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px; }
 
+        /* 登录与加载 */
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
-        .status-message { padding: 10px; border-radius: 10px; margin-top: 15px; font-weight: bold; text-align: center;}
+        .loading-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-color); z-index: 9999; display: flex; 
+            flex-direction: column; justify-content: center; align-items: center; 
+        }
+        .spinner { font-size: 3em; animation: spin 2s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .status-message { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 20px; z-index: 10000; font-weight: bold; }
         .status-error { background: #ffe5e5; color: #d32f2f; border: 2px solid #ffcdd2; }
         .status-success { background: #e8f5e9; color: #2e7d32; border: 2px solid #c8e6c9; }
 
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
-            .search-bar { position: static; margin-bottom: 10px; text-align: center; }
+            .search-bar { position: static; margin-bottom: 15px; }
             .search-input { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- 登录 -->
+        <!-- 全局消息 -->
+        <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
+
+        <!-- 1. 登录界面 -->
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
@@ -138,40 +132,44 @@
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
                 <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
-                <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
             </div>
         </div>
 
-        <!-- 主界面 -->
+        <!-- 2. 数据加载中界面 (防止白屏的关键) -->
+        <div v-else-if="isLoadingData" class="loading-screen">
+            <div class="spinner">☯️</div>
+            <h2>正在读取命运档案...</h2>
+        </div>
+
+        <!-- 3. 主界面 (只有数据准备好才渲染) -->
         <div v-else class="container">
             <div class="header">
                 <div class="search-bar">
-                    <input v-model="searchQuery" placeholder="🔍 搜索全站内容..." class="search-input">
+                    <input v-model="searchQuery" placeholder="🔍 搜索内容..." class="search-input">
                 </div>
                 <h1>👋 {{ userEmail.split('@')[0] }} 的修身空间</h1>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}</button>
                     <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
                 </div>
-                <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']" style="margin-top: 10px;">{{ message }}</div>
             </div>
             
-            <!-- 搜索结果栏 -->
+            <!-- 搜索结果 -->
             <div v-if="searchQuery" class="card" style="margin-bottom: 30px; border-color: #ff9a8b;">
                 <h2>🔍 搜索结果 <button class="btn-sm" @click="searchQuery=''">关闭</button></h2>
-                <div v-if="searchResults.length === 0" style="padding: 20px; color: #999;">未找到相关内容</div>
+                <div v-if="searchResults.length === 0" style="color: #999;">无结果</div>
                 <div v-else style="max-height: 300px; overflow-y: auto;">
                     <div v-for="item in searchResults" :key="item.id" style="padding: 10px; border-bottom: 1px dashed #e0c9b8; cursor: pointer;" @click="viewDetail(item)">
-                        <strong>{{ item.typeLabel }}</strong> {{ item.title || item.code || '无标题' }}
-                        <div style="font-size: 0.8em; color: #777; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{ item.preview }}</div>
+                        <strong>{{ item.typeLabel }}</strong> {{ item.title || item.code }}
                     </div>
                 </div>
             </div>
 
             <div class="grid">
-                <!-- 模块1：状态 & 每日委托 -->
+                <!-- 模块1：状态 -->
                 <div class="card">
                     <h2>📊 角色状态</h2>
+                    <!-- 安全渲染: 只有 playerData 存在才显示 -->
                     <div v-if="playerData">
                         <div style="font-size: 3em; font-weight: 800; text-align: center; color: #ff6b6b;">Lv.{{ playerData.level }}</div>
                         <div style="height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0;">
@@ -181,47 +179,42 @@
                     </div>
 
                     <div style="margin-top: 20px; border-top: 2px dashed #e0c9b8; padding-top: 10px;">
-                        <h3 style="font-size: 1.1em; color: #5a4a42;">☀️ 每日委托 <span style="font-size: 0.7em; color: #999;">(0点重置)</span></h3>
-                        <div class="quest-list" v-if="playerData.dailyQuests">
+                        <h3 style="font-size: 1.1em;">☀️ 每日委托</h3>
+                        <div v-if="playerData && playerData.dailyQuests">
                             <div v-for="q in playerData.dailyQuests" :key="q.id" class="quest-item" :class="{done: q.done}" @click="toggleQuest(q)">
                                 <span style="margin-right: 10px;">{{ q.done ? '✅' : '⬜' }}</span>
                                 <span style="flex: 1;">{{ q.text }}</span>
-                                <span style="font-size: 0.8em; font-weight: bold; color: #ff9a8b;">+{{ q.xp }} XP</span>
+                                <span style="font-size: 0.8em; color: #ff9a8b;">+{{ q.xp }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 模块2：目标 & 资产曲线 -->
+                <!-- 模块2：目标 & 资产 -->
                 <div class="card">
                     <h2>🎯 目标 & 财富</h2>
-                    
-                    <!-- 资产曲线图表 -->
                     <div style="height: 180px; margin-bottom: 20px;">
                         <canvas id="assetChart"></canvas>
                     </div>
 
-                    <div style="background: #fffaf5; padding: 15px; border-radius: 12px; border: 1px dashed #e0c9b8; margin-bottom: 15px;">
-                        <div style="display: flex; gap: 5px;">
-                            <input v-model="newGoal.title" placeholder="新目标..." class="note-input" style="margin: 0; flex: 2;">
-                            <input v-model.number="newGoal.target" placeholder="目标值" type="number" class="note-input" style="margin: 0; flex: 1;">
-                            <button class="btn-sm" @click="addGoal">➕</button>
-                        </div>
+                    <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+                        <input v-model="newGoal.title" placeholder="新目标..." class="note-input" style="margin: 0; flex: 2;">
+                        <input v-model.number="newGoal.target" placeholder="目标值" type="number" class="note-input" style="margin: 0; flex: 1;">
+                        <button class="btn-sm" @click="addGoal">➕</button>
                     </div>
 
-                    <div style="max-height: 250px; overflow-y: auto;" v-if="playerData.goals">
-                        <div v-for="(goal, index) in playerData.goals" :key="index" class="goal-item" style="padding: 15px; margin-bottom: 10px;">
-                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9em;">
+                    <div style="max-height: 250px; overflow-y: auto;" v-if="playerData && playerData.goals">
+                        <div v-for="(goal, index) in playerData.goals" :key="index" class="goal-item">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold;">
                                 <span>{{ goal.title }}</span>
                                 <span>{{ calculateProgress(goal) }}%</span>
                             </div>
-                            <div class="goal-progress-bg" style="height: 10px; margin: 8px 0;">
-                                <div class="goal-progress-fill" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}"></div>
+                            <div style="height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin: 8px 0;">
+                                <div :style="{width: Math.min(100, calculateProgress(goal)) + '%', background: '#4ecdc4', height: '100%'}"></div>
                             </div>
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <input type="number" v-model.number="goal.current" @change="saveAll" style="width: 70px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
-                                <span style="font-size: 0.8em; color: #999;">/ {{ goal.target }}</span>
-                                <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="margin-left: auto; padding: 4px 10px;">✕</button>
+                            <div style="display: flex; gap: 5px;">
+                                <input type="number" v-model.number="goal.current" @change="saveAll" style="width: 70px; padding: 4px;">
+                                <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="margin-left: auto;">✕</button>
                             </div>
                         </div>
                     </div>
@@ -231,7 +224,7 @@
                 <div class="card" style="grid-column: 1 / -1;">
                     <h2>🔄 复盘笔记 <button class="collapse-btn" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '取消' : '➕ 新建' }}</button></h2>
                     
-                    <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #ff9a8b; border-radius: 15px; margin-bottom: 20px;">
+                    <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
                         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                             <button v-for="t in ['daily','stock','weekly']" :key="t" class="btn-sm" 
                                 :style="{background: activeReviewTab===t?'#ff9a8b':'#ddd'}" @click="activeReviewTab=t">
@@ -239,21 +232,18 @@
                             </button>
                         </div>
 
-                        <!-- 股票专用 -->
                         <div v-if="activeReviewTab === 'stock'" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px;">
-                            <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin:0;">
+                            <input v-model="newStockData.code" placeholder="代码" class="note-input" style="margin:0;">
                             <select v-model="newStockData.action" class="note-input" style="margin:0;">
-                                <option value="buy">🔵 买入</option>
-                                <option value="sell">🔴 卖出</option>
-                                <option value="hold">⚪ 持仓</option>
+                                <option value="buy">买入</option><option value="sell">卖出</option><option value="hold">持仓</option>
                             </select>
                             <input v-model="newStockData.price" placeholder="价格" class="note-input" style="margin:0;">
                             <input v-model="newStockData.profit" placeholder="盈亏" class="note-input" style="margin:0;">
-                            <input v-model.number="newStockData.totalAssets" placeholder="📌 输入总资产更新曲线" class="note-input" style="margin:0; border-color: #a3de83;">
+                            <input v-model.number="newStockData.totalAssets" placeholder="📌 总资产" class="note-input" style="margin:0; border-color: #a3de83;">
                         </div>
 
                         <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
-                        <input v-model="newNote.tags" placeholder="标签 (如: 心态, 甲木, 冥想)..." class="note-input">
+                        <input v-model="newNote.tags" placeholder="标签..." class="note-input">
                         <textarea v-model="newNote.content" class="note-textarea" placeholder="内容..." style="height: 100px;"></textarea>
                         <button class="btn" @click="saveNote">💾 保存</button>
                     </div>
@@ -263,42 +253,39 @@
                             <button class="btn-sm btn-danger" @click="deleteNote(note.id)">✕</button>
                         </div>
                         <div style="font-size: 0.85em; color: #999; margin-bottom: 5px;">{{ formatDate(note.createdAt) }}</div>
-                        
                         <div v-if="note.tags" style="margin-bottom: 8px;">
                             <span v-for="tag in note.tags.split(/[,，]/)" :key="tag" class="tag-badge">{{ tag }}</span>
                         </div>
-
                         <div v-if="note.type === 'stock'" style="font-weight: bold; margin-bottom: 5px;">
                             <span :style="{color: note.stockData?.action === 'buy' ? 'red' : 'green'}">
-                                {{ note.stockData?.action === 'buy' ? '买入' : (note.stockData?.action === 'sell' ? '卖出' : '持仓') }}
+                                {{ note.stockData?.action === 'buy' ? '买入' : '卖出' }}
                             </span>
                             {{ note.stockData?.code }}
                             <span v-if="note.stockData?.profit" style="margin-left: 10px;">{{ note.stockData.profit }}</span>
                         </div>
-
                         <h3 v-if="note.title">{{ note.title }}</h3>
-                        <p style="white-space: pre-wrap; line-height: 1.6; color: #5a4a42;">{{ note.content }}</p>
+                        <p style="white-space: pre-wrap;">{{ note.content }}</p>
                     </div>
                 </div>
 
-                <!-- 模块4：积分商店 -->
+                <!-- 模块4：商店 -->
                 <div class="card">
-                    <h2>🏦 积分商店 <span style="font-size: 0.6em; color: #7a6a62;">(XP余额: {{ playerData.xp }})</span></h2>
-                    <div class="shop-grid" v-if="playerData.shopItems">
+                    <h2>🏦 积分商店</h2>
+                    <div class="shop-grid" v-if="playerData && playerData.shopItems">
                         <div v-for="item in playerData.shopItems" :key="item.id" class="shop-item" @click="buyItem(item)">
                             <div style="font-size: 2em;">{{ item.icon }}</div>
-                            <div style="font-weight: bold; font-size: 0.9em;">{{ item.name }}</div>
-                            <div style="color: #ff9a8b; font-weight: bold;">💎 {{ item.cost }}</div>
+                            <div>{{ item.name }}</div>
+                            <div style="color: #ff9a8b;">💎 {{ item.cost }}</div>
                         </div>
                     </div>
                     <div style="margin-top: 15px; display: flex; gap: 5px;">
-                        <input v-model="newShopItem.name" placeholder="自定义奖励" class="note-input" style="margin:0; font-size: 0.8em;">
-                        <input v-model.number="newShopItem.cost" placeholder="XP" type="number" class="note-input" style="margin:0; width: 60px; font-size: 0.8em;">
+                        <input v-model="newShopItem.name" placeholder="商品名" class="note-input" style="margin:0;">
+                        <input v-model.number="newShopItem.cost" placeholder="XP" type="number" class="note-input" style="margin:0; width: 60px;">
                         <button class="btn-sm" @click="addShopItem">➕</button>
                     </div>
                 </div>
 
-                <!-- 模块5：易学命例 -->
+                <!-- 模块5：易学 -->
                 <div class="card">
                     <h2>☯️ 易学命例</h2>
                     <button class="btn-sm" @click="showCaseForm = !showCaseForm" style="margin-bottom: 15px;">+ 新记录</button>
@@ -319,17 +306,16 @@
         </div>
 
         <!-- 详情弹窗 -->
-        <div v-if="viewingItem" style="position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(2px); z-index: 999; display: flex; justify-content: center; align-items: center;" @click.self="viewingItem = null">
+        <div v-if="viewingItem" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;" @click.self="viewingItem = null">
             <div class="card" style="width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                     <h2>详情</h2> <span @click="viewingItem = null" style="cursor: pointer; font-size: 1.5em;">&times;</span>
                 </div>
                 <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; border-radius: 10px; margin-bottom: 15px;">
                 <h3>{{ viewingItem.title || viewingItem.code }}</h3>
-                <p style="white-space: pre-wrap; line-height: 1.6;">{{ viewingItem.content || viewingItem.notes }}</p>
+                <p style="white-space: pre-wrap;">{{ viewingItem.content || viewingItem.notes }}</p>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -342,25 +328,16 @@
             data() {
                 return {
                     isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
-                    loading: false, syncing: false, message: '', messageType: '',
+                    loading: false, syncing: false, isLoadingData: false, // 新增：数据加载状态
+                    message: '', messageType: '',
                     
                     activeReviewTab: 'stock', showReviewForm: false, showCaseForm: false, viewingItem: null,
                     searchQuery: '', chartInstance: null,
 
-                    // 默认数据结构 (防止白屏)
+                    // 默认数据，防止 undefined 报错
                     playerData: { 
                         level: 1, xp: 0, nextLevelXp: 100, 
-                        goals: [], 
-                        dailyQuests: [
-                            { id: 1, text: '🧘‍♂️ 冥想/站桩', done: false, xp: 10 },
-                            { id: 2, text: '📖 阅读 30分钟', done: false, xp: 15 },
-                            { id: 3, text: '📈 盘后复盘', done: false, xp: 20 }
-                        ],
-                        shopItems: [
-                            { id: 1, name: '奶茶', cost: 50, icon: '🥤' },
-                            { id: 2, name: '游戏1h', cost: 100, icon: '🎮' }
-                        ],
-                        assetsHistory: [],
+                        goals: [], dailyQuests: [], shopItems: [], assetsHistory: [],
                         lastLoginDate: ''
                     },
                     notes: [], cases: [],
@@ -386,13 +363,9 @@
                 searchResults() {
                     if (!this.searchQuery) return [];
                     const q = this.searchQuery.toLowerCase();
-                    const mapItem = (item, type, preview) => ({ ...item, typeLabel: type, preview: preview });
-                    
-                    const n = this.notes.filter(x => (x.content+x.title+x.tags).toLowerCase().includes(q))
-                                  .map(x => mapItem(x, x.type==='stock'?'股票':'笔记', x.content));
-                    const c = this.cases.filter(x => (x.content+x.title).toLowerCase().includes(q))
-                                  .map(x => mapItem(x, '命例', x.content));
-                    
+                    const mapItem = (item, type) => ({ ...item, typeLabel: type });
+                    const n = this.notes.filter(x => (x.content+x.title+x.tags).toLowerCase().includes(q)).map(x => mapItem(x, '笔记'));
+                    const c = this.cases.filter(x => (x.content+x.title).toLowerCase().includes(q)).map(x => mapItem(x, '命例'));
                     return [...n, ...c];
                 }
             },
@@ -413,33 +386,53 @@
                 async logout() { await sb.auth.signOut(); this.isLoggedIn = false; },
 
                 async loadData() {
-                    this.syncing = true;
+                    this.isLoadingData = true; // 开启加载遮罩
                     try {
+                        // 使用 maybeSingle 避免空数据报错
                         const [p, n, c] = await Promise.all([
-                            sb.from('players').select('*').eq('user_id', this.userId).maybeSingle(), // Use maybeSingle to prevent crash on empty
+                            sb.from('players').select('*').eq('user_id', this.userId).maybeSingle(),
                             sb.from('notes').select('*').eq('user_id', this.userId),
                             sb.from('cases').select('*').eq('user_id', this.userId)
                         ]);
 
                         if (p.data && p.data.data) {
-                            // 安全合并数据，防止覆盖掉默认结构
+                            // 深度合并，保留默认结构
                             this.playerData = { ...this.playerData, ...p.data.data };
+                        } else {
+                            console.log("新用户，使用默认数据");
                         }
+
+                        // 确保数组不为 undefined
+                        ['goals', 'dailyQuests', 'shopItems', 'assetsHistory'].forEach(k => {
+                            if (!this.playerData[k]) this.playerData[k] = [];
+                        });
                         
-                        // 确保关键数组存在，防止 v-for 报错
-                        const keys = ['goals', 'dailyQuests', 'shopItems', 'assetsHistory'];
-                        keys.forEach(k => { if(!this.playerData[k]) this.playerData[k] = []; });
+                        // 设置默认任务（如果是空的）
+                        if (this.playerData.dailyQuests.length === 0) {
+                            this.playerData.dailyQuests = [
+                                { id: 1, text: '🧘‍♂️ 冥想/站桩', done: false, xp: 10 },
+                                { id: 2, text: '📖 阅读 30分钟', done: false, xp: 15 },
+                                { id: 3, text: '📈 盘后复盘', done: false, xp: 20 }
+                            ];
+                        }
+                        if (this.playerData.shopItems.length === 0) {
+                             this.playerData.shopItems = [
+                                { id: 1, name: '奶茶', cost: 50, icon: '🥤' },
+                                { id: 2, name: '游戏1h', cost: 100, icon: '🎮' }
+                             ];
+                        }
 
                         if (n.data) this.notes = n.data.map(i => i.data);
                         if (c.data) this.cases = c.data.map(i => i.data);
 
                         this.checkDailyReset();
-                        this.initChart();
                     } catch (e) {
-                        console.error("加载错误:", e);
-                        this.showMessage("数据加载异常，请查看控制台", "error");
+                        console.error("加载失败:", e);
+                        this.showMessage("数据加载异常", "error");
+                    } finally {
+                        this.isLoadingData = false; // 关闭加载遮罩
+                        this.$nextTick(() => { this.initChart(); }); // 渲染图表
                     }
-                    this.syncing = false;
                 },
 
                 async saveAll() {
@@ -481,35 +474,31 @@
                     }
                 },
 
-                // 核心修复：图表延时加载，防止白屏
                 initChart() {
-                    setTimeout(() => {
-                        const ctx = document.getElementById('assetChart');
-                        if (!ctx || typeof Chart === 'undefined') return;
-                        
-                        if (this.chartInstance) this.chartInstance.destroy();
+                    const ctx = document.getElementById('assetChart');
+                    if (!ctx) return;
+                    if (this.chartInstance) this.chartInstance.destroy();
 
-                        const history = this.playerData.assetsHistory || [];
-                        const labels = history.map(h => h.date);
-                        const data = history.map(h => h.value);
+                    const history = this.playerData.assetsHistory || [];
+                    const labels = history.map(h => h.date);
+                    const data = history.map(h => h.value);
 
-                        try {
-                            this.chartInstance = new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: '净值',
-                                        data: data,
-                                        borderColor: '#a3de83',
-                                        backgroundColor: 'rgba(163, 222, 131, 0.2)',
-                                        tension: 0.3, fill: true
-                                    }]
-                                },
-                                options: { responsive: true, maintainAspectRatio: false }
-                            });
-                        } catch(e) { console.error("Chart Error", e); }
-                    }, 500); // 延时500ms确保DOM已经渲染
+                    try {
+                        this.chartInstance = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: '净值',
+                                    data: data,
+                                    borderColor: '#a3de83',
+                                    backgroundColor: 'rgba(163, 222, 131, 0.2)',
+                                    tension: 0.3, fill: true
+                                }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    } catch(e){console.warn('图表渲染失败',e)}
                 },
                 updateChart(val) {
                     if(!val) return;
@@ -550,19 +539,16 @@
 
                 handleImageUpload(e) {
                     const file = e.target.files[0]; if(!file)return;
-                    // 图片限制：5MB
                     if(file.size > 5*1024*1024) return alert('图片不能超过5MB');
                     const reader = new FileReader();
                     reader.onload = (evt) => {
                         const img = new Image(); img.src = evt.target.result;
                         img.onload = () => {
                             const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
-                            // 强制压缩宽度到 800px
                             const scale = 800/img.width; 
                             cvs.width = img.width > 800 ? 800 : img.width; 
                             cvs.height = img.width > 800 ? img.height * scale : img.height;
                             ctx.drawImage(img,0,0,cvs.width,cvs.height);
-                            // 质量压缩 0.7
                             this.newCase.image = cvs.toDataURL('image/jpeg', 0.7);
                         }
                     };
@@ -578,10 +564,10 @@
             }
         });
 
-        // 全局错误捕捉，防止白屏
+        // 全局错误捕获，防止白屏
         app.config.errorHandler = (err) => {
-            console.error("Vue Crash:", err);
-            alert("应用发生错误，请刷新页面或检查控制台。");
+            console.error("Vue Error:", err);
+            alert("发生错误，应用已重启渲染");
         };
 
         app.mount('#app');
