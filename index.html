@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 个人空间 </title>
+    <title>成长手账 - 稳定修复版</title>
+    <!-- 核心库：使用可靠的 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ========== 全局样式 (保留原版暖色手账风) ========== */
+        /* ========== 全局样式 (暖色手账风) ========== */
         :root {
             --bg-color: #fef9f3;
             --text-color: #5a4a42;
@@ -39,10 +40,8 @@
         }
         .header h1 { font-size: 2.2em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; margin-bottom: 10px; }
 
-        /* 搜索框 (新增样式) */
-        .search-bar {
-            position: absolute; right: 20px; top: 20px;
-        }
+        /* 搜索框 */
+        .search-bar { position: absolute; right: 20px; top: 20px; }
         .search-input {
             padding: 8px 12px; border-radius: 20px; border: 2px solid #e0c9b8; 
             outline: none; background: rgba(255,255,255,0.8); transition: width 0.3s; width: 150px;
@@ -56,8 +55,7 @@
         .card {
             background: #fffefc; border-radius: 20px; padding: 30px;
             box-shadow: var(--card-shadow); border: var(--card-border);
-            transition: transform 0.3s; position: relative;
-            display: flex; flex-direction: column;
+            transition: transform 0.3s; position: relative; display: flex; flex-direction: column;
         }
         .card:hover { transform: translateY(-3px); }
         .card h2 {
@@ -90,9 +88,7 @@
         }
         .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
 
-        /* ========== 新增板块样式 (嵌入原风格) ========== */
-        
-        /* 每日委托 */
+        /* 特殊板块样式 */
         .quest-list { margin-top: 15px; background: #fffaf5; padding: 10px; border-radius: 12px; border: 1px solid #e0c9b8; }
         .quest-item {
             display: flex; align-items: center; padding: 10px; margin-bottom: 8px; 
@@ -101,7 +97,6 @@
         .quest-item:hover { transform: translateX(5px); border-color: #a3de83; }
         .quest-item.done { background: #e8f5e9; opacity: 0.7; text-decoration: line-through; border-color: #a3de83; }
 
-        /* 积分商店 */
         .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px; }
         .shop-item {
             text-align: center; padding: 10px; border: 2px solid #e0c9b8; border-radius: 10px; 
@@ -109,22 +104,18 @@
         }
         .shop-item:hover { background: #fff0eb; border-color: #ff9a8b; }
 
-        /* 目标管理 */
         .goal-item {
             background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 20px;
             margin-bottom: 15px; transition: all 0.3s;
         }
         .goal-progress-bg { height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; margin: 10px 0; }
         .goal-progress-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s; }
-        .p-done { background: #4ecdc4; }
-
-        /* 复盘 Tag */
+        
         .tag-badge { 
             display: inline-block; background: #9fa8da; color: white; 
             padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-right: 5px; 
         }
 
-        /* 登录与状态 */
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
         .status-message { padding: 10px; border-radius: 10px; margin-top: 15px; font-weight: bold; text-align: center;}
         .status-error { background: #ffe5e5; color: #d32f2f; border: 2px solid #ffcdd2; }
@@ -143,10 +134,10 @@
         <div v-if="!isLoggedIn" class="login-box">
             <div class="card">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
-                <h2 style="justify-content: center;">个人空间</h2>
+                <h2 style="justify-content: center;">成长手账</h2>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
-                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入' }}</button>
+                <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入我的世界' }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
             </div>
         </div>
@@ -157,7 +148,7 @@
                 <div class="search-bar">
                     <input v-model="searchQuery" placeholder="🔍 搜索全站内容..." class="search-input">
                 </div>
-                <h1>👋 {{ userEmail.split('@')[0] }} 的空间</h1>
+                <h1>👋 {{ userEmail.split('@')[0] }} 的修身空间</h1>
                 <div>
                     <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}</button>
                     <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
@@ -165,7 +156,7 @@
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']" style="margin-top: 10px;">{{ message }}</div>
             </div>
             
-            <!-- 搜索结果栏 (仅当搜索时显示) -->
+            <!-- 搜索结果栏 -->
             <div v-if="searchQuery" class="card" style="margin-bottom: 30px; border-color: #ff9a8b;">
                 <h2>🔍 搜索结果 <button class="btn-sm" @click="searchQuery=''">关闭</button></h2>
                 <div v-if="searchResults.length === 0" style="padding: 20px; color: #999;">未找到相关内容</div>
@@ -178,10 +169,10 @@
             </div>
 
             <div class="grid">
-                <!-- 模块1：状态 & 每日委托 (新功能) -->
+                <!-- 模块1：状态 & 每日委托 -->
                 <div class="card">
                     <h2>📊 角色状态</h2>
-                    <div>
+                    <div v-if="playerData">
                         <div style="font-size: 3em; font-weight: 800; text-align: center; color: #ff6b6b;">Lv.{{ playerData.level }}</div>
                         <div style="height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0;">
                             <div style="height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s;" :style="{width: xpPercentage + '%'}"></div>
@@ -191,7 +182,7 @@
 
                     <div style="margin-top: 20px; border-top: 2px dashed #e0c9b8; padding-top: 10px;">
                         <h3 style="font-size: 1.1em; color: #5a4a42;">☀️ 每日委托 <span style="font-size: 0.7em; color: #999;">(0点重置)</span></h3>
-                        <div class="quest-list">
+                        <div class="quest-list" v-if="playerData.dailyQuests">
                             <div v-for="q in playerData.dailyQuests" :key="q.id" class="quest-item" :class="{done: q.done}" @click="toggleQuest(q)">
                                 <span style="margin-right: 10px;">{{ q.done ? '✅' : '⬜' }}</span>
                                 <span style="flex: 1;">{{ q.text }}</span>
@@ -201,7 +192,7 @@
                     </div>
                 </div>
 
-                <!-- 模块2：目标 & 资产曲线 (新功能) -->
+                <!-- 模块2：目标 & 资产曲线 -->
                 <div class="card">
                     <h2>🎯 目标 & 财富</h2>
                     
@@ -218,7 +209,7 @@
                         </div>
                     </div>
 
-                    <div style="max-height: 250px; overflow-y: auto;">
+                    <div style="max-height: 250px; overflow-y: auto;" v-if="playerData.goals">
                         <div v-for="(goal, index) in playerData.goals" :key="index" class="goal-item" style="padding: 15px; margin-bottom: 10px;">
                             <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 0.9em;">
                                 <span>{{ goal.title }}</span>
@@ -236,7 +227,7 @@
                     </div>
                 </div>
 
-                <!-- 模块3：复盘笔记 (含标签 & 股票图表联动) -->
+                <!-- 模块3：复盘笔记 -->
                 <div class="card" style="grid-column: 1 / -1;">
                     <h2>🔄 复盘笔记 <button class="collapse-btn" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '取消' : '➕ 新建' }}</button></h2>
                     
@@ -273,12 +264,10 @@
                         </div>
                         <div style="font-size: 0.85em; color: #999; margin-bottom: 5px;">{{ formatDate(note.createdAt) }}</div>
                         
-                        <!-- 标签展示 -->
                         <div v-if="note.tags" style="margin-bottom: 8px;">
                             <span v-for="tag in note.tags.split(/[,，]/)" :key="tag" class="tag-badge">{{ tag }}</span>
                         </div>
 
-                        <!-- 股票展示 -->
                         <div v-if="note.type === 'stock'" style="font-weight: bold; margin-bottom: 5px;">
                             <span :style="{color: note.stockData?.action === 'buy' ? 'red' : 'green'}">
                                 {{ note.stockData?.action === 'buy' ? '买入' : (note.stockData?.action === 'sell' ? '卖出' : '持仓') }}
@@ -292,17 +281,16 @@
                     </div>
                 </div>
 
-                <!-- 模块4：积分商店 (新功能) & 成就 -->
+                <!-- 模块4：积分商店 -->
                 <div class="card">
                     <h2>🏦 积分商店 <span style="font-size: 0.6em; color: #7a6a62;">(XP余额: {{ playerData.xp }})</span></h2>
-                    <div class="shop-grid">
+                    <div class="shop-grid" v-if="playerData.shopItems">
                         <div v-for="item in playerData.shopItems" :key="item.id" class="shop-item" @click="buyItem(item)">
                             <div style="font-size: 2em;">{{ item.icon }}</div>
                             <div style="font-weight: bold; font-size: 0.9em;">{{ item.name }}</div>
                             <div style="color: #ff9a8b; font-weight: bold;">💎 {{ item.cost }}</div>
                         </div>
                     </div>
-                    <!-- 添加商品 -->
                     <div style="margin-top: 15px; display: flex; gap: 5px;">
                         <input v-model="newShopItem.name" placeholder="自定义奖励" class="note-input" style="margin:0; font-size: 0.8em;">
                         <input v-model.number="newShopItem.cost" placeholder="XP" type="number" class="note-input" style="margin:0; width: 60px; font-size: 0.8em;">
@@ -310,7 +298,7 @@
                     </div>
                 </div>
 
-                <!-- 模块5：易学命例 (图片压缩优化) -->
+                <!-- 模块5：易学命例 -->
                 <div class="card">
                     <h2>☯️ 易学命例</h2>
                     <button class="btn-sm" @click="showCaseForm = !showCaseForm" style="margin-bottom: 15px;">+ 新记录</button>
@@ -350,18 +338,16 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const { createApp } = Vue;
 
-        createApp({
+        const app = createApp({
             data() {
                 return {
                     isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                     loading: false, syncing: false, message: '', messageType: '',
                     
-                    // UI Controls
                     activeReviewTab: 'stock', showReviewForm: false, showCaseForm: false, viewingItem: null,
-                    searchQuery: '',
-                    chartInstance: null,
+                    searchQuery: '', chartInstance: null,
 
-                    // Data Models (Default Values to Prevent Crash)
+                    // 默认数据结构 (防止白屏)
                     playerData: { 
                         level: 1, xp: 0, nextLevelXp: 100, 
                         goals: [], 
@@ -377,9 +363,8 @@
                         assetsHistory: [],
                         lastLoginDate: ''
                     },
-                    notes: [], cases: [], books: [], // Removed 'achievements' & 'skills' arrays to simplify data syncing if not used, or keep if needed.
+                    notes: [], cases: [],
                     
-                    // Input Models
                     newGoal: { title: '', target: null, current: 0 },
                     newNote: { title: '', content: '', tags: '' },
                     newStockData: { code: '', action: 'buy', price: '', profit: '', totalAssets: null },
@@ -388,9 +373,12 @@
                 };
             },
             computed: {
-                xpPercentage() { return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100); },
+                xpPercentage() { 
+                    if (!this.playerData || !this.playerData.nextLevelXp) return 0;
+                    return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100); 
+                },
                 filteredNotes() {
-                    let res = this.notes;
+                    let res = this.notes || [];
                     if (this.activeReviewTab === 'daily') res = res.filter(n => !n.type || n.type === 'daily');
                     else res = res.filter(n => n.type === this.activeReviewTab);
                     return res.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -410,10 +398,9 @@
             },
             methods: {
                 showMessage(txt, type='success') { this.message = txt; this.messageType = type; setTimeout(()=>this.message='', 3000); },
-                formatDate(str) { return new Date(str).toLocaleDateString(); },
-                calculateProgress(g) { if(!g.target) return 0; return Math.round((g.current/g.target)*100); },
+                formatDate(str) { return str ? new Date(str).toLocaleDateString() : ''; },
+                calculateProgress(g) { if(!g || !g.target) return 0; return Math.round((g.current/g.target)*100); },
                 
-                // --- Auth & Load ---
                 async login() {
                     if (!this.email || !this.password) return this.showMessage('请输入账号密码', 'error');
                     this.loading = true;
@@ -429,51 +416,53 @@
                     this.syncing = true;
                     try {
                         const [p, n, c] = await Promise.all([
-                            sb.from('players').select('*').eq('user_id', this.userId).single(),
+                            sb.from('players').select('*').eq('user_id', this.userId).maybeSingle(), // Use maybeSingle to prevent crash on empty
                             sb.from('notes').select('*').eq('user_id', this.userId),
                             sb.from('cases').select('*').eq('user_id', this.userId)
                         ]);
 
-                        // Merge Data safely
                         if (p.data && p.data.data) {
+                            // 安全合并数据，防止覆盖掉默认结构
                             this.playerData = { ...this.playerData, ...p.data.data };
-                            // Ensure arrays exist
-                            ['goals', 'dailyQuests', 'shopItems', 'assetsHistory'].forEach(key => {
-                                if (!this.playerData[key]) this.playerData[key] = [];
-                            });
                         }
+                        
+                        // 确保关键数组存在，防止 v-for 报错
+                        const keys = ['goals', 'dailyQuests', 'shopItems', 'assetsHistory'];
+                        keys.forEach(k => { if(!this.playerData[k]) this.playerData[k] = []; });
+
                         if (n.data) this.notes = n.data.map(i => i.data);
                         if (c.data) this.cases = c.data.map(i => i.data);
 
                         this.checkDailyReset();
-                        this.initChart(); // Chart init is handled safely now
+                        this.initChart();
                     } catch (e) {
-                        console.error("Load Error:", e);
+                        console.error("加载错误:", e);
+                        this.showMessage("数据加载异常，请查看控制台", "error");
                     }
                     this.syncing = false;
                 },
 
-                // --- Sync & Save ---
                 async saveAll() {
                     if (!this.userId) return;
                     const saveTable = async (table, list) => {
                         await sb.from(table).delete().eq('user_id', this.userId);
-                        if(list.length) await sb.from(table).insert(list.map(d => ({ user_id: this.userId, data: d })));
+                        if(list && list.length) await sb.from(table).insert(list.map(d => ({ user_id: this.userId, data: d })));
                     };
                     
-                    await Promise.all([
-                        sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' }),
-                        saveTable('notes', this.notes),
-                        saveTable('cases', this.cases)
-                    ]);
+                    try {
+                        await Promise.all([
+                            sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' }),
+                            saveTable('notes', this.notes),
+                            saveTable('cases', this.cases)
+                        ]);
+                    } catch (e) { console.error(e); }
                 },
                 async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
-                // --- Features ---
                 checkDailyReset() {
                     const today = new Date().toLocaleDateString();
                     if (this.playerData.lastLoginDate !== today) {
-                        this.playerData.dailyQuests.forEach(q => q.done = false);
+                        if(this.playerData.dailyQuests) this.playerData.dailyQuests.forEach(q => q.done = false);
                         this.playerData.lastLoginDate = today;
                         this.saveAll();
                     }
@@ -492,12 +481,11 @@
                     }
                 },
 
-                // Chart Logic (Fixed for White Screen Issue)
+                // 核心修复：图表延时加载，防止白屏
                 initChart() {
-                    // Critical Fix: Wait for DOM updates before accessing Canvas
-                    this.$nextTick(() => {
+                    setTimeout(() => {
                         const ctx = document.getElementById('assetChart');
-                        if (!ctx) return; // Prevent crash if element is missing
+                        if (!ctx || typeof Chart === 'undefined') return;
                         
                         if (this.chartInstance) this.chartInstance.destroy();
 
@@ -505,31 +493,33 @@
                         const labels = history.map(h => h.date);
                         const data = history.map(h => h.value);
 
-                        this.chartInstance = new Chart(ctx, {
-                            type: 'line',
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: '净值',
-                                    data: data,
-                                    borderColor: '#a3de83',
-                                    backgroundColor: 'rgba(163, 222, 131, 0.2)',
-                                    tension: 0.3, fill: true
-                                }]
-                            },
-                            options: { responsive: true, maintainAspectRatio: false }
-                        });
-                    });
+                        try {
+                            this.chartInstance = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: '净值',
+                                        data: data,
+                                        borderColor: '#a3de83',
+                                        backgroundColor: 'rgba(163, 222, 131, 0.2)',
+                                        tension: 0.3, fill: true
+                                    }]
+                                },
+                                options: { responsive: true, maintainAspectRatio: false }
+                            });
+                        } catch(e) { console.error("Chart Error", e); }
+                    }, 500); // 延时500ms确保DOM已经渲染
                 },
                 updateChart(val) {
                     if(!val) return;
                     const today = new Date().toLocaleDateString();
+                    if(!this.playerData.assetsHistory) this.playerData.assetsHistory = [];
                     this.playerData.assetsHistory.push({ date: today, value: val });
                     if(this.playerData.assetsHistory.length > 30) this.playerData.assetsHistory.shift();
                     this.initChart();
                 },
 
-                // CRUD Operations
                 addGoal() { if(!this.newGoal.title)return; this.playerData.goals.push({...this.newGoal, current:0}); this.newGoal.title=''; this.saveAll(); },
                 deleteGoal(i) { this.playerData.goals.splice(i,1); this.saveAll(); },
                 
@@ -560,16 +550,19 @@
 
                 handleImageUpload(e) {
                     const file = e.target.files[0]; if(!file)return;
-                    if(file.size > 5*1024*1024) return alert('图片太大');
+                    // 图片限制：5MB
+                    if(file.size > 5*1024*1024) return alert('图片不能超过5MB');
                     const reader = new FileReader();
                     reader.onload = (evt) => {
                         const img = new Image(); img.src = evt.target.result;
                         img.onload = () => {
                             const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
+                            // 强制压缩宽度到 800px
                             const scale = 800/img.width; 
                             cvs.width = img.width > 800 ? 800 : img.width; 
                             cvs.height = img.width > 800 ? img.height * scale : img.height;
                             ctx.drawImage(img,0,0,cvs.width,cvs.height);
+                            // 质量压缩 0.7
                             this.newCase.image = cvs.toDataURL('image/jpeg', 0.7);
                         }
                     };
@@ -583,7 +576,15 @@
                     if (session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadData(); }
                 });
             }
-        }).mount('#app');
+        });
+
+        // 全局错误捕捉，防止白屏
+        app.config.errorHandler = (err) => {
+            console.error("Vue Crash:", err);
+            alert("应用发生错误，请刷新页面或检查控制台。");
+        };
+
+        app.mount('#app');
     </script>
 </body>
 </html>
