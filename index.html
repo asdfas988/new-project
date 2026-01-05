@@ -524,7 +524,8 @@
                     newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric', targetText: '' },
                     newSkillName: '',
                     
-                    skills: [], achievements: [
+                    skills: [], 
+                    achievements: [
                         { id: 1, name: '初次交易', icon: '💰', description: '记录股票交易', requirement: 1, current: 0, unlocked: false },
                         { id: 2, name: '铁口直断', icon: '☯️', description: '记录3个命例', requirement: 3, current: 0, unlocked: false }
                     ],
@@ -566,7 +567,7 @@
                 
                 // Visualization Helpers
                 calculateProgress(goal) {
-                    if (goal.mode === 'text') return goal.current || 0; // 手动进度
+                    if (goal.mode === 'text') return goal.current || 0; 
                     if (!goal.target || goal.target === 0) return 0;
                     return Math.round((goal.current / goal.target) * 100);
                 },
@@ -597,7 +598,13 @@
                         sb.from('kb_notes').select('*').eq('user_id', this.userId),
                         sb.from('cases').select('*').eq('user_id', this.userId)
                     ]);
-                    if(p.data) this.playerData = p.data.data;
+                    
+                    // 修复：确保读取后如果缺少字段（如 goals），使用本地默认值，避免目标数组消失
+                    if(p.data && p.data.data) {
+                        this.playerData = { ...this.playerData, ...p.data.data };
+                        if (!this.playerData.goals) this.playerData.goals = [];
+                    }
+
                     if(s.data) this.skills = s.data.map(i => i.data);
                     if(a.data) this.achievements = a.data.map(i => i.data);
                     if(n.data) this.notes = n.data.map(i => i.data);
@@ -607,32 +614,61 @@
                     if(cs.data) this.cases = cs.data.map(i => i.data);
                     this.syncing = false;
                 },
-                async saveAll() {
-                    const wrap = (list) => list.map(d => ({ user_id: this.userId, data: d }));
-                    await Promise.all([
-                        sb.from('skills').delete().eq('user_id', this.userId),
-                        sb.from('achievements').delete().eq('user_id', this.userId),
-                        sb.from('notes').delete().eq('user_id', this.userId),
-                        sb.from('books').delete().eq('user_id', this.userId),
-                        sb.from('kb_categories').delete().eq('user_id', this.userId),
-                        sb.from('kb_notes').delete().eq('user_id', this.userId),
-                        sb.from('cases').delete().eq('user_id', this.userId)
-                    ]);
-                    await sb.from('players').upsert({ user_id: this.userId, data: this.playerData });
-                    if(this.skills.length) await sb.from('skills').insert(wrap(this.skills));
-                    if(this.achievements.length) await sb.from('achievements').insert(wrap(this.achievements));
-                    if(this.notes.length) await sb.from('notes').insert(wrap(this.notes));
-                    if(this.books.length) await sb.from('books').insert(wrap(this.books));
-                    if(this.kbCategories.length) await sb.from('kb_categories').insert(wrap(this.kbCategories));
-                    if(this.kbDocs.length) await sb.from('kb_notes').insert(wrap(this.kbDocs));
-                    if(this.cases.length) await sb.from('cases').insert(wrap(this.cases));
-                },
-                async syncData() { await this.saveAll(); this.showMessage('同步成功！'); },
 
-                // OKR (Updated)
+                // 核心优化：并行保存 + onConflict 修复
+                async saveAll() {
+                    if (!this.userId) return;
+                    
+                    // 定义一个通用保存函数，先并行处理删除和插入
+                    const saveTable = async (tableName, list) => {
+                        // 1. 删除旧数据 (如果数据量大，建议改为增量更新，但为了保持逻辑简单，此处仍用全量覆盖)
+                        const { error: delError } = await sb.from(tableName).delete().eq('user_id', this.userId);
+                        if (delError) console.error(`Error clearing ${tableName}:`, delError);
+
+                        // 2. 插入新数据
+                        if (list && list.length > 0) {
+                            const payload = list.map(d => ({ user_id: this.userId, data: d }));
+                            const { error: insError } = await sb.from(tableName).insert(payload);
+                            if (insError) console.error(`Error saving ${tableName}:`, insError);
+                        }
+                    };
+
+                    // 使用 Promise.all 并行执行所有网络请求，极大提升速度
+                    try {
+                        await Promise.all([
+                            // 修复目标无法保存的问题：添加 onConflict 指令
+                            sb.from('players').upsert(
+                                { user_id: this.userId, data: this.playerData }, 
+                                { onConflict: 'user_id' } 
+                            ),
+                            saveTable('skills', this.skills),
+                            saveTable('achievements', this.achievements),
+                            saveTable('notes', this.notes),
+                            saveTable('books', this.books),
+                            saveTable('kb_categories', this.kbCategories),
+                            saveTable('kb_notes', this.kbDocs),
+                            saveTable('cases', this.cases)
+                        ]);
+                        // 不再强制弹出提示，体验更流畅
+                        // this.showMessage('同步完成'); 
+                    } catch (e) {
+                        console.error("Sync error:", e);
+                        this.showMessage('同步部分失败，请检查控制台', 'error');
+                    }
+                },
+
+                async syncData() { 
+                    this.syncing = true;
+                    await this.saveAll(); 
+                    this.syncing = false;
+                    this.showMessage('同步成功！'); 
+                },
+
+                // OKR Logic
                 addGoal() { 
                     if(!this.newGoal.title) return; 
-                    if(!this.playerData.goals) this.playerData.goals=[];
+                    // 双重保险：确保 goals 数组存在
+                    if(!this.playerData.goals) this.playerData.goals = [];
                     
                     const goal = {
                         title: this.newGoal.title, 
@@ -676,8 +712,45 @@
                 },
                 deleteNote(id) { if(confirm('删除?')) { this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
 
-                // Cases
-                handleImageUpload(e) { const file = e.target.files[0]; if(!file)return; const reader = new FileReader(); reader.onload = (evt) => { this.newCase.image = evt.target.result; }; reader.readAsDataURL(file); },
+                // Cases (Images) - 核心优化：图片压缩
+                handleImageUpload(e) { 
+                    const file = e.target.files[0]; 
+                    if(!file) return; 
+                    
+                    // 限制大小提示
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert("图片太大，建议小于5MB");
+                    }
+
+                    const reader = new FileReader(); 
+                    reader.onload = (evt) => { 
+                        // 创建 Image 对象进行压缩
+                        const img = new Image();
+                        img.src = evt.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            
+                            // 保持比例缩放，最大宽度 800px
+                            const maxWidth = 800;
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            if (width > maxWidth) {
+                                height = Math.round(height * (maxWidth / width));
+                                width = maxWidth;
+                            }
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // 压缩为 JPEG，质量 0.7
+                            this.newCase.image = canvas.toDataURL('image/jpeg', 0.7);
+                        };
+                    }; 
+                    reader.readAsDataURL(file); 
+                },
                 saveCase() { if(!this.newCase.title) return; this.cases.unshift({ id: Date.now(), type: 'case', createdAt: new Date().toISOString(), ...this.newCase }); this.newCase = { title: '', content: '', image: null }; this.showCaseForm = false; this.addXp(30); this.saveAll(); },
 
                 // Books & KB
@@ -707,3 +780,4 @@
     </script>
 </body>
 </html>
+
