@@ -31,7 +31,7 @@
             color: var(--text-color);
             padding: 20px;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; } /* 稍微收窄一点，单列看起来更精致 */
 
         /* 头部 */
         .header {
@@ -42,8 +42,13 @@
         }
         .header h1 { font-size: 2.2em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; margin-bottom: 10px; }
 
-        /* 布局 */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        /* 布局的核心修改：改回单列垂直堆叠 */
+        .grid { 
+            display: grid; 
+            grid-template-columns: 1fr; /* 强制一列，占满宽度 */
+            gap: 30px; 
+            margin-bottom: 40px; 
+        }
         
         /* 卡片 */
         .card {
@@ -96,7 +101,7 @@
         .markdown-content blockquote { border-left: 4px solid #ff9a8b; background: #fffaf5; padding: 5px 15px; color: #666; margin: 10px 0; }
         .markdown-content pre { background: #333; color: white; padding: 10px; border-radius: 8px; overflow-x: auto; }
 
-        /* 组件样式 */
+        /* 组件内部的小网格 (保持多列) */
         .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .quest-item { background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; }
         .quest-item.completed { background: #e8f5e9; border-color: #a3de83; opacity: 0.8; }
@@ -104,7 +109,7 @@
         .quest-item.completed .checkbox-custom { background: #a3de83; border-color: #2e7d32; }
         .quest-item.completed .checkbox-custom::after { content: '✔'; color: white; font-weight: bold; }
 
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .shop-card { background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; text-align: center; }
 
         .chart-container { width: 100%; height: 300px; background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
@@ -113,7 +118,7 @@
         .xp-progress { height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
 
-        /* 读书笔记 */
+        /* 读书笔记列表 */
         .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .book-card { background: #fff; border-radius: 16px; padding: 15px; box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #e0c9b8; display: flex; flex-direction: column; cursor: pointer; height: 220px; transition: transform 0.2s;}
         .book-card:hover { transform: translateY(-5px); border-color: #ff9a8b; }
@@ -130,11 +135,11 @@
         .review-tab.active { background: #ff9a8b; color: white; border-color: #ff9a8b; }
         .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; }
 
-        /* 命例 */
+        /* 命例列表 */
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; }
         
-        /* 知识库 & 弹窗 */
+        /* 弹窗系统 */
         .modal-overlay { position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); z-index: 999; display: flex; justify-content: center; align-items: center; }
         .kb-window { width: 95%; max-width: 1400px; height: 90vh; background: #fef9f3; border-radius: 20px; border: 4px solid #5a4a42; display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
         .kb-sidebar { width: 250px; background: #fffaf0; border-right: 2px solid #e0c9b8; display: flex; flex-direction: column; }
@@ -162,6 +167,12 @@
         .p-mid { background: linear-gradient(90deg, #f6d365, #fda085); }
         .p-high { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
         .p-done { background: linear-gradient(90deg, #4ecdc4, #556270); }
+
+        @media (max-width: 768px) {
+            .kb-window { width: 100%; height: 100vh; border-radius: 0; }
+            .kb-sidebar { width: 80px; }
+            .kb-nav-item span:not(.count) { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -617,10 +628,8 @@
                     
                     const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(fileName);
                     
-                    // 将 Markdown 图片语法插入到目标字段
                     const markdownImg = `\n![图片](${publicUrl})\n`;
                     
-                    // 利用 path 设置深层对象属性 (e.g., 'newBook.content')
                     const keys = targetModelPath.split('.');
                     if (keys.length === 2) {
                         this[keys[0]][keys[1]] = (this[keys[0]][keys[1]] || '') + markdownImg;
