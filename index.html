@@ -239,6 +239,25 @@
         .p-high { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
         .p-done { background: linear-gradient(90deg, #4ecdc4, #556270); }
 
+        /* ========== 新增：复盘内容预览样式 ========== */
+        .note-preview-box {
+            max-height: 100px; /* 限制高度 */
+            overflow: hidden;
+            position: relative;
+        }
+        /* 底部渐变遮罩，提示还有内容 */
+        .note-preview-box::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, #fffaf5);
+            pointer-events: none;
+        }
+        /* 鼠标悬停卡片时的效果 */
+        .note-card { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .note-card:hover { border-color: #ff9a8b; }
+
         @media (max-width: 768px) {
             .kb-window { width: 100%; height: 100vh; border-radius: 0; }
             .kb-sidebar { width: 80px; }
@@ -386,7 +405,7 @@
                 </div>
             </div>
 
-            <!-- 复盘 & 资产 (已更新：分页 & 增量保存) -->
+            <!-- 复盘 & 资产 (已更新：分页 & 增量保存 & 详情弹窗) -->
             <div class="card">
                 <h2>🔄 复盘 & 资产 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.reviews">
@@ -431,17 +450,24 @@
                         <button class="btn" @click="saveNote">💾 保存</button>
                     </div>
 
-                    <!-- 列表显示 (已改为分页) -->
-                    <div v-for="note in paginatedNotes" :key="note.id" class="note-card">
-                        <div style="font-size:0.8em;color:#999;margin-bottom:5px">{{ formatDate(note.createdAt) }}</div>
-                        <div v-if="note.type === 'stock'" style="padding-bottom:5px;border-bottom:1px dashed #ddd;margin-bottom:5px;">
-                            <strong>{{ note.stockData?.code }}</strong> <span :style="{color: note.stockData?.action==='buy'?'red':'green'}">{{ note.stockData?.action }}</span>
-                            <span v-if="note.stockData?.totalAsset" style="float:right;color:#2e7d32;font-weight:bold">💰 {{ note.stockData.totalAsset }}</span>
+                    <!-- 列表显示 (已改为分页 + 点击查看详情) -->
+                    <div v-for="note in paginatedNotes" :key="note.id" class="note-card" @click="viewingNote = note">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div style="font-size:0.8em;color:#999;margin-bottom:5px">{{ formatDate(note.createdAt) }}</div>
+                                <!-- 股票/资产信息展示 -->
+                                <div v-if="note.type === 'stock'" style="padding-bottom:5px;border-bottom:1px dashed #ddd;margin-bottom:5px; display:inline-block;">
+                                    <strong>{{ note.stockData?.code }}</strong> 
+                                    <span :style="{color: note.stockData?.action==='buy'?'red':'green'}"> {{ note.stockData?.action }}</span>
+                                    <span v-if="note.stockData?.totalAsset" style="margin-left:10px; color:#2e7d32;font-weight:bold">💰 {{ note.stockData.totalAsset }}</span>
+                                </div>
+                                <h3 v-if="note.title" style="margin-bottom:5px;">{{ note.title }}</h3>
+                            </div>
+                            <span style="color:#ff9a8b; font-size:1.5em;">&rsaquo;</span>
                         </div>
-                        <h3 v-if="note.title">{{ note.title }}</h3>
-                        <div class="markdown-content" v-html="renderMarkdown(note.content)"></div>
-                        <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="float:right;margin-top:5px">删除</button>
-                        <div style="clear:both"></div>
+                        
+                        <!-- 内容预览区 (限制高度) -->
+                        <div class="markdown-content note-preview-box" v-html="renderMarkdown(note.content)"></div>
                     </div>
 
                     <!-- 分页控件 -->
@@ -450,6 +476,32 @@
                         <span class="page-info">第 {{ reviewPage }} / {{ totalReviewPages }} 页</span>
                         <button class="btn-page" :disabled="reviewPage === totalReviewPages" @click="reviewPage++">下一页 →</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- 新增：复盘详情弹窗 -->
+            <div v-if="viewingNote" class="modal-overlay" @click.self="viewingNote = null">
+                <div class="detail-modal">
+                    <span class="close-modal" @click="viewingNote = null">&times;</span>
+                    
+                    <div style="padding-bottom:15px; border-bottom:2px solid #5a4a42; margin-bottom:20px;">
+                        <div style="font-size:0.9em; color:#999;">{{ formatDate(viewingNote.createdAt) }}</div>
+                        
+                        <!-- 弹窗内的股票信息 -->
+                        <div v-if="viewingNote.type === 'stock'" style="margin-top:10px; font-size:1.1em;">
+                            <strong>{{ viewingNote.stockData?.code }}</strong> 
+                            <span :style="{color: viewingNote.stockData?.action==='buy'?'red':'green'}"> {{ viewingNote.stockData?.action }}</span>
+                            <div v-if="viewingNote.stockData?.price">价格: {{ viewingNote.stockData.price }}</div>
+                            <div v-if="viewingNote.stockData?.profit">盈亏: {{ viewingNote.stockData.profit }}</div>
+                            <div v-if="viewingNote.stockData?.totalAsset" style="color:#2e7d32;font-weight:bold; margin-top:5px;">💰 总净值: {{ viewingNote.stockData.totalAsset }}</div>
+                        </div>
+
+                        <h2 v-if="viewingNote.title" style="margin-top:10px; border:none;">{{ viewingNote.title }}</h2>
+                    </div>
+
+                    <div class="markdown-content" v-html="renderMarkdown(viewingNote.content)"></div>
+                    
+                    <button class="btn-sm btn-danger" @click="deleteNote(viewingNote.id); viewingNote = null;" style="margin-top: 30px; float: right;">删除此记录</button>
                 </div>
             </div>
 
@@ -728,6 +780,9 @@
                 // --- 新增：分页控制变量 ---
                 reviewPage: 1,      // 当前页码
                 reviewPageSize: 5,  // 每页显示多少条
+                
+                // --- 新增：复盘弹窗控制 ---
+                viewingNote: null
             };
         },
         computed: {
