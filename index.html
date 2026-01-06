@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 升级版</title>
+    <title>个人空间 - 修复增强版</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -13,7 +13,7 @@
     <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* ========== 全局样式 (保持暖色手账风) ========== */
+        /* ========== 全局样式 ========== */
         :root {
             --bg-color: #fef9f3;
             --text-color: #5a4a42;
@@ -147,7 +147,7 @@
         
         .skill-item { padding: 15px; background: #fffaf5; border-radius: 15px; margin: 15px 0; border: 2px solid #e0c9b8; display: flex; justify-content: space-between; align-items: center; }
         
-        /* ========== 🏆 成就系统 (升级) ========== */
+        /* ========== 🏆 成就系统 ========== */
         .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .achievement-card { 
             background: #fffefc; border-radius: 15px; padding: 20px; text-align: center; 
@@ -158,7 +158,7 @@
         .achievement-icon { font-size: 3em; margin-bottom: 10px; display: block; }
         .ach-edit-controls { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; display: flex; gap: 5px; justify-content: center;}
 
-        /* ========== 📚 读书笔记 (新增) ========== */
+        /* ========== 📚 读书笔记 (升级: 标签) ========== */
         .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .book-card {
             background: #fff; border-radius: 16px; padding: 20px; 
@@ -168,6 +168,11 @@
         .star-rating { display: inline-flex; font-size: 1.2em; cursor: pointer; }
         .star { color: #ddd; transition: color 0.2s; margin-right: 2px; }
         .star.active { color: #ffc107; text-shadow: 1px 1px 0 #d39e00; }
+        .book-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+        .tag-pill {
+            background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; 
+            border-radius: 12px; padding: 2px 8px; font-size: 0.75em; font-weight: bold;
+        }
         
         /* 复盘/笔记 */
         .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0c9b8; padding-bottom: 10px; overflow-x: auto; }
@@ -268,7 +273,6 @@
             <div class="card">
                 <h2>🎯 阶段目标 <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.goals">
-                    <!-- 添加目标 -->
                     <div style="background: #fffaf5; padding: 15px; border: 2px dashed #e0c9b8; border-radius: 12px; margin-bottom: 20px;">
                         <div class="goal-mode-switch">
                             <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值进度</div>
@@ -283,7 +287,6 @@
                             <button class="btn-sm" @click="addGoal" style="height: 42px; width: 80px;">添加</button>
                         </div>
                     </div>
-                    <!-- 目标列表 -->
                     <div class="goal-list">
                         <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: calculateProgress(goal) >= 100}">
                             <div class="goal-header">
@@ -434,11 +437,10 @@
                 </div>
             </div>
 
-            <!-- 🆕 单独板块：成就系统 (升级版) -->
+            <!-- 成就系统 -->
             <div class="card">
                 <h2>🏅 荣耀成就 <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">{{ collapsed.achievements ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.achievements">
-                    <!-- 添加成就 -->
                     <div style="background: #fffaf5; padding: 15px; border-radius: 15px; border: 2px dashed #e0c9b8; margin-bottom: 20px;">
                         <h4 style="margin-bottom: 10px;">添加新成就</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
@@ -450,7 +452,6 @@
                         <button class="btn-sm" @click="addAchievement" style="width: 100%; margin-top: 10px;">➕ 创建成就</button>
                     </div>
 
-                    <!-- 成就列表 -->
                     <div class="achievement-grid">
                         <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: ach.current < ach.requirement, unlocked: ach.current >= ach.requirement}">
                             <span class="achievement-icon">{{ ach.icon }}</span>
@@ -459,8 +460,6 @@
                             <div style="font-weight: bold; margin: 10px 0;" :style="{color: ach.current >= ach.requirement ? '#ffa502' : '#999'}">
                                 {{ ach.current }} / {{ ach.requirement }}
                             </div>
-                            
-                            <!-- 修改进度与删除 -->
                             <div class="ach-edit-controls">
                                 <input type="number" v-model.number="ach.current" style="width: 60px; border: 1px solid #ccc; border-radius: 5px; padding: 2px;" @change="saveAll()">
                                 <button class="btn-sm btn-danger" style="padding: 2px 8px; font-size: 0.8em;" @click="deleteAchievement(ach.id)">🗑️</button>
@@ -470,7 +469,7 @@
                 </div>
             </div>
 
-            <!-- 🆕 单独板块：读书笔记 (Books) -->
+            <!-- 📚 读书笔记 (增强版：带标签) -->
             <div class="card">
                 <h2>📚 读书笔记 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.books">
@@ -481,6 +480,9 @@
                             <input v-model="newBook.title" placeholder="书名" class="note-input">
                             <input v-model="newBook.author" placeholder="作者" class="note-input">
                         </div>
+                        <div style="margin-bottom: 10px;">
+                            <input v-model="newBook.tags" placeholder="标签/分类 (用逗号分隔，如：历史, 金融)..." class="note-input">
+                        </div>
                         <div style="margin-bottom: 15px;">
                             <label style="font-weight: bold; margin-right: 10px;">推荐指数:</label>
                             <div class="star-rating">
@@ -488,7 +490,7 @@
                             </div>
                         </div>
                         <textarea v-model="newBook.content" placeholder="核心笔记..." class="note-textarea" style="height: 100px;"></textarea>
-                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢 (Gratitude)..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;"></textarea>
+                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;"></textarea>
                         <button class="btn" @click="saveBook">💾 保存笔记</button>
                     </div>
 
@@ -500,7 +502,13 @@
                                     <span v-for="n in 5" :key="n" class="star" :class="{active: n <= book.rating}">★</span>
                                 </div>
                             </div>
-                            <div style="color: #888; font-size: 0.9em; margin-bottom: 15px;">👤 {{ book.author }}</div>
+                            <div style="color: #888; font-size: 0.9em; margin-bottom: 10px;">👤 {{ book.author }}</div>
+                            
+                            <!-- 🏷️ 标签展示 -->
+                            <div v-if="book.tags && book.tags.length > 0" class="book-tags">
+                                <span v-for="tag in book.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
+                            </div>
+
                             <div style="background: #fffaf5; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
                                 <strong>📝 笔记:</strong>
                                 <p style="white-space: pre-wrap; font-size: 0.95em;">{{ book.content }}</p>
@@ -515,7 +523,7 @@
                 </div>
             </div>
 
-            <!-- 知识库入口 -->
+            <!-- 知识库 -->
             <div class="card">
                 <h2>📂 知识库</h2>
                 <p style="margin-bottom: 15px; color: #666;">整理你的知识体系。</p>
@@ -548,7 +556,7 @@
         </div>
     </div>
 
-    <!-- 知识库弹窗 (已修复) -->
+    <!-- 知识库弹窗 -->
     <div v-if="showKnowledgeBase" class="kb-overlay" @click.self="showKnowledgeBase = false">
         <div class="kb-window">
             <div class="kb-sidebar">
@@ -569,12 +577,10 @@
                         <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 400px;"></textarea>
                         <div style="display: flex; gap: 10px;">
                             <button class="btn" @click="saveKbDoc">保存</button>
-                            <!-- 新增：删除按钮 -->
                             <button v-if="kbEditorData.id" class="btn btn-danger" @click="deleteKbDoc(kbEditorData.id)">🗑️ 删除</button>
                             <button class="btn" style="background: #ccc;" @click="kbEditorMode = false">取消</button>
                         </div>
                     </div>
-                    <!-- 修复列表显示逻辑 -->
                     <div v-else>
                         <div v-for="doc in filteredKbDocs" :key="doc.id" style="padding: 15px; border-bottom: 1px dashed #e0c9b8; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='transparent'" @click="editKbDoc(doc)">
                             <div style="font-weight: bold; font-size: 1.1em;">📄 {{ doc.title || '无标题文档' }}</div>
@@ -617,12 +623,11 @@
                     goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory: []
                 },
                 
-                // 新增输入模型
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
                 newQuestTitle: '', 
                 newShopItem: { name: '', cost: 50, icon: '🥤' },
-                newAchievement: { name: '', description: '', icon: '🏆', requirement: 100, current: 0 }, // 🆕
-                newBook: { title: '', author: '', rating: 5, content: '', thoughts: '' }, // 🆕
+                newAchievement: { name: '', description: '', icon: '🏆', requirement: 100, current: 0 },
+                newBook: { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' }, // 🆕 Tags String
 
                 skills: [], achievements: [], notes: [], cases: [], books: [],
                 kbCategories: [], kbDocs: [],
@@ -632,7 +637,6 @@
                 newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
                 newSkillName: '',
                 
-                // 弹窗相关
                 showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbEditorData: {},
                 showCaseForm: false, showBookForm: false, newCase: { title: '', content: '', image: null }, viewingItem: null,
                 
@@ -649,7 +653,6 @@
                 });
                 return res.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             },
-            // 修复知识库筛选逻辑
             filteredKbDocs() {
                 if (this.kbCurrentCategory === 'all') return this.kbDocs;
                 return this.kbDocs.filter(d => d.categoryId === this.kbCurrentCategory.id);
@@ -662,6 +665,18 @@
             calculateProgress(goal) { return goal.mode === 'text' ? (goal.current || 0) : (!goal.target ? 0 : Math.round((goal.current / goal.target) * 100)); },
             getProgressColor(p) { return p < 30 ? '#ff6b6b' : (p < 80 ? '#ffcc00' : '#2e7d32'); },
             getProgressClass(p) { return p >= 100 ? 'p-done' : (p < 30 ? 'p-low' : (p < 80 ? 'p-mid' : 'p-high')); },
+
+            // ⚠️ 核心修复：数据去重工具函数 ⚠️
+            deduplicate(arr) {
+                if (!arr || !Array.isArray(arr)) return [];
+                const seen = new Set();
+                return arr.filter(item => {
+                    const id = item.id;
+                    if (seen.has(id)) return false; // 已经见过这个ID，丢弃（去重）
+                    seen.add(id);
+                    return true;
+                });
+            },
 
             async login() {
                 if (!this.email || !this.password) return;
@@ -689,23 +704,23 @@
                 
                 if(p.data && p.data.data) {
                     this.playerData = { ...this.playerData, ...p.data.data };
-                    // 补全字段
                     if(!this.playerData.dailyTasks) this.playerData.dailyTasks = [];
-                    if(!this.playerData.shopItems) this.playerData.shopItems = [
-                        {id: 1, name: '喝奶茶', cost: 50, icon: '🥤'},
-                        {id: 2, name: '赖床券', cost: 200, icon: '🛌'}
-                    ];
+                    if(!this.playerData.shopItems) this.playerData.shopItems = [];
                     if(!this.playerData.assetHistory) this.playerData.assetHistory = [];
                     this.checkDailyReset();
                 }
 
-                if(s.data) this.skills = s.data.map(i => i.data);
-                if(a.data) this.achievements = a.data.map(i => i.data);
-                if(n.data) this.notes = n.data.map(i => i.data);
-                if(b.data) this.books = b.data.map(i => i.data); // 载入书籍
-                if(kc.data) this.kbCategories = kc.data.map(i => i.data);
-                if(kd.data) this.kbDocs = kd.data.map(i => i.data);
-                if(cs.data) this.cases = cs.data.map(i => i.data);
+                // 加载数据并立即执行去重清洗
+                if(s.data) this.skills = this.deduplicate(s.data.map(i => i.data));
+                if(a.data) this.achievements = this.deduplicate(a.data.map(i => i.data));
+                if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
+                if(b.data) this.books = this.deduplicate(b.data.map(i => i.data));
+                
+                // 重点修复知识库
+                if(kc.data) this.kbCategories = this.deduplicate(kc.data.map(i => i.data));
+                if(kd.data) this.kbDocs = this.deduplicate(kd.data.map(i => i.data));
+                
+                if(cs.data) this.cases = this.deduplicate(cs.data.map(i => i.data));
                 
                 this.syncing = false;
                 setTimeout(() => this.loadChart(), 500);
@@ -713,9 +728,18 @@
 
             async saveAll() {
                 if (!this.userId) return;
+                // 保存前再次去重以防万一
+                this.kbDocs = this.deduplicate(this.kbDocs);
+                this.kbCategories = this.deduplicate(this.kbCategories);
+
                 await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
                 
-                const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
+                const saveTbl = async (t, d) => { 
+                    // 先清空该用户该表所有数据
+                    await sb.from(t).delete().eq('user_id', this.userId); 
+                    // 再插入当前去重后的数据
+                    if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); 
+                };
                 
                 await Promise.all([
                     saveTbl('skills', this.skills),
@@ -749,7 +773,7 @@
                 quest.completed = true;
                 this.addXp(5);
                 if (this.playerData.dailyTasks.every(t => t.completed)) {
-                    this.showMessage('🔥 全勤达成！奖励 20 XP');
+                    this.showMessage('🔥 全勤达成！');
                     this.addXp(20);
                 }
                 this.saveAll();
@@ -825,19 +849,17 @@
             handleImageUpload(e) { const file = e.target.files[0]; if(!file)return; const reader = new FileReader(); reader.onload = (evt) => { const img = new Image(); img.src = evt.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxW = 800; let w=img.width, h=img.height; if(w>maxW){ h=Math.round(h*(maxW/w)); w=maxW; } canvas.width=w; canvas.height=h; ctx.drawImage(img,0,0,w,h); this.newCase.image=canvas.toDataURL('image/jpeg',0.7); } }; reader.readAsDataURL(file); },
             saveCase() { if(!this.newCase.title)return; this.cases.unshift({id:Date.now(), type:'case', createdAt:new Date().toISOString(), ...this.newCase}); this.newCase={title:'',content:'',image:null}; this.showCaseForm=false; this.addXp(30); this.saveAll(); },
             
-            // ========== 知识库修复逻辑 ==========
+            // KB Logic
             openKbEditor() { this.kbEditorMode=true; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory === 'all' ? null : this.kbCurrentCategory.id}; },
             editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; },
             saveKbDoc() { 
                 const now=new Date().toISOString(); 
                 if(this.kbEditorData.id){
-                    // 编辑模式：找到并更新
                     const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id);
                     if(i !== -1) {
                         this.kbDocs[i] = {...this.kbDocs[i], ...this.kbEditorData, updatedAt:now};
                     }
                 } else {
-                    // 新增模式
                     this.kbDocs.unshift({
                         id: Date.now(), 
                         title: this.kbEditorData.title || '无标题',
@@ -858,9 +880,7 @@
             },
             addKbCategory() { const n=prompt('分类名'); if(n)this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); },
             
-            // ========== 🆕 新增功能逻辑 ==========
-            
-            // 成就 CRUD
+            // Achievement
             addAchievement() {
                 if(!this.newAchievement.name) return;
                 this.achievements.push({ id: Date.now(), ...this.newAchievement });
@@ -874,15 +894,21 @@
                 }
             },
 
-            // 书籍 CRUD
+            // Books (Updated with Tags)
             saveBook() {
                 if(!this.newBook.title) return;
+                // 处理标签：分割逗号，去除空格，过滤空项
+                const tagsArray = this.newBook.tags 
+                    ? this.newBook.tags.split(/[,，]/).map(t => t.trim()).filter(t => t) 
+                    : [];
+
                 this.books.unshift({
                     id: Date.now(),
                     ...this.newBook,
+                    tags: tagsArray,
                     createdAt: new Date().toISOString()
                 });
-                this.newBook = { title: '', author: '', rating: 5, content: '', thoughts: '' };
+                this.newBook = { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' };
                 this.showBookForm = false;
                 this.addXp(20);
                 this.saveAll();
