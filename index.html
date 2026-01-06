@@ -33,6 +33,18 @@
         }
         .container { max-width: 1200px; margin: 0 auto; }
 
+        /* 1. 禁止标题和界面元素被选中，避免出现输入光标 */
+        h1, h2, h3, h4, .level-display, .review-tab, .kb-nav-item, .toggle-btn, .preview-label {
+            user-select: none;          /* 禁止选中文字 */
+            -webkit-user-select: none;  /* 兼容 Safari/Chrome */
+            cursor: default;            /* 鼠标样式强制变为标准箭头 */
+        }
+
+        /* 2. 确保所有可点击的卡片、按钮依然显示手型鼠标 */
+        button, .btn, .btn-sm, .collapse-btn, .review-tab, .kb-nav-item, .toggle-btn, .quest-item, .note-card, .book-card, .case-card {
+            cursor: pointer;
+        }
+
         /* 头部 */
         .header {
             text-align: center; margin-bottom: 30px; padding: 30px;
@@ -1160,3 +1172,4 @@
 </script>
 </body>
 </html>
+
