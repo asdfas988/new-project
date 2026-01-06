@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 旗舰版</title>
+    <title>个人空间 - 急速版</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Marked.js (Markdown 解析) -->
+    <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
             color: var(--text-color);
             padding: 20px;
         }
-        .container { max-width: 1200px; margin: 0 auto; } /* 稍微收窄一点，单列看起来更精致 */
+        .container { max-width: 1200px; margin: 0 auto; }
 
         /* 头部 */
         .header {
@@ -42,13 +42,8 @@
         }
         .header h1 { font-size: 2.2em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; margin-bottom: 10px; }
 
-        /* 布局的核心修改：改回单列垂直堆叠 */
-        .grid { 
-            display: grid; 
-            grid-template-columns: 1fr; /* 强制一列，占满宽度 */
-            gap: 30px; 
-            margin-bottom: 40px; 
-        }
+        /* 单列布局 */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
         
         /* 卡片 */
         .card {
@@ -75,9 +70,9 @@
             box-shadow: 3px 3px 0px #2ba69b; border: none; color: white; font-weight: bold; cursor: pointer;
         }
         .btn-upload {
-            background: #eee; color: #555; box-shadow: none; border: 1px solid #ccc; display: inline-flex; align-items: center; gap: 5px;
+            background: #eee; color: #555; box-shadow: none; border: 1px solid #ccc; display: inline-flex; align-items: center; gap: 5px; transition: background 0.3s;
         }
-        .btn-upload:hover { background: #ddd; }
+        .btn-upload:hover { background: #e0e0e0; }
         .btn-danger { background: #ff6b6b; box-shadow: 3px 3px 0px #c0392b; }
         .collapse-btn {
             background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b;
@@ -94,14 +89,14 @@
             margin-bottom: 20px; background: white; font-weight: bold; 
         }
 
-        /* Markdown 内容样式 */
+        /* Markdown */
         .markdown-content { line-height: 1.8; color: #444; overflow-wrap: break-word; }
         .markdown-content h1, .markdown-content h2 { border-bottom: 1px dashed #e0c9b8; padding-bottom: 5px; margin-top: 10px; }
         .markdown-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid #eee; }
         .markdown-content blockquote { border-left: 4px solid #ff9a8b; background: #fffaf5; padding: 5px 15px; color: #666; margin: 10px 0; }
         .markdown-content pre { background: #333; color: white; padding: 10px; border-radius: 8px; overflow-x: auto; }
 
-        /* 组件内部的小网格 (保持多列) */
+        /* 组件样式 */
         .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .quest-item { background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; }
         .quest-item.completed { background: #e8f5e9; border-color: #a3de83; opacity: 0.8; }
@@ -118,7 +113,6 @@
         .xp-progress { height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
 
-        /* 读书笔记列表 */
         .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .book-card { background: #fff; border-radius: 16px; padding: 15px; box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #e0c9b8; display: flex; flex-direction: column; cursor: pointer; height: 220px; transition: transform 0.2s;}
         .book-card:hover { transform: translateY(-5px); border-color: #ff9a8b; }
@@ -129,17 +123,14 @@
         .star.active { color: #ffc107; text-shadow: 1px 1px 0 #d39e00; }
         .tag-pill { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; border-radius: 12px; padding: 2px 8px; font-size: 0.75em; font-weight: bold; margin-right: 4px; display: inline-block;}
 
-        /* 复盘 */
         .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0c9b8; padding-bottom: 10px; overflow-x: auto; }
         .review-tab { padding: 8px 18px; border: 2px solid #e0c9b8; background: #fffaf5; border-radius: 15px 15px 0 0; cursor: pointer; font-weight: 600; white-space: nowrap; }
         .review-tab.active { background: #ff9a8b; color: white; border-color: #ff9a8b; }
         .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; }
 
-        /* 命例列表 */
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; }
         
-        /* 弹窗系统 */
         .modal-overlay { position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); z-index: 999; display: flex; justify-content: center; align-items: center; }
         .kb-window { width: 95%; max-width: 1400px; height: 90vh; background: #fef9f3; border-radius: 20px; border: 4px solid #5a4a42; display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
         .kb-sidebar { width: 250px; background: #fffaf0; border-right: 2px solid #e0c9b8; display: flex; flex-direction: column; }
@@ -319,7 +310,7 @@
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="reviewFileInput" @change="handleUpload($event, 'newNote.content')" style="display:none" accept="image/*">
                             <button class="btn-sm btn-upload" @click="$refs.reviewFileInput.click()">
-                                {{ uploading ? '⏳ 上传中...' : '📸 插入图片' }}
+                                {{ uploading ? '⏳ 压缩上传中...' : '📸 插入图片' }}
                             </button>
                         </div>
 
@@ -361,7 +352,7 @@
                         <!-- 📸 上传组件 -->
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="bookFileInput" @change="handleUpload($event, 'newBook.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.bookFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片到笔记' }}</button>
+                            <button class="btn-sm btn-upload" @click="$refs.bookFileInput.click()">{{ uploading ? '⏳ 压缩上传中...' : '📸 插入图片到笔记' }}</button>
                         </div>
 
                         <textarea v-model="newBook.thoughts" placeholder="感悟与致谢..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;"></textarea>
@@ -405,7 +396,7 @@
                         <!-- 📸 上传组件 -->
                          <div style="margin-bottom:10px;">
                             <input type="file" ref="caseFileInput" @change="handleUpload($event, 'newCase.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.caseFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片/排盘' }}</button>
+                            <button class="btn-sm btn-upload" @click="$refs.caseFileInput.click()">{{ uploading ? '⏳ 压缩上传中...' : '📸 插入图片/排盘' }}</button>
                         </div>
                         
                         <button class="btn-sm" @click="saveCase">保存</button>
@@ -481,7 +472,7 @@
                         <!-- 📸 上传组件 -->
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="kbFileInput" @change="handleUpload($event, 'kbEditorData.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
+                            <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()">{{ uploading ? '⏳ 压缩上传中...' : '📸 插入图片' }}</button>
                         </div>
 
                         <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -612,17 +603,62 @@
                 try { return marked.parse(text); } catch(e) { return text; }
             },
 
-            // 📸 核心上传功能
+            // 🚀 核心优化：智能压缩图片
+            async compressImage(file) {
+                // 如果是动图，不压缩，直接返回
+                if (file.type === 'image/gif') return file;
+
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            
+                            // 限制最大宽度为 1280px，保持比例
+                            const MAX_WIDTH = 1280;
+                            if (width > MAX_WIDTH) {
+                                height = Math.round(height * (MAX_WIDTH / width));
+                                width = MAX_WIDTH;
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // 压缩为 jpeg，质量 0.7
+                            canvas.toBlob((blob) => {
+                                // 创建新的 File 对象
+                                const newFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                resolve(newFile);
+                            }, 'image/jpeg', 0.7); 
+                        };
+                    };
+                });
+            },
+
+            // 📸 上传功能
             async handleUpload(event, targetModelPath) {
                 const file = event.target.files[0];
                 if (!file) return;
                 
-                if (file.size > 5 * 1024 * 1024) return alert('图片不能超过 5MB');
-                
                 this.uploading = true;
                 try {
-                    const fileName = `${this.userId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
-                    const { data, error } = await sb.storage.from('images').upload(fileName, file);
+                    // 1. 先压缩
+                    const processedFile = await this.compressImage(file);
+
+                    // 2. 再上传
+                    const fileName = `${this.userId}/${Date.now()}_${processedFile.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
+                    const { data, error } = await sb.storage.from('images').upload(fileName, processedFile);
                     
                     if (error) throw error;
                     
