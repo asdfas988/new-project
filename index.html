@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 终极版</title>
+    <title>个人空间</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -52,9 +52,7 @@
             box-shadow: var(--card-shadow); border: var(--card-border);
             transition: transform 0.3s; position: relative;
         }
-        /* 禁止卡片内部的 hover 影响整体布局，仅做微动 */
         .card-hover:hover { transform: translateY(-3px); }
-        
         .card h2 {
             margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px dotted #ff9a8b;
             font-size: 1.4em; font-weight: 700; display: flex; justify-content: space-between; align-items: center;
@@ -137,24 +135,14 @@
         .level-display { font-size: 4em; font-weight: 800; text-align: center; color: #ff6b6b; text-shadow: 3px 3px 0px #ffd6cc; margin: 10px 0; }
         .xp-progress { height: 24px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
-        .skill-item { padding: 15px; background: #fffaf5; border-radius: 15px; margin: 15px 0; border: 2px solid #e0c9b8; display: flex; justify-content: space-between; align-items: center; }
         
-        /* ========== 🏆 成就系统 ========== */
-        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .achievement-card { 
-            background: #fffefc; border-radius: 15px; padding: 20px; text-align: center; 
-            box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #5a4a42;
-        }
-        .achievement-card.locked { opacity: 0.7; border-style: dashed; }
-        .achievement-icon { font-size: 3em; margin-bottom: 10px; display: block; }
-        
-        /* ========== 📚 读书笔记 (优化版) ========== */
+        /* ========== 📚 读书笔记 ========== */
         .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .book-card {
             background: #fff; border-radius: 16px; padding: 15px; 
             box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #e0c9b8; 
             display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s;
-            height: 220px; /* 固定高度，内容多显示省略号 */
+            height: 220px; 
         }
         .book-card:hover { transform: translateY(-5px); border-color: #ff9a8b; }
         .book-title { font-weight: bold; font-size: 1.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -174,9 +162,10 @@
         .review-tab.special { background: #a3de83; border-color: #88c967; color: #2d5a27; }
         .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; position: relative; }
 
-        /* 命例 & 通用弹窗覆盖层 */
+        /* 命例 */
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; }
+        .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; transition: all 0.2s; }
+        .case-card:hover { transform: translateY(-3px); }
         .image-upload-area { border: 2px dashed #e0c9b8; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; background: #fffaf9; }
         
         /* 弹窗系统 */
@@ -373,34 +362,11 @@
                 </div>
             </div>
 
-            <!-- 技能 & 成就 -->
-            <div class="card card-hover">
-                <h2>⚡ 技能 & 成就</h2>
-                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input v-model="newSkillName" placeholder="新技能..." class="note-input" style="margin:0;">
-                    <button class="btn-sm" @click="addNewSkillInline">习得</button>
-                </div>
-                <div v-for="skill in skills" :key="skill.id" class="skill-item">
-                    <div><strong>{{ skill.name }}</strong> <span style="color:#999">Lv.{{ skill.level }}</span></div>
-                    <div style="display:flex;gap:5px"><button class="btn-sm" @click="practiceSkill(skill.id)">练习</button><button class="btn-sm btn-danger" @click="deleteSkill(skill.id)">✕</button></div>
-                </div>
-                <hr style="margin:20px 0; border:none; border-top:2px dashed #e0c9b8;">
-                <h4 style="margin-bottom:15px">成就墙</h4>
-                <div class="achievement-grid">
-                    <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: ach.current < ach.requirement}">
-                        <span style="font-size:2em">{{ ach.icon }}</span>
-                        <h4>{{ ach.name }}</h4>
-                        <div style="color:#ff9a8b">{{ ach.current }}/{{ ach.requirement }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 📚 读书笔记 (搜索+详情优化) -->
+            <!-- 📚 读书笔记 -->
             <div class="card card-hover">
                 <h2>📚 读书笔记 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.books">
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                         <!-- 🔍 搜索框 -->
                         <input v-model="bookSearchQuery" class="search-bar" placeholder="🔍 搜索书名、作者、笔记内容或感悟..." style="margin-bottom: 0;">
                         <button class="btn" style="width: auto; white-space: nowrap;" @click="showBookForm = !showBookForm">{{ showBookForm ? '收起' : '📖 记一本' }}</button>
                     </div>
@@ -437,35 +403,42 @@
                 </div>
             </div>
 
-            <!-- 知识库 & 易学 -->
+            <!-- 📂 知识库 (独立板块) -->
             <div class="card card-hover">
-                 <h2>📂 知识库 & 命例</h2>
-                 <div style="display:flex; gap:10px;">
-                     <button class="btn" @click="showKnowledgeBase = true">打开知识库</button>
-                     <button class="btn" @click="showCaseForm = !showCaseForm">记录命例</button>
-                 </div>
-                 
-                 <div v-if="showCaseForm" style="margin-top:15px; background:#fffaf9; padding:15px; border-radius:10px; border:2px dashed #e0c9b8;">
-                    <input v-model="newCase.title" placeholder="命主..." class="note-input">
-                    <div class="image-upload-area" @click="$refs.fileInput.click()">
-                         <input type="file" ref="fileInput" @change="handleImageUpload" style="display:none">
-                         <span v-if="!newCase.image">点击上传图片</span>
-                         <img v-else :src="newCase.image" style="max-height:100px;">
-                    </div>
-                    <textarea v-model="newCase.content" class="note-textarea"></textarea>
-                    <button class="btn-sm" @click="saveCase">保存</button>
-                 </div>
-                 <div class="case-grid" style="margin-top:20px;">
-                    <div v-for="c in cases" :key="c.id" class="case-card" @click="viewingItem = { ...c, type: 'case' }">
-                        <img v-if="c.image" :src="c.image" style="width:100%;height:100px;object-fit:cover;border-radius:10px;">
-                        <div style="font-weight:bold; margin-top:5px;">{{ c.title }}</div>
-                    </div>
+                 <h2>📂 知识库</h2>
+                 <p style="margin-bottom:15px; color:#666;">记录沉淀，构建体系。</p>
+                 <button class="btn" @click="showKnowledgeBase = true">打开知识库</button>
+            </div>
+
+            <!-- ☯️ 易学命例 (独立板块) -->
+            <div class="card card-hover">
+                 <h2>☯️ 易学命例 <button class="collapse-btn" @click="collapsed.cases = !collapsed.cases">{{ collapsed.cases ? '展开' : '收起' }}</button></h2>
+                 <div v-show="!collapsed.cases">
+                     <button class="btn" style="margin-bottom: 20px;" @click="showCaseForm = !showCaseForm">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
+                     
+                     <div v-if="showCaseForm" style="background:#fffaf9; padding:15px; border-radius:10px; border:2px dashed #e0c9b8; margin-bottom:20px;">
+                        <input v-model="newCase.title" placeholder="命主 / 概要..." class="note-input">
+                        <div class="image-upload-area" @click="$refs.fileInput.click()">
+                             <input type="file" ref="fileInput" @change="handleImageUpload" style="display:none">
+                             <span v-if="!newCase.image">点击上传排盘图片</span>
+                             <img v-else :src="newCase.image" style="max-height:100px;">
+                        </div>
+                        <textarea v-model="newCase.content" placeholder="断语与复盘..." class="note-textarea"></textarea>
+                        <button class="btn-sm" @click="saveCase">保存</button>
+                     </div>
+
+                     <div class="case-grid">
+                        <div v-for="c in cases" :key="c.id" class="case-card" @click="viewingItem = { ...c, type: 'case' }">
+                            <img v-if="c.image" :src="c.image" style="width:100%;height:100px;object-fit:cover;border-radius:10px;">
+                            <div style="font-weight:bold; margin-top:5px;">{{ c.title }}</div>
+                        </div>
+                     </div>
                  </div>
             </div>
         </div>
     </div>
 
-    <!-- 📚 书籍详情弹窗 (新增) -->
+    <!-- 📚 书籍详情弹窗 -->
     <div v-if="viewingBook" class="modal-overlay" @click.self="viewingBook = null">
         <div class="detail-modal">
             <span class="close-modal" @click="viewingBook = null">&times;</span>
@@ -494,7 +467,7 @@
         </div>
     </div>
 
-    <!-- 📂 知识库弹窗 (优化交互) -->
+    <!-- 📂 知识库弹窗 -->
     <div v-if="showKnowledgeBase" class="modal-overlay" @click.self="showKnowledgeBase = false">
         <div class="kb-window">
             <div class="kb-sidebar">
@@ -586,16 +559,15 @@
                 isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                 loading: false, syncing: false, message: '', messageType: '',
                 
-                collapsed: { goals: false, stats: false, quests: false, shop: false, reviews: false, books: false },
+                collapsed: { goals: false, stats: false, quests: false, shop: false, reviews: false, books: false, cases: false },
                 
                 playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory: [] },
                 
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
                 newQuestTitle: '', 
                 newShopItem: { name: '', cost: 50, icon: '🥤' },
-                newSkillName: '',
                 
-                skills: [], achievements: [], notes: [], cases: [], books: [], kbCategories: [], kbDocs: [],
+                notes: [], cases: [], books: [], kbCategories: [], kbDocs: [],
                 
                 activeReviewTab: 'stock', showReviewForm: false, newNote: { title: '', content: '' },
                 newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
@@ -659,10 +631,8 @@
 
             async loadData() {
                 this.syncing = true;
-                const [p, s, a, n, b, kc, kd, cs] = await Promise.all([
+                const [p, n, b, kc, kd, cs] = await Promise.all([
                     sb.from('players').select('*').eq('user_id', this.userId).single(),
-                    sb.from('skills').select('*').eq('user_id', this.userId),
-                    sb.from('achievements').select('*').eq('user_id', this.userId),
                     sb.from('notes').select('*').eq('user_id', this.userId),
                     sb.from('books').select('*').eq('user_id', this.userId),
                     sb.from('kb_categories').select('*').eq('user_id', this.userId),
@@ -678,12 +648,16 @@
                     this.checkDailyReset();
                 }
 
-                if(s.data) this.skills = this.deduplicate(s.data.map(i => i.data));
-                if(a.data) this.achievements = this.deduplicate(a.data.map(i => i.data));
                 if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
                 if(b.data) this.books = this.deduplicate(b.data.map(i => i.data));
                 if(kc.data) this.kbCategories = this.deduplicate(kc.data.map(i => i.data));
-                if(kd.data) this.kbDocs = this.deduplicate(kd.data.map(i => i.data));
+                
+                // ⚠️ 知识库自动清洗逻辑：过滤掉 ID 无效或空 ID 的文档 ⚠️
+                if(kd.data) {
+                    this.kbDocs = this.deduplicate(kd.data.map(i => i.data))
+                        .filter(d => d && d.id); // 只有存在 ID 的才保留
+                }
+
                 if(cs.data) this.cases = this.deduplicate(cs.data.map(i => i.data));
                 
                 this.syncing = false;
@@ -695,7 +669,8 @@
                 this.kbDocs = this.deduplicate(this.kbDocs); // Safety
                 await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
                 const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
-                await Promise.all([ saveTbl('skills', this.skills), saveTbl('achievements', this.achievements), saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
+                // 移除 skills 和 achievements 的保存
+                await Promise.all([ saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
             },
             async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
@@ -726,9 +701,6 @@
             addGoal() { if(this.newGoal.title){ this.playerData.goals.push({title:this.newGoal.title,mode:this.newGoal.mode,current:0,unit:this.newGoal.unit||'',target:this.newGoal.target||100}); this.newGoal={title:'',target:null,current:0,unit:'',mode:'numeric'}; this.saveAll(); } },
             deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.saveAll(); } },
             addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
-            addNewSkillInline() { if(this.newSkillName){ this.skills.push({id:Date.now(),name:this.newSkillName,level:1,xp:0}); this.newSkillName=''; this.saveAll(); } },
-            practiceSkill(id){ const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=50){s.xp=0;s.level++;} this.addXp(5); this.saveAll(); } },
-            deleteSkill(id){ if(confirm('删?')){ this.skills=this.skills.filter(x=>x.id!==id); this.saveAll(); } },
 
             handleImageUpload(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=()=>{ const c=document.createElement('canvas'); const ctx=c.getContext('2d'); let w=i.width,h=i.height; if(w>800){h=Math.round(h*(800/w));w=800;} c.width=w;c.height=h; ctx.drawImage(i,0,0,w,h); this.newCase.image=c.toDataURL('image/jpeg',0.7); } }; r.readAsDataURL(f); },
             saveCase() { if(this.newCase.title){ this.cases.unshift({id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase}); this.newCase={title:'',content:'',image:null}; this.showCaseForm=false; this.addXp(20); this.saveAll(); } },
@@ -744,17 +716,32 @@
             },
             deleteBook(id) { if(confirm('删除此书?')){ this.books=this.books.filter(b=>b.id!==id); this.viewingBook=null; this.saveAll(); } },
 
-            // 📂 KB Logic (Optimized)
+            // 📂 KB Logic (Fix: Robust Delete & Save)
             selectKbCategory(c) { this.kbCurrentCategory = c; this.viewingKbDoc = null; this.kbEditorMode = false; },
             openKbEditor() { this.kbEditorMode=true; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
             editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.viewingKbDoc=null; },
             saveKbDoc() { 
                 const now=new Date().toISOString(); 
-                if(this.kbEditorData.id){ const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); if(i!==-1)this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; viewingKbDoc = this.kbDocs[i]; } // Update view
-                else { this.kbDocs.unshift({id:Date.now(),title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now}); }
-                this.kbEditorMode=false; this.viewingKbDoc=null; this.saveAll(); 
+                if(this.kbEditorData.id){ 
+                    const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); 
+                    if(i!==-1) {
+                        this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; 
+                        this.viewingKbDoc = this.kbDocs[i]; // Update view
+                    }
+                } else { 
+                    const newId = Date.now();
+                    this.kbDocs.unshift({id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now}); 
+                }
+                this.kbEditorMode=false; this.saveAll(); 
             },
-            deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>d.id!==id); this.kbEditorMode=false; this.viewingKbDoc=null; this.saveAll(); } },
+            deleteKbDoc(id) { 
+                if(confirm('删除?')){ 
+                    this.kbDocs=this.kbDocs.filter(d=>d.id!==id); 
+                    this.kbEditorMode=false; 
+                    this.viewingKbDoc=null; 
+                    this.saveAll(); 
+                } 
+            },
             addKbCategory() { const n=prompt('新分类名'); if(n){ this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); } },
             deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case')this.cases=this.cases.filter(c=>c.id!==item.id); this.viewingItem=null; this.saveAll(); }
         },
