@@ -85,9 +85,25 @@
             font-size: 15px; margin-bottom: 10px; background: #fffaf9; font-family: inherit;
         }
         .note-textarea { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 1px dashed #e0c9b8; }
-        /* ... 之前的 CSS ... */
+        
+        /* 实时预览区域 */
+        .live-preview {
+            width: 100%;
+            min-height: 60px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #fff;
+            border: 2px solid #e0c9b8;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .preview-label {
+            font-size: 0.75em; color: #999; font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px;
+        }
 
-        /* ========== 新增：目标模式切换按钮样式 ========== */
+        /* 目标模式切换按钮样式 */
         .goal-mode-switch { 
             display: flex; 
             background: #eee; 
@@ -114,28 +130,20 @@
         }
         
         /* 优化滑动条样式 */
-        input[type=range] {
-            accent-color: #ff9a8b;
-            cursor: pointer;
-        }
+        input[type=range] { accent-color: #ff9a8b; cursor: pointer; }
 
-        
-        /* 实时预览区域 (新增) */
-        .live-preview {
-            width: 100%;
-            min-height: 60px;
-            max-height: 300px;
-            overflow-y: auto;
-            background: #fff;
-            border: 2px solid #e0c9b8;
-            border-top: none;
-            border-radius: 0 0 12px 12px;
-            padding: 15px;
-            margin-bottom: 10px;
+        /* 分页控件样式 */
+        .pagination-controls {
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e0c9b8;
         }
-        .preview-label {
-            font-size: 0.75em; color: #999; font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px;
+        .page-info { font-size: 0.9em; font-weight: bold; color: #7a6a62; }
+        .btn-page {
+            background: #fff; border: 2px solid #e0c9b8; border-radius: 8px; padding: 5px 12px;
+            cursor: pointer; color: #5a4a42; font-weight: bold; transition: all 0.2s;
         }
+        .btn-page:hover:not(:disabled) { background: #fffaf0; border-color: #ff9a8b; color: #ff9a8b; }
+        .btn-page:disabled { opacity: 0.5; cursor: not-allowed; background: #eee; }
 
         .search-bar {
             padding: 12px 15px; border: 2px solid #5a4a42; border-radius: 50px; width: 100%;
@@ -183,16 +191,6 @@
 
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; }
-        
-        .modal-overlay { position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); z-index: 999; display: flex; justify-content: center; align-items: center; }
-        .kb-window { width: 95%; max-width: 1400px; height: 90vh; background: #fef9f3; border-radius: 20px; border: 4px solid #5a4a42; display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        .kb-sidebar { width: 250px; background: #fffaf0; border-right: 2px solid #e0c9b8; display: flex; flex-direction: column; }
-        .kb-main { flex: 1; display: flex; flex-direction: column; background: #fffefc; }
-        .kb-nav-item { padding: 15px 20px; cursor: pointer; color: #5a4a42; font-weight: 500; border-left: 4px solid transparent; }
-        .kb-nav-item.active { background: #ffe8d6; border-left-color: #ff9a8b; font-weight: bold; }
-        .kb-content { flex: 1; padding: 40px; overflow-y: auto; }
-        .kb-toolbar { padding: 15px 30px; border-bottom: 2px dashed #e0c9b8; display: flex; justify-content: space-between; align-items: center; background: #fffaf5; }
-        .kb-list-item { padding: 15px; border: 1px solid #e0c9b8; border-radius: 10px; margin-bottom: 10px; cursor: pointer; background: #fff; display: flex; justify-content: space-between; align-items: center; }
         
         /* 切换按钮组 */
         .toggle-group { display: flex; background: #e0c9b8; border-radius: 8px; padding: 4px; gap: 4px; margin-bottom: 10px; width: fit-content; }
@@ -280,8 +278,7 @@
                 </div>
             </div>
 
-            <!-- 目标管理 -->
-            <!-- 目标管理 -->
+            <!-- 目标管理 (已更新：滑块模式) -->
             <div class="card">
                 <h2>🎯 阶段目标 <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.goals">
@@ -328,7 +325,7 @@
                                 <!-- A. 数值模式控件 -->
                                 <template v-if="goal.mode === 'numeric'">
                                     <div style="display:flex; align-items:center; background: white; padding: 2px 8px; border-radius: 8px; border: 1px solid #ddd;">
-                                        <input type="number" v-model.number="goal.current" style="border:none; width: 60px; font-weight:bold; text-align:right; outline:none;" @change="saveAll">
+                                        <input type="number" v-model.number="goal.current" style="border:none; width: 60px; font-weight:bold; text-align:right; outline:none;" @change="savePlayerData">
                                         <span style="font-size:0.8em; color:#666; margin-left: 5px;"> / {{ goal.target }} {{ goal.unit }}</span>
                                     </div>
                                 </template>
@@ -336,7 +333,7 @@
                                 <!-- B. 滑动条模式控件 -->
                                 <template v-else>
                                     <span style="font-size:0.8em; color:#666;">0%</span>
-                                    <input type="range" v-model.number="goal.current" min="0" max="100" step="1" style="flex:1;" @change="saveAll">
+                                    <input type="range" v-model.number="goal.current" min="0" max="100" step="1" style="flex:1;" @change="savePlayerData">
                                     <span style="font-size:0.8em; color:#666;">100%</span>
                                 </template>
 
@@ -365,14 +362,14 @@
                 </div>
             </div>
 
-            <!-- 复盘 & 资产 -->
+            <!-- 复盘 & 资产 (已更新：分页 & 增量保存) -->
             <div class="card">
                 <h2>🔄 复盘 & 资产 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.reviews">
                     <div class="review-tabs">
-                        <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'; loadChart()">📈 股票/资产</div>
-                        <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
-                        <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
+                        <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'; reviewPage = 1; loadChart()">📈 股票/资产</div>
+                        <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'; reviewPage = 1">📝 日常</div>
+                        <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'; reviewPage = 1">📅 周复盘</div>
                         <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                     </div>
                     <div v-show="activeReviewTab === 'stock'" class="chart-container"><canvas id="assetChart"></canvas></div>
@@ -388,7 +385,7 @@
                         </div>
                         <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
                         
-                        <!-- 这里的 Textarea 增加了 @paste 监听 -->
+                        <!-- Textarea with paste support -->
                         <textarea v-model="newNote.content" class="note-textarea" style="height:100px;" 
                             placeholder="支持 Markdown，可直接 Ctrl+V 粘贴截图..."
                             @paste="handlePaste($event, 'newNote.content')"></textarea>
@@ -399,7 +396,7 @@
                             <div class="markdown-content" v-html="renderMarkdown(newNote.content)"></div>
                         </div>
                         
-                        <!-- 📸 上传组件 (兼容按钮) -->
+                        <!-- Upload Button -->
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="reviewFileInput" @change="handleFileUpload($event, 'newNote.content')" style="display:none" accept="image/*">
                             <button class="btn-sm btn-upload" @click="$refs.reviewFileInput.click()">
@@ -409,7 +406,9 @@
 
                         <button class="btn" @click="saveNote">💾 保存</button>
                     </div>
-                    <div v-for="note in filteredNotes" :key="note.id" class="note-card">
+
+                    <!-- 列表显示 (已改为分页) -->
+                    <div v-for="note in paginatedNotes" :key="note.id" class="note-card">
                         <div style="font-size:0.8em;color:#999;margin-bottom:5px">{{ formatDate(note.createdAt) }}</div>
                         <div v-if="note.type === 'stock'" style="padding-bottom:5px;border-bottom:1px dashed #ddd;margin-bottom:5px;">
                             <strong>{{ note.stockData?.code }}</strong> <span :style="{color: note.stockData?.action==='buy'?'red':'green'}">{{ note.stockData?.action }}</span>
@@ -419,6 +418,13 @@
                         <div class="markdown-content" v-html="renderMarkdown(note.content)"></div>
                         <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="float:right;margin-top:5px">删除</button>
                         <div style="clear:both"></div>
+                    </div>
+
+                    <!-- 分页控件 -->
+                    <div v-if="filteredNotes.length > reviewPageSize" class="pagination-controls">
+                        <button class="btn-page" :disabled="reviewPage === 1" @click="reviewPage--">← 上一页</button>
+                        <span class="page-info">第 {{ reviewPage }} / {{ totalReviewPages }} 页</span>
+                        <button class="btn-page" :disabled="reviewPage === totalReviewPages" @click="reviewPage++">下一页 →</button>
                     </div>
                 </div>
             </div>
@@ -693,7 +699,11 @@
                 kbEditorData: {},
                 showCaseForm: false, newCase: { title: '', content: '' }, viewingItem: null,
                 
-                chartInstance: null
+                chartInstance: null,
+
+                // --- 新增：分页控制变量 ---
+                reviewPage: 1,      // 当前页码
+                reviewPageSize: 5,  // 每页显示多少条
             };
         },
         computed: {
@@ -702,6 +712,16 @@
                 let res = this.notes.filter(n => (!n.type && this.activeReviewTab==='daily') || n.type===this.activeReviewTab);
                 return res.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             },
+            // --- 新增：分页计算 ---
+            paginatedNotes() {
+                const start = (this.reviewPage - 1) * this.reviewPageSize;
+                const end = start + this.reviewPageSize;
+                return this.filteredNotes.slice(start, end);
+            },
+            totalReviewPages() {
+                return Math.ceil(this.filteredNotes.length / this.reviewPageSize) || 1;
+            },
+
             filteredBooks() {
                 let list = this.books;
                 if (this.bookSearchQuery) {
@@ -733,7 +753,36 @@
                 try { return marked.parse(text); } catch(e) { return text; }
             },
 
-            // 🚀 智能压缩 (保留)
+            // ========== 新增：增量更新核心函数 ==========
+            async saveOne(tableName, item) {
+                if (!this.userId) return;
+                // 1. 尝试更新
+                const { data, error, count } = await sb.from(tableName)
+                    .update({ data: item })
+                    .eq('user_id', this.userId)
+                    .eq('data->>id', item.id)
+                    .select('id', { count: 'exact' });
+
+                if (error) console.error('更新失败', error);
+
+                // 2. 如果没更新到，则插入
+                if (count === 0) {
+                    await sb.from(tableName).insert({ user_id: this.userId, data: item });
+                }
+            },
+
+            async deleteOne(tableName, itemId) {
+                if (!this.userId) return;
+                await sb.from(tableName).delete().eq('user_id', this.userId).eq('data->>id', itemId);
+            },
+            // ============================================
+
+            async savePlayerData() {
+                if (!this.userId) return;
+                await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
+            },
+
+            // 🚀 智能压缩
             async compressImage(file) {
                 if (file.type === 'image/gif') return file;
                 return new Promise((resolve) => {
@@ -760,22 +809,18 @@
                 });
             },
 
-            // 📋 监听粘贴事件 (New)
             async handlePaste(event, modelPath) {
-                // 检查剪贴板中是否有文件
                 const items = (event.clipboardData || event.originalEvent.clipboardData).items;
                 for (let item of items) {
                     if (item.kind === 'file' && item.type.startsWith('image/')) {
-                        event.preventDefault(); // 阻止默认粘贴（避免粘贴出二进制乱码）
+                        event.preventDefault();
                         const file = item.getAsFile();
-                        // 复用上传逻辑，并传入当前触发事件的目标元素（Textarea）以便插入光标位置
                         await this.performUpload(file, modelPath, event.target);
                         return;
                     }
                 }
             },
 
-            // 🖱️ 按钮点击上传 (兼容旧版)
             async handleFileUpload(event, modelPath) {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -783,7 +828,6 @@
                 event.target.value = ''; // Reset
             },
 
-            // ☁️ 核心上传逻辑 (统一处理)
             async performUpload(file, modelPath, textareaEl) {
                 if (file.size > 10 * 1024 * 1024) return alert('图片不能超过 10MB');
                 this.uploading = true;
@@ -797,26 +841,20 @@
                     const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(fileName);
                     const markdownImg = `![image](${publicUrl})`;
 
-                    // 🎯 更新数据模型
                     const keys = modelPath.split('.');
                     if (keys.length === 2) {
                         const originalText = this[keys[0]][keys[1]] || '';
-                        
-                        // 如果是从 Textarea 粘贴的，尝试插在光标处
                         if (textareaEl) {
                             const start = textareaEl.selectionStart;
                             const end = textareaEl.selectionEnd;
                             const newText = originalText.substring(0, start) + markdownImg + originalText.substring(end);
                             this[keys[0]][keys[1]] = newText;
-                            
-                            // 恢复光标位置
                             this.$nextTick(() => {
                                 const newPos = start + markdownImg.length;
                                 textareaEl.selectionStart = textareaEl.selectionEnd = newPos;
                                 textareaEl.focus();
                             });
                         } else {
-                            // 如果是按钮上传，直接追加到末尾
                             this[keys[0]][keys[1]] = originalText + '\n' + markdownImg + '\n';
                         }
                     }
@@ -869,23 +907,24 @@
                 setTimeout(() => this.loadChart(), 500);
             },
 
+            // 这是一个全量保存，留作兜底/手动同步
             async saveAll() {
                 if (!this.userId) return;
                 this.kbDocs = this.deduplicate(this.kbDocs);
-                await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
+                await this.savePlayerData();
                 const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
                 await Promise.all([ saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
             },
             async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
-            checkDailyReset() { const today = new Date().toDateString(); if (this.playerData.lastLoginDate !== today) { this.playerData.dailyTasks.forEach(t => t.completed = false); this.playerData.lastLoginDate = today; this.saveAll(); this.showMessage('☀️ 每日任务已刷新'); } },
-            addDailyQuest() { if(this.newQuestTitle){ this.playerData.dailyTasks.push({id:Date.now(),title:this.newQuestTitle,completed:false}); this.newQuestTitle=''; this.saveAll(); } },
-            toggleQuest(q) { if(!q.completed){ q.completed=true; this.addXp(5); if(this.playerData.dailyTasks.every(t=>t.completed))this.addXp(20); this.saveAll(); } },
-            deleteDailyQuest(id) { if(confirm('删?')){ this.playerData.dailyTasks=this.playerData.dailyTasks.filter(t=>t.id!==id); this.saveAll(); } },
+            checkDailyReset() { const today = new Date().toDateString(); if (this.playerData.lastLoginDate !== today) { this.playerData.dailyTasks.forEach(t => t.completed = false); this.playerData.lastLoginDate = today; this.savePlayerData(); this.showMessage('☀️ 每日任务已刷新'); } },
+            addDailyQuest() { if(this.newQuestTitle){ this.playerData.dailyTasks.push({id:Date.now(),title:this.newQuestTitle,completed:false}); this.newQuestTitle=''; this.savePlayerData(); } },
+            toggleQuest(q) { if(!q.completed){ q.completed=true; this.addXp(5); if(this.playerData.dailyTasks.every(t=>t.completed))this.addXp(20); this.savePlayerData(); } },
+            deleteDailyQuest(id) { if(confirm('删?')){ this.playerData.dailyTasks=this.playerData.dailyTasks.filter(t=>t.id!==id); this.savePlayerData(); } },
 
-            addShopItem() { this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem }); this.newShopItem={name:'',cost:50,icon:'✨'}; this.saveAll(); },
-            deleteShopItem(id) { this.playerData.shopItems=this.playerData.shopItems.filter(i=>i.id!==id); this.saveAll(); },
-            buyItem(item) { if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ this.playerData.xp-=item.cost; this.notes.unshift({id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name}); this.saveAll(); } },
+            addShopItem() { this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem }); this.newShopItem={name:'',cost:50,icon:'✨'}; this.savePlayerData(); },
+            deleteShopItem(id) { this.playerData.shopItems=this.playerData.shopItems.filter(i=>i.id!==id); this.savePlayerData(); },
+            buyItem(item) { if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ this.playerData.xp-=item.cost; this.notes.unshift({id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name}); this.saveOne('notes', this.notes[0]); this.savePlayerData(); } },
 
             loadChart() {
                 if(this.activeReviewTab!=='stock')return; const ctx=document.getElementById('assetChart'); if(!ctx)return;
@@ -893,18 +932,45 @@
                 const h=(this.playerData.assetHistory||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
                 this.chartInstance=new Chart(ctx,{type:'line',data:{labels:h.map(x=>new Date(x.date).toLocaleDateString()),datasets:[{data:h.map(x=>x.value),borderColor:'#4ecdc4',backgroundColor:'rgba(78,205,196,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
             },
+            
+            // --- 核心修改：使用增量更新 saveNote ---
             saveNote() { 
+                let itemToSave = null;
                 if(this.activeReviewTab==='stock'){
-                    if(this.newStockData.totalAsset){ this.playerData.assetHistory.push({date:new Date().toISOString(),value:this.newStockData.totalAsset}); setTimeout(()=>this.loadChart(),100); }
-                    if(this.newStockData.code) this.notes.unshift({id:Date.now(),type:'stock',createdAt:new Date().toISOString(),content:this.newNote.content,stockData:{...this.newStockData}});
-                } else if(this.newNote.title) { this.notes.unshift({id:Date.now(),type:this.activeReviewTab,createdAt:new Date().toISOString(),...this.newNote}); }
-                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; this.newNote={title:'',content:''}; this.showReviewForm=false; this.addXp(10); this.saveAll();
+                    if(this.newStockData.totalAsset){ 
+                        this.playerData.assetHistory.push({date:new Date().toISOString(),value:this.newStockData.totalAsset}); 
+                        this.savePlayerData();
+                        setTimeout(()=>this.loadChart(),100); 
+                    }
+                    if(this.newStockData.code) {
+                        itemToSave = {id:Date.now(),type:'stock',createdAt:new Date().toISOString(),content:this.newNote.content,stockData:{...this.newStockData}};
+                        this.notes.unshift(itemToSave);
+                    }
+                } else if(this.newNote.title) { 
+                    itemToSave = {id:Date.now(),type:this.activeReviewTab,createdAt:new Date().toISOString(),...this.newNote};
+                    this.notes.unshift(itemToSave); 
+                }
+                
+                if(itemToSave) {
+                    this.saveOne('notes', itemToSave); // 增量保存
+                }
+
+                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; 
+                this.newNote={title:'',content:''}; 
+                this.showReviewForm=false; 
+                this.addXp(10); 
+                this.savePlayerData(); // 只更新经验值
+                this.reviewPage = 1; // 自动跳回第一页
             },
-            deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
+            deleteNote(id){ 
+                if(confirm('删?')){ 
+                    this.notes=this.notes.filter(n=>n.id!==id); 
+                    this.deleteOne('notes', id); // 增量删除
+                } 
+            },
 
             addGoal() { 
                 if (this.newGoal.title) {
-                    // 如果是滑块模式，目标固定为 100，单位为空
                     const isSlider = this.newGoal.mode === 'slider';
                     const target = isSlider ? 100 : (this.newGoal.target || 100);
                     const unit = isSlider ? '' : (this.newGoal.unit || '');
@@ -917,54 +983,94 @@
                         target: target
                     });
                     
-                    // 重置输入框，保留当前选中的模式
                     const currentMode = this.newGoal.mode;
                     this.newGoal = { title: '', target: null, current: 0, unit: '', mode: currentMode };
-                    this.saveAll(); 
+                    this.savePlayerData(); 
                 } 
             },
-            deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.saveAll(); } },
+            deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.savePlayerData(); } },
             addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
 
-            saveCase() { if(this.newCase.title){ this.cases.unshift({id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase}); this.newCase={title:'',content:''}; this.showCaseForm=false; this.addXp(20); this.saveAll(); } },
+            // --- 核心修改：使用增量更新 saveCase ---
+            saveCase() { 
+                if(this.newCase.title){ 
+                    const newItem = {id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase};
+                    this.cases.unshift(newItem); 
+                    this.saveOne('cases', newItem);
+
+                    this.newCase={title:'',content:''}; 
+                    this.showCaseForm=false; 
+                    this.addXp(20); 
+                    this.savePlayerData();
+                } 
+            },
             
+            // --- 核心修改：使用增量更新 saveBook ---
             saveBook() { 
                 if(this.newBook.title){ 
                     const tags = this.newBook.tags ? this.newBook.tags.split(/[,，]/).map(t=>t.trim()).filter(t=>t) : [];
-                    this.books.unshift({id:Date.now(),...this.newBook, tags, createdAt:new Date().toISOString()}); 
+                    const newItem = {id:Date.now(),...this.newBook, tags, createdAt:new Date().toISOString()};
+                    this.books.unshift(newItem); 
+                    this.saveOne('books', newItem);
+
                     this.newBook={title:'',author:'',rating:5,content:'',thoughts:'',tags:''}; 
-                    this.showBookForm=false; this.addXp(20); this.saveAll(); 
+                    this.showBookForm=false; 
+                    this.addXp(20); 
+                    this.savePlayerData();
                 } 
             },
-            deleteBook(id) { if(confirm('删除此书?')){ this.books=this.books.filter(b=>b.id!==id); this.viewingBook=null; this.saveAll(); } },
+            deleteBook(id) { 
+                if(confirm('删除此书?')){ 
+                    this.books=this.books.filter(b=>b.id!==id); 
+                    this.viewingBook=null; 
+                    this.deleteOne('books', id);
+                } 
+            },
 
             selectKbCategory(c) { this.kbCurrentCategory = c; this.viewingKbDoc = null; this.kbEditorMode = false; },
             openKbEditor() { this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
             editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; },
+            
+            // --- 核心修改：使用增量更新 saveKbDoc ---
             saveKbDoc() { 
                 const now=new Date().toISOString(); 
+                let docToSave = null;
                 if(this.kbEditorData.id){ 
                     const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); 
                     if(i!==-1) {
                         this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; 
                         this.viewingKbDoc = this.kbDocs[i];
+                        docToSave = this.kbDocs[i];
                     }
                 } else { 
                     const newId = Date.now();
-                    this.kbDocs.unshift({id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now}); 
+                    docToSave = {id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now};
+                    this.kbDocs.unshift(docToSave); 
                 }
-                this.kbEditorMode=false; this.saveAll(); 
+                
+                if (docToSave) {
+                    this.saveOne('kb_notes', docToSave);
+                }
+                this.kbEditorMode=false; 
             },
             deleteKbDoc(id) { 
                 if(confirm('删除?')){ 
                     this.kbDocs=this.kbDocs.filter(d=>d.id!==id); 
                     this.kbEditorMode=false; 
                     this.viewingKbDoc=null; 
-                    this.saveAll(); 
+                    this.deleteOne('kb_notes', id);
                 } 
             },
-            addKbCategory() { const n=prompt('新分类名'); if(n){ this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); } },
-            deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case')this.cases=this.cases.filter(c=>c.id!==item.id); this.viewingItem=null; this.saveAll(); }
+            
+            addKbCategory() { const n=prompt('新分类名'); if(n){ const item = {id:Date.now(),name:n}; this.kbCategories.push(item); this.saveOne('kb_categories', item); } },
+            deleteItem(item) { 
+                if(!confirm('删除?'))return; 
+                if(item.type==='case') {
+                    this.cases=this.cases.filter(c=>c.id!==item.id); 
+                    this.deleteOne('cases', item.id);
+                }
+                this.viewingItem=null; 
+            }
         },
         mounted() {
             sb.auth.getSession().then(({ data: { session } }) => {
@@ -975,4 +1081,3 @@
 </script>
 </body>
 </html>
-
