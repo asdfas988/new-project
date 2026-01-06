@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 修复增强版</title>
+    <title>个人空间 - 终极版</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -52,7 +52,9 @@
             box-shadow: var(--card-shadow); border: var(--card-border);
             transition: transform 0.3s; position: relative;
         }
-        .card:hover { transform: translateY(-3px); }
+        /* 禁止卡片内部的 hover 影响整体布局，仅做微动 */
+        .card-hover:hover { transform: translateY(-3px); }
+        
         .card h2 {
             margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px dotted #ff9a8b;
             font-size: 1.4em; font-weight: 700; display: flex; justify-content: space-between; align-items: center;
@@ -76,12 +78,17 @@
             padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; cursor: pointer;
         }
 
-        /* 输入框 */
+        /* 输入框 & 搜索框 */
         .note-input, .note-textarea {
             width: 100%; padding: 12px; border: 2px solid #e0c9b8; border-radius: 12px;
             font-size: 15px; margin-bottom: 15px; background: #fffaf9; font-family: inherit;
         }
-        .note-input:focus, .note-textarea:focus { outline: none; border-color: #ff9a8b; box-shadow: 2px 2px 0px #ffd6cc; }
+        .search-bar {
+            padding: 12px 15px; border: 2px solid #5a4a42; border-radius: 50px; width: 100%;
+            margin-bottom: 20px; background: white; font-weight: bold; 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235a4a42' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: 15px center; padding-left: 40px;
+        }
 
         /* ========== 每日任务 ========== */
         .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -93,8 +100,7 @@
         .quest-item.completed { background: #e8f5e9; border-color: #a3de83; opacity: 0.8; }
         .checkbox-custom {
             width: 24px; height: 24px; border: 2px solid #5a4a42; border-radius: 6px; margin-right: 15px;
-            display: flex; align-items: center; justify-content: center; background: white;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; background: white; flex-shrink: 0;
         }
         .quest-item.completed .checkbox-custom { background: #a3de83; border-color: #2e7d32; }
         .quest-item.completed .checkbox-custom::after { content: '✔'; color: white; font-weight: bold; }
@@ -105,15 +111,9 @@
             background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; text-align: center;
             display: flex; flex-direction: column; justify-content: space-between; height: 100%;
         }
-        .shop-icon { font-size: 2.5em; margin-bottom: 10px; display: block; }
-        .shop-price { color: #ff9a8b; font-weight: bold; margin: 10px 0; }
-        .btn-buy { background: #5a4a42; color: #fff; border: none; padding: 8px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; }
-        .btn-buy:disabled { background: #ccc; cursor: not-allowed; }
 
         /* ========== 资产图表 ========== */
-        .chart-container {
-            width: 100%; height: 300px; background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 20px;
-        }
+        .chart-container { width: 100%; height: 300px; background: #fff; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; margin-bottom: 20px; }
 
         /* ========== 目标 & 进度 ========== */
         .goal-mode-switch { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -122,20 +122,13 @@
             background: #fff; transition: all 0.2s;
         }
         .mode-btn.active { border-color: #ff9a8b; color: #ff6b6b; background: #fff0eb; }
-
         .goal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .goal-item {
             background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 20px;
             transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;
         }
-        .goal-item.completed { background: #e8f5e9; border-color: #a3de83; box-shadow: inset 0 0 10px rgba(163, 222, 131, 0.2); }
-        .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; }
         .goal-progress-bg { height: 16px; background: #eee; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; position: relative; margin: 10px 0; }
-        .goal-progress-fill { height: 100%; transition: width 0.5s, background-color 0.3s; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; }
-        .goal-input-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-        .goal-input-small { flex: 1; padding: 6px; border: 1px solid #d4b8a7; border-radius: 6px; font-size: 0.9em; text-align: center; font-weight: bold; color: #5a4a42; }
-
-        /* 进度条颜色 */
+        .goal-progress-fill { height: 100%; transition: width 0.5s; border-radius: 8px; }
         .p-low { background: linear-gradient(90deg, #ff9a8b, #ff6b6b); }
         .p-mid { background: linear-gradient(90deg, #f6d365, #fda085); }
         .p-high { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
@@ -144,60 +137,74 @@
         .level-display { font-size: 4em; font-weight: 800; text-align: center; color: #ff6b6b; text-shadow: 3px 3px 0px #ffd6cc; margin: 10px 0; }
         .xp-progress { height: 24px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
-        
         .skill-item { padding: 15px; background: #fffaf5; border-radius: 15px; margin: 15px 0; border: 2px solid #e0c9b8; display: flex; justify-content: space-between; align-items: center; }
         
         /* ========== 🏆 成就系统 ========== */
         .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .achievement-card { 
             background: #fffefc; border-radius: 15px; padding: 20px; text-align: center; 
-            box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #5a4a42; position: relative;
+            box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #5a4a42;
         }
         .achievement-card.locked { opacity: 0.7; border-style: dashed; }
-        .achievement-card.unlocked { border-color: #f6d365; background: #fffff0; }
         .achievement-icon { font-size: 3em; margin-bottom: 10px; display: block; }
-        .ach-edit-controls { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; display: flex; gap: 5px; justify-content: center;}
-
-        /* ========== 📚 读书笔记 (升级: 标签) ========== */
-        .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        /* ========== 📚 读书笔记 (优化版) ========== */
+        .book-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .book-card {
-            background: #fff; border-radius: 16px; padding: 20px; 
-            box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; 
-            display: flex; flex-direction: column;
+            background: #fff; border-radius: 16px; padding: 15px; 
+            box-shadow: 3px 3px 0px #d4b8a7; border: 2px solid #e0c9b8; 
+            display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s;
+            height: 220px; /* 固定高度，内容多显示省略号 */
         }
+        .book-card:hover { transform: translateY(-5px); border-color: #ff9a8b; }
+        .book-title { font-weight: bold; font-size: 1.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .book-preview { flex: 1; font-size: 0.85em; color: #666; margin: 10px 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
         .star-rating { display: inline-flex; font-size: 1.2em; cursor: pointer; }
         .star { color: #ddd; transition: color 0.2s; margin-right: 2px; }
         .star.active { color: #ffc107; text-shadow: 1px 1px 0 #d39e00; }
-        .book-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
         .tag-pill {
             background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; 
-            border-radius: 12px; padding: 2px 8px; font-size: 0.75em; font-weight: bold;
+            border-radius: 12px; padding: 2px 8px; font-size: 0.75em; font-weight: bold; margin-right: 4px;
         }
-        
+
         /* 复盘/笔记 */
         .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0c9b8; padding-bottom: 10px; overflow-x: auto; }
-        .review-tab { padding: 8px 18px; border: 2px solid #e0c9b8; background: #fffaf5; border-radius: 15px 15px 0 0; cursor: pointer; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
-        .review-tab.active { background: #ff9a8b; color: white; border-color: #ff9a8b; transform: translateY(2px); }
+        .review-tab { padding: 8px 18px; border: 2px solid #e0c9b8; background: #fffaf5; border-radius: 15px 15px 0 0; cursor: pointer; font-weight: 600; }
+        .review-tab.active { background: #ff9a8b; color: white; border-color: #ff9a8b; }
         .review-tab.special { background: #a3de83; border-color: #88c967; color: #2d5a27; }
-        .stock-tag { display: inline-block; padding: 2px 6px; font-size: 0.8em; border-radius: 4px; color: white; margin-right: 5px; }
-        .bg-red { background: #e53935; } .bg-green { background: #43a047; } .bg-gray { background: #555; }
         .note-card { background: #fffaf5; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 2px solid #e0c9b8; position: relative; }
-        .type-switcher { position: absolute; top: 15px; right: 15px; padding: 4px; border-radius: 6px; border: 1px solid #e0c9b8; background: white; font-size: 0.8em; color: #5a4a42; cursor: pointer; }
 
-        /* 命例 */
+        /* 命例 & 通用弹窗覆盖层 */
         .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; transition: all 0.2s; }
+        .case-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 4px 4px 0px #d4b8a7; border: 2px solid #e0c9b8; cursor: pointer; }
         .image-upload-area { border: 2px dashed #e0c9b8; padding: 20px; text-align: center; border-radius: 10px; margin-bottom: 15px; cursor: pointer; background: #fffaf9; }
         
-        /* 知识库弹窗 */
-        .kb-overlay { position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); z-index: 999; display: flex; justify-content: center; align-items: center; }
+        /* 弹窗系统 */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); z-index: 999; display: flex; justify-content: center; align-items: center; }
+        /* 知识库大窗 */
         .kb-window { width: 95%; max-width: 1400px; height: 90vh; background: #fef9f3; border-radius: 20px; border: 4px solid #5a4a42; display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
         .kb-sidebar { width: 250px; background: #fffaf0; border-right: 2px solid #e0c9b8; display: flex; flex-direction: column; }
         .kb-main { flex: 1; display: flex; flex-direction: column; background: #fffefc; }
-        .kb-nav-item { padding: 12px 20px; cursor: pointer; color: #5a4a42; font-weight: 500; display: flex; justify-content: space-between; }
-        .kb-nav-item.active { background: #ffe8d6; border-right: 4px solid #ff9a8b; }
+        .kb-nav-item { padding: 12px 20px; cursor: pointer; color: #5a4a42; font-weight: 500; border-left: 4px solid transparent; }
+        .kb-nav-item:hover { background: #fff0e6; }
+        .kb-nav-item.active { background: #ffe8d6; border-left-color: #ff9a8b; font-weight: bold; }
         .kb-content { flex: 1; padding: 40px; overflow-y: auto; }
         .kb-toolbar { padding: 15px 30px; border-bottom: 2px dashed #e0c9b8; display: flex; justify-content: space-between; align-items: center; background: #fffaf5; }
+        
+        /* 知识库列表项 */
+        .kb-list-item { 
+            padding: 15px; border: 1px solid #e0c9b8; border-radius: 10px; margin-bottom: 10px; 
+            cursor: pointer; background: #fff; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.2s;
+        }
+        .kb-list-item:hover { transform: translateX(5px); border-color: #ff9a8b; }
+
+        /* 阅读详情弹窗 (书籍/命例) */
+        .detail-modal { background: #fffefc; width: 90%; max-width: 700px; max-height: 85vh; border-radius: 20px; border: 3px solid #5a4a42; padding: 30px; overflow-y: auto; position: relative; box-shadow: 10px 10px 0px rgba(0,0,0,0.2); }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; color: #999; }
+        .close-modal:hover { color: #ff6b6b; }
+        .detail-section { margin-top: 20px; background: #fffaf5; padding: 15px; border-radius: 10px; border: 1px dashed #e0c9b8; }
+        .detail-section h4 { color: #ff9a8b; border-bottom: 2px solid #ff9a8b; display: inline-block; margin-bottom: 10px; }
 
         .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
         .status-message { padding: 10px; border-radius: 10px; margin-top: 15px; font-weight: bold; }
@@ -215,17 +222,16 @@
     <div id="app">
         <!-- 登录 -->
         <div v-if="!isLoggedIn" class="login-box">
-            <div class="card">
+            <div class="card card-hover">
                 <h1 style="font-size: 3em; margin-bottom: 10px;">☯️</h1>
                 <h2 style="justify-content: center;">个人空间</h2>
-                <p style="margin-bottom: 20px; color: #7a6a62;">记录 </p>
                 <input type="email" v-model="email" placeholder="邮箱" class="note-input">
                 <input type="password" v-model="password" placeholder="密码" class="note-input">
                 <button class="btn" @click="login" :disabled="loading">{{ loading ? '验证中...' : '进入' }}</button>
                 <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']">{{ message }}</div>
             </div>
         </div>
-<!-- 主界面 -->
+
     <div v-else class="container">
         <div class="header">
             <h1>👋 {{ userEmail.split('@')[0] }} 的空间</h1>
@@ -237,8 +243,8 @@
         </div>
 
         <div class="grid">
-            <!-- 模块1：状态 (Level & XP) -->
-            <div class="card">
+            <!-- 角色状态 -->
+            <div class="card card-hover">
                 <h2>📊 角色状态 <button class="collapse-btn" @click="collapsed.stats = !collapsed.stats">{{ collapsed.stats ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.stats">
                     <div class="level-display">Lv.{{ playerData.level }}</div>
@@ -248,11 +254,11 @@
             </div>
 
             <!-- 每日任务 -->
-            <div class="card">
+            <div class="card card-hover">
                 <h2>⚔️ 每日任务 <button class="collapse-btn" @click="collapsed.quests = !collapsed.quests">{{ collapsed.quests ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.quests">
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <input v-model="newQuestTitle" placeholder="添加每日任务 (如: 早起/看盘)..." class="note-input" style="margin-bottom: 0;">
+                        <input v-model="newQuestTitle" placeholder="添加每日任务..." class="note-input" style="margin-bottom: 0;">
                         <button class="btn-sm" @click="addDailyQuest" style="width: 80px;">➕ 添加</button>
                     </div>
                     <div class="quest-list">
@@ -265,23 +271,22 @@
                             <button class="btn-sm btn-danger" @click.stop="deleteDailyQuest(quest.id)" style="width: auto; padding: 5px 10px; margin-left: 10px;">✕</button>
                         </div>
                     </div>
-                    <div style="text-align: center; font-size: 0.8em; color: #999; margin-top: 15px;">⏳ 任务将于每日凌晨自动重置</div>
                 </div>
             </div>
 
-            <!-- 目标管理 (OKR) -->
-            <div class="card">
+            <!-- 目标管理 -->
+            <div class="card card-hover">
                 <h2>🎯 阶段目标 <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.goals">
                     <div style="background: #fffaf5; padding: 15px; border: 2px dashed #e0c9b8; border-radius: 12px; margin-bottom: 20px;">
                         <div class="goal-mode-switch">
-                            <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值进度</div>
+                            <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值</div>
                             <div class="mode-btn" :class="{active: newGoal.mode === 'text'}" @click="newGoal.mode = 'text'">🚩 关键成果</div>
                         </div>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                             <input v-model="newGoal.title" placeholder="目标内容..." class="note-input" style="flex: 2; margin: 0;">
                             <template v-if="newGoal.mode === 'numeric'">
-                                <input v-model.number="newGoal.target" type="number" placeholder="目标数" class="note-input" style="flex: 1; margin: 0;">
+                                <input v-model.number="newGoal.target" type="number" placeholder="目标" class="note-input" style="flex: 1; margin: 0;">
                                 <input v-model="newGoal.unit" placeholder="单位" class="note-input" style="flex: 1; margin: 0;">
                             </template>
                             <button class="btn-sm" @click="addGoal" style="height: 42px; width: 80px;">添加</button>
@@ -289,27 +294,22 @@
                     </div>
                     <div class="goal-list">
                         <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: calculateProgress(goal) >= 100}">
-                            <div class="goal-header">
+                            <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;">
                                 <span :style="{textDecoration: calculateProgress(goal) >= 100 ? 'line-through' : 'none'}">{{ goal.title }}</span>
                                 <span :style="{color: getProgressColor(calculateProgress(goal))}">{{ calculateProgress(goal) }}%</span>
                             </div>
-                            <div v-if="goal.mode === 'numeric' || !goal.mode" class="goal-meta">
-                                <span>🎯 目标: {{ goal.target }} {{ goal.unit }}</span>
-                            </div>
-                            <div v-else class="goal-desc">关键成果：{{ goal.targetText || '完成任务' }}</div>
                             <div class="goal-progress-bg">
                                 <div class="goal-progress-fill" :class="getProgressClass(calculateProgress(goal))" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}"></div>
                             </div>
-                            <div class="goal-input-group">
-                                <label style="font-size: 0.8em; color: #999;">进度:</label>
-                                <template v-if="goal.mode === 'numeric' || !goal.mode">
+                            <div style="margin-top:10px; display:flex; align-items:center; gap:5px;">
+                                <template v-if="goal.mode === 'numeric'">
                                     <input type="number" v-model.number="goal.current" class="goal-input-small" @change="saveAll">
-                                    <span style="font-size: 0.8em;">{{ goal.unit }}</span>
+                                    <span style="font-size:0.8em"> / {{ goal.target }} {{ goal.unit }}</span>
                                 </template>
                                 <template v-else>
-                                    <input type="range" v-model.number="goal.current" min="0" max="100" style="flex: 1;" @change="saveAll">
+                                    <input type="range" v-model.number="goal.current" min="0" max="100" style="flex:1" @change="saveAll">
                                 </template>
-                                <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="margin-left: auto;">✕</button>
+                                <button class="btn-sm btn-danger" @click="deleteGoal(index)">✕</button>
                             </div>
                         </div>
                     </div>
@@ -317,35 +317,25 @@
             </div>
 
             <!-- 积分商店 -->
-            <div class="card">
+            <div class="card card-hover">
                 <h2>🏦 积分商店 <button class="collapse-btn" @click="collapsed.shop = !collapsed.shop">{{ collapsed.shop ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.shop">
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input v-model="newShopItem.name" placeholder="商品名..." class="note-input" style="margin-bottom: 0;">
-                        <input v-model.number="newShopItem.cost" type="number" placeholder="XP" class="note-input" style="width: 100px; margin-bottom: 0;">
-                        <input v-model="newShopItem.icon" placeholder="图标" class="note-input" style="width: 80px; margin-bottom: 0;">
+                        <input v-model="newShopItem.name" placeholder="商品..." class="note-input" style="margin:0;">
+                        <input v-model.number="newShopItem.cost" type="number" placeholder="XP" class="note-input" style="width: 80px; margin:0;">
                         <button class="btn-sm" @click="addShopItem">上架</button>
                     </div>
                     <div class="shop-grid">
                         <div v-for="item in playerData.shopItems || []" :key="item.id" class="shop-card">
-                            <div>
-                                <span class="shop-icon">{{ item.icon }}</span>
-                                <h3>{{ item.name }}</h3>
-                                <div class="shop-price">{{ item.cost }} XP</div>
-                            </div>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="btn-buy" :disabled="playerData.xp < item.cost" @click="buyItem(item)">
-                                    {{ playerData.xp < item.cost ? 'XP不足' : '💰 兑换' }}
-                                </button>
-                                <button class="btn-sm btn-danger" style="width: 30px; padding: 0;" @click="deleteShopItem(item.id)">✕</button>
-                            </div>
+                            <div><span style="font-size:2em">{{ item.icon }}</span><h3>{{ item.name }}</h3><div style="color:#ff9a8b;font-weight:bold">{{ item.cost }} XP</div></div>
+                            <div style="display:flex;gap:5px;"><button class="btn-buy" :disabled="playerData.xp < item.cost" @click="buyItem(item)">兑换</button><button class="btn-sm btn-danger" style="width:30px;padding:0" @click="deleteShopItem(item.id)">✕</button></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 复盘 & 资产 -->
-            <div class="card">
+            <div class="card card-hover">
                 <h2>🔄 复盘 & 资产 <button class="collapse-btn" @click="collapsed.reviews = !collapsed.reviews">{{ collapsed.reviews ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.reviews">
                     <div class="review-tabs">
@@ -354,140 +344,75 @@
                         <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
                         <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                     </div>
-
-                    <div v-show="activeReviewTab === 'stock'" class="chart-container">
-                        <canvas id="assetChart"></canvas>
-                    </div>
-
-                    <div v-if="showReviewForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #ff9a8b; border-radius: 15px; margin-bottom: 20px;">
+                    <div v-show="activeReviewTab === 'stock'" class="chart-container"><canvas id="assetChart"></canvas></div>
+                    <div v-if="showReviewForm" style="background:#fffaf5;padding:20px;border:2px dashed #ff9a8b;border-radius:15px;margin-bottom:20px;">
                         <div v-if="activeReviewTab === 'stock'">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin: 0;">
-                                <select v-model="newStockData.action" class="note-input" style="margin: 0;">
-                                    <option value="buy">🔵 买入</option>
-                                    <option value="sell">🔴 卖出</option>
-                                    <option value="hold">⚪ 持仓/记录</option>
-                                </select>
-                                <input v-model="newStockData.price" placeholder="交易价格" class="note-input" style="margin: 0;">
-                                <input v-model="newStockData.profit" placeholder="盈亏额" class="note-input" style="margin: 0;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                                <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin:0;">
+                                <select v-model="newStockData.action" class="note-input" style="margin:0;"><option value="buy">🔵 买入</option><option value="sell">🔴 卖出</option><option value="hold">⚪ 持仓</option></select>
+                                <input v-model="newStockData.price" placeholder="价格" class="note-input" style="margin:0;">
+                                <input v-model="newStockData.profit" placeholder="盈亏" class="note-input" style="margin:0;">
                             </div>
-                            <div style="background: #e8f5e9; padding: 10px; border-radius: 10px; margin-bottom: 10px;">
-                                <label style="font-weight: bold; color: #2e7d32;">💵 当前总资产:</label>
-                                <input v-model.number="newStockData.totalAsset" type="number" placeholder="输入当前总净值..." class="note-input" style="margin-top: 5px;">
-                            </div>
+                            <input v-model.number="newStockData.totalAsset" type="number" placeholder="当前总净值..." class="note-input">
                         </div>
-
                         <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
-                        <textarea v-model="newNote.content" :placeholder="activeReviewTab === 'stock' ? '逻辑分析...' : '内容...'" class="note-textarea" style="height: 150px;"></textarea>
-                        <button class="btn" @click="saveNote">💾 保存记录</button>
+                        <textarea v-model="newNote.content" class="note-textarea" style="height:100px;"></textarea>
+                        <button class="btn" @click="saveNote">💾 保存</button>
                     </div>
-
                     <div v-for="note in filteredNotes" :key="note.id" class="note-card">
-                        <select v-model="note.type" @change="saveAll()" class="type-switcher">
-                            <option value="daily">📝 日常</option>
-                            <option value="stock">📈 股票</option>
-                            <option value="weekly">📅 周报</option>
-                        </select>
-
-                        <div style="font-size: 0.85em; color: #999; margin-bottom: 5px;">{{ formatDate(note.createdAt) }}</div>
-                        
-                        <div v-if="note.type === 'stock'" style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e0c9b8;">
-                            <span class="stock-tag" :class="note.stockData?.action === 'buy' ? 'bg-red' : (note.stockData?.action === 'sell' ? 'bg-green' : 'bg-gray')">
-                                {{ note.stockData?.action === 'buy' ? '买入' : (note.stockData?.action === 'sell' ? '卖出' : '持仓') }}
-                            </span>
-                            <strong>{{ note.stockData?.code }}</strong>
-                            <span v-if="note.stockData?.price" style="margin-left: 10px;">@ {{ note.stockData?.price }}</span>
-                            <span v-if="note.stockData?.profit" style="float: right; font-weight: bold;" :style="{color: parseFloat(note.stockData.profit) > 0 ? '#e53935' : '#43a047'}">
-                                {{ parseFloat(note.stockData.profit) > 0 ? '+' : '' }}{{ note.stockData.profit }}
-                            </span>
-                            <div v-if="note.stockData?.totalAsset" style="margin-top: 5px; color: #2e7d32; font-size: 0.9em; font-weight: bold;">
-                                💰 当时净值: {{ note.stockData.totalAsset }}
-                            </div>
+                        <div style="font-size:0.8em;color:#999;margin-bottom:5px">{{ formatDate(note.createdAt) }}</div>
+                        <div v-if="note.type === 'stock'" style="padding-bottom:5px;border-bottom:1px dashed #ddd;margin-bottom:5px;">
+                            <strong>{{ note.stockData?.code }}</strong> <span :style="{color: note.stockData?.action==='buy'?'red':'green'}">{{ note.stockData?.action }}</span>
+                            <span v-if="note.stockData?.totalAsset" style="float:right;color:#2e7d32;font-weight:bold">💰 {{ note.stockData.totalAsset }}</span>
                         </div>
-
                         <h3 v-if="note.title">{{ note.title }}</h3>
-                        <p style="white-space: pre-wrap; line-height: 1.6; color: #5a4a42;">{{ note.content }}</p>
-                        <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="margin-top: 10px; float: right;">删除</button>
-                        <div style="clear: both;"></div>
+                        <p style="white-space:pre-wrap">{{ note.content }}</p>
+                        <button class="btn-sm btn-danger" @click="deleteNote(note.id)" style="float:right;margin-top:5px">删除</button>
+                        <div style="clear:both"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 技能修炼 -->
-            <div class="card">
-                <h2>⚡ 技能修炼 <button class="collapse-btn" @click="collapsed.skills = !collapsed.skills">{{ collapsed.skills ? '展开' : '收起' }}</button></h2>
-                <div v-show="!collapsed.skills">
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input v-model="newSkillName" placeholder="新技能名称..." class="note-input" style="margin-bottom: 0;">
-                        <button class="btn" @click="addNewSkillInline" style="width: 120px;">✨ 习得</button>
-                    </div>
-                    <div v-for="skill in skills" :key="skill.id" class="skill-item">
-                        <div style="flex: 1; padding-right: 20px;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <strong style="font-size: 1.1em;">{{ skill.icon }} {{ skill.name }}</strong>
-                                <span style="color: #999;">Lv.{{ skill.level }}</span>
-                            </div>
-                            <div class="xp-progress" style="height: 8px; margin: 0;"><div class="xp-fill" :style="{width: (skill.xp / skill.maxXp * 100) + '%'}"></div></div>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn-sm" @click="practiceSkill(skill.id)">🔥 练习</button>
-                            <button class="btn-sm btn-danger" @click="deleteSkill(skill.id)">✕</button>
-                        </div>
+            <!-- 技能 & 成就 -->
+            <div class="card card-hover">
+                <h2>⚡ 技能 & 成就</h2>
+                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input v-model="newSkillName" placeholder="新技能..." class="note-input" style="margin:0;">
+                    <button class="btn-sm" @click="addNewSkillInline">习得</button>
+                </div>
+                <div v-for="skill in skills" :key="skill.id" class="skill-item">
+                    <div><strong>{{ skill.name }}</strong> <span style="color:#999">Lv.{{ skill.level }}</span></div>
+                    <div style="display:flex;gap:5px"><button class="btn-sm" @click="practiceSkill(skill.id)">练习</button><button class="btn-sm btn-danger" @click="deleteSkill(skill.id)">✕</button></div>
+                </div>
+                <hr style="margin:20px 0; border:none; border-top:2px dashed #e0c9b8;">
+                <h4 style="margin-bottom:15px">成就墙</h4>
+                <div class="achievement-grid">
+                    <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: ach.current < ach.requirement}">
+                        <span style="font-size:2em">{{ ach.icon }}</span>
+                        <h4>{{ ach.name }}</h4>
+                        <div style="color:#ff9a8b">{{ ach.current }}/{{ ach.requirement }}</div>
                     </div>
                 </div>
             </div>
 
-            <!-- 成就系统 -->
-            <div class="card">
-                <h2>🏅 荣耀成就 <button class="collapse-btn" @click="collapsed.achievements = !collapsed.achievements">{{ collapsed.achievements ? '展开' : '收起' }}</button></h2>
-                <div v-show="!collapsed.achievements">
-                    <div style="background: #fffaf5; padding: 15px; border-radius: 15px; border: 2px dashed #e0c9b8; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px;">添加新成就</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                            <input v-model="newAchievement.name" placeholder="成就名" class="note-input">
-                            <input v-model="newAchievement.description" placeholder="描述" class="note-input">
-                            <input v-model="newAchievement.icon" placeholder="图标 (🏆)" class="note-input">
-                            <input v-model.number="newAchievement.requirement" type="number" placeholder="目标值 (如100)" class="note-input">
-                        </div>
-                        <button class="btn-sm" @click="addAchievement" style="width: 100%; margin-top: 10px;">➕ 创建成就</button>
-                    </div>
-
-                    <div class="achievement-grid">
-                        <div v-for="ach in achievements" :key="ach.id" class="achievement-card" :class="{locked: ach.current < ach.requirement, unlocked: ach.current >= ach.requirement}">
-                            <span class="achievement-icon">{{ ach.icon }}</span>
-                            <h3>{{ ach.name }}</h3>
-                            <p style="font-size: 0.9em; color: #666; height: 40px;">{{ ach.description }}</p>
-                            <div style="font-weight: bold; margin: 10px 0;" :style="{color: ach.current >= ach.requirement ? '#ffa502' : '#999'}">
-                                {{ ach.current }} / {{ ach.requirement }}
-                            </div>
-                            <div class="ach-edit-controls">
-                                <input type="number" v-model.number="ach.current" style="width: 60px; border: 1px solid #ccc; border-radius: 5px; padding: 2px;" @change="saveAll()">
-                                <button class="btn-sm btn-danger" style="padding: 2px 8px; font-size: 0.8em;" @click="deleteAchievement(ach.id)">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 📚 读书笔记 (增强版：带标签) -->
-            <div class="card">
+            <!-- 📚 读书笔记 (搜索+详情优化) -->
+            <div class="card card-hover">
                 <h2>📚 读书笔记 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.books">
-                    <button class="btn" style="margin-bottom: 20px;" @click="showBookForm = !showBookForm">{{ showBookForm ? '收起' : '📖 记录新书' }}</button>
-                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                         <!-- 🔍 搜索框 -->
+                        <input v-model="bookSearchQuery" class="search-bar" placeholder="🔍 搜索书名、作者、笔记内容或感悟..." style="margin-bottom: 0;">
+                        <button class="btn" style="width: auto; white-space: nowrap;" @click="showBookForm = !showBookForm">{{ showBookForm ? '收起' : '📖 记一本' }}</button>
+                    </div>
+
                     <div v-if="showBookForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #5a4a42; border-radius: 15px; margin-bottom: 20px;">
                         <div style="display: flex; gap: 10px;">
                             <input v-model="newBook.title" placeholder="书名" class="note-input">
                             <input v-model="newBook.author" placeholder="作者" class="note-input">
                         </div>
-                        <div style="margin-bottom: 10px;">
-                            <input v-model="newBook.tags" placeholder="标签/分类 (用逗号分隔，如：历史, 金融)..." class="note-input">
-                        </div>
+                        <input v-model="newBook.tags" placeholder="标签 (用逗号分隔)..." class="note-input">
                         <div style="margin-bottom: 15px;">
-                            <label style="font-weight: bold; margin-right: 10px;">推荐指数:</label>
-                            <div class="star-rating">
-                                <span v-for="n in 5" :key="n" class="star" :class="{active: n <= newBook.rating}" @click="newBook.rating = n">★</span>
-                            </div>
+                            <span v-for="n in 5" :key="n" class="star" :class="{active: n <= newBook.rating}" @click="newBook.rating = n">★</span>
                         </div>
                         <textarea v-model="newBook.content" placeholder="核心笔记..." class="note-textarea" style="height: 100px;"></textarea>
                         <textarea v-model="newBook.thoughts" placeholder="感悟与致谢..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;"></textarea>
@@ -495,113 +420,158 @@
                     </div>
 
                     <div class="book-list">
-                        <div v-for="book in books" :key="book.id" class="book-card">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <h3 style="margin-bottom: 5px;">{{ book.title }}</h3>
-                                <div class="star-rating" style="cursor: default;">
-                                    <span v-for="n in 5" :key="n" class="star" :class="{active: n <= book.rating}">★</span>
-                                </div>
+                        <div v-for="book in filteredBooks" :key="book.id" class="book-card" @click="viewingBook = book">
+                            <div style="display:flex; justify-content:space-between;">
+                                <div class="book-title" :title="book.title">{{ book.title }}</div>
+                                <div style="color:#ffc107">★ {{ book.rating }}</div>
                             </div>
-                            <div style="color: #888; font-size: 0.9em; margin-bottom: 10px;">👤 {{ book.author }}</div>
-                            
-                            <!-- 🏷️ 标签展示 -->
-                            <div v-if="book.tags && book.tags.length > 0" class="book-tags">
+                            <div style="font-size:0.8em; color:#888; margin-bottom:8px;">{{ book.author }}</div>
+                            <div v-if="book.tags && book.tags.length" style="margin-bottom:8px; overflow:hidden; white-space:nowrap;">
                                 <span v-for="tag in book.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
                             </div>
-
-                            <div style="background: #fffaf5; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                                <strong>📝 笔记:</strong>
-                                <p style="white-space: pre-wrap; font-size: 0.95em;">{{ book.content }}</p>
-                            </div>
-                            <div v-if="book.thoughts" style="background: #f0fdf4; padding: 10px; border-radius: 8px; border: 1px dashed #a3de83;">
-                                <strong style="color: #2e7d32;">🙏 感悟:</strong>
-                                <p style="white-space: pre-wrap; font-size: 0.95em; color: #1b5e20;">{{ book.thoughts }}</p>
-                            </div>
-                            <button class="btn-sm btn-danger" @click="deleteBook(book.id)" style="align-self: flex-end; margin-top: 15px;">删除</button>
+                            <div class="book-preview">{{ book.content }}</div>
+                            <div style="font-size:0.8em; text-align:right; color:#ff9a8b; margin-top:auto;">点击查看详情 &rsaquo;</div>
                         </div>
                     </div>
+                     <div v-if="filteredBooks.length === 0" style="text-align: center; color: #999; margin-top: 20px;">没有找到相关书籍</div>
                 </div>
             </div>
 
-            <!-- 知识库 -->
-            <div class="card">
-                <h2>📂 知识库</h2>
-                <p style="margin-bottom: 15px; color: #666;">整理你的知识体系。</p>
-                <button class="btn" @click="showKnowledgeBase = true">打开知识库</button>
-            </div>
-
-            <!-- 易学命例 -->
-            <div class="card">
-                <h2>☯️ 易学命例 <button class="collapse-btn" @click="collapsed.cases = !collapsed.cases">{{ collapsed.cases ? '展开' : '收起' }}</button></h2>
-                <div v-show="!collapsed.cases">
-                    <button class="btn" style="margin-bottom: 20px;" @click="showCaseForm = !showCaseForm">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
-                    <div v-if="showCaseForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #5a4a42; border-radius: 15px; margin-bottom: 20px;">
-                        <input v-model="newCase.title" placeholder="命主称呼 / 八字概要" class="note-input">
-                        <div class="image-upload-area" @click="$refs.fileInput.click()">
-                            <input type="file" ref="fileInput" @change="handleImageUpload" style="display: none;" accept="image/*">
-                            <div v-if="newCase.image"><img :src="newCase.image" style="max-height: 200px; max-width: 100%;"></div>
-                            <div v-else>📷 点击上传排盘图片</div>
-                        </div>
-                        <textarea v-model="newCase.content" placeholder="断语与复盘..." class="note-textarea" style="height: 100px;"></textarea>
-                        <button class="btn" @click="saveCase">💾 保存</button>
+            <!-- 知识库 & 易学 -->
+            <div class="card card-hover">
+                 <h2>📂 知识库 & 命例</h2>
+                 <div style="display:flex; gap:10px;">
+                     <button class="btn" @click="showKnowledgeBase = true">打开知识库</button>
+                     <button class="btn" @click="showCaseForm = !showCaseForm">记录命例</button>
+                 </div>
+                 
+                 <div v-if="showCaseForm" style="margin-top:15px; background:#fffaf9; padding:15px; border-radius:10px; border:2px dashed #e0c9b8;">
+                    <input v-model="newCase.title" placeholder="命主..." class="note-input">
+                    <div class="image-upload-area" @click="$refs.fileInput.click()">
+                         <input type="file" ref="fileInput" @change="handleImageUpload" style="display:none">
+                         <span v-if="!newCase.image">点击上传图片</span>
+                         <img v-else :src="newCase.image" style="max-height:100px;">
                     </div>
-                    <div class="case-grid">
-                        <div v-for="c in cases" :key="c.id" class="case-card" @click="viewingItem = { ...c, type: 'case' }">
-                            <img v-if="c.image" :src="c.image" style="width: 100%; height: 120px; object-fit: cover; border-radius: 10px;">
-                            <h3>{{ c.title }}</h3>
-                        </div>
+                    <textarea v-model="newCase.content" class="note-textarea"></textarea>
+                    <button class="btn-sm" @click="saveCase">保存</button>
+                 </div>
+                 <div class="case-grid" style="margin-top:20px;">
+                    <div v-for="c in cases" :key="c.id" class="case-card" @click="viewingItem = { ...c, type: 'case' }">
+                        <img v-if="c.image" :src="c.image" style="width:100%;height:100px;object-fit:cover;border-radius:10px;">
+                        <div style="font-weight:bold; margin-top:5px;">{{ c.title }}</div>
                     </div>
-                </div>
+                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 知识库弹窗 -->
-    <div v-if="showKnowledgeBase" class="kb-overlay" @click.self="showKnowledgeBase = false">
+    <!-- 📚 书籍详情弹窗 (新增) -->
+    <div v-if="viewingBook" class="modal-overlay" @click.self="viewingBook = null">
+        <div class="detail-modal">
+            <span class="close-modal" @click="viewingBook = null">&times;</span>
+            <div style="padding-bottom:15px; border-bottom:2px solid #5a4a42; margin-bottom:20px;">
+                <h1 style="margin-bottom:5px;">{{ viewingBook.title }}</h1>
+                <div style="color:#666; font-size:1.1em;">作者: {{ viewingBook.author }}</div>
+                <div style="margin-top:10px;">
+                     <span v-for="n in 5" :key="n" class="star" :class="{active: n <= viewingBook.rating}">★</span>
+                </div>
+                <div v-if="viewingBook.tags && viewingBook.tags.length" style="margin-top:10px;">
+                    <span v-for="tag in viewingBook.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h4>📝 核心笔记</h4>
+                <p style="white-space: pre-wrap; line-height: 1.8; color: #444; margin-top: 10px;">{{ viewingBook.content || '暂无笔记' }}</p>
+            </div>
+
+            <div v-if="viewingBook.thoughts" class="detail-section" style="background: #f0fdf4; border-color: #a3de83;">
+                <h4 style="color: #2e7d32; border-color: #2e7d32;">🙏 感悟与致谢</h4>
+                <p style="white-space: pre-wrap; line-height: 1.8; color: #1b5e20; margin-top: 10px;">{{ viewingBook.thoughts }}</p>
+            </div>
+
+            <button class="btn-sm btn-danger" @click="deleteBook(viewingBook.id)" style="margin-top: 30px; float: right;">删除此记录</button>
+        </div>
+    </div>
+
+    <!-- 📂 知识库弹窗 (优化交互) -->
+    <div v-if="showKnowledgeBase" class="modal-overlay" @click.self="showKnowledgeBase = false">
         <div class="kb-window">
             <div class="kb-sidebar">
-                <div style="padding: 20px; font-weight: bold; border-bottom: 2px dashed #e0c9b8;">📚 知识库 <span @click="addKbCategory" style="float:right; cursor:pointer;">+</span></div>
+                <div style="padding: 20px; font-weight: bold; border-bottom: 2px dashed #e0c9b8; background: #fffaf0;">
+                    📚 知识库 <span @click="addKbCategory" style="float:right; cursor:pointer; color:#ff9a8b;">+</span>
+                </div>
                 <div style="flex: 1; overflow-y: auto;">
-                    <div class="kb-nav-item" :class="{active: kbCurrentCategory === 'all'}" @click="kbCurrentCategory = 'all'">📂 全部</div>
-                    <div v-for="cat in kbCategories" :key="cat.id" class="kb-nav-item" :class="{active: kbCurrentCategory && kbCurrentCategory.id === cat.id}" @click="kbCurrentCategory = cat">📁 {{ cat.name }}</div>
+                    <div class="kb-nav-item" :class="{active: kbCurrentCategory === 'all'}" @click="selectKbCategory('all')">📂 全部文档</div>
+                    <div v-for="cat in kbCategories" :key="cat.id" class="kb-nav-item" :class="{active: kbCurrentCategory && kbCurrentCategory.id === cat.id}" @click="selectKbCategory(cat)">
+                        📁 {{ cat.name }}
+                    </div>
                 </div>
             </div>
+            
             <div class="kb-main">
                 <div class="kb-toolbar">
-                    <span>{{ kbCurrentCategory === 'all' ? '全部' : kbCurrentCategory.name }}</span>
+                    <span style="font-weight:bold; color:#5a4a42;">{{ kbCurrentCategory === 'all' ? '全部文档' : kbCurrentCategory.name }}</span>
                     <button class="btn-sm" @click="openKbEditor()">+ 新建文档</button>
                 </div>
+                
                 <div class="kb-content">
+                    <!-- 1. 编辑模式 -->
                     <div v-if="kbEditorMode">
-                        <input v-model="kbEditorData.title" placeholder="标题" class="note-input">
-                        <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 400px;"></textarea>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn" @click="saveKbDoc">保存</button>
-                            <button v-if="kbEditorData.id" class="btn btn-danger" @click="deleteKbDoc(kbEditorData.id)">🗑️ 删除</button>
-                            <button class="btn" style="background: #ccc;" @click="kbEditorMode = false">取消</button>
+                        <input v-model="kbEditorData.title" placeholder="文档标题" class="note-input" style="font-size:1.2em; font-weight:bold;">
+                        <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 50vh; font-family: monospace;"></textarea>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button class="btn" style="background:#ccc; width:auto;" @click="kbEditorMode = false">取消</button>
+                            <button v-if="kbEditorData.id" class="btn btn-danger" style="width:auto;" @click="deleteKbDoc(kbEditorData.id)">删除</button>
+                            <button class="btn" style="width:auto;" @click="saveKbDoc">保存文档</button>
                         </div>
                     </div>
-                    <div v-else>
-                        <div v-for="doc in filteredKbDocs" :key="doc.id" style="padding: 15px; border-bottom: 1px dashed #e0c9b8; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='transparent'" @click="editKbDoc(doc)">
-                            <div style="font-weight: bold; font-size: 1.1em;">📄 {{ doc.title || '无标题文档' }}</div>
-                            <div style="font-size: 0.8em; color: #999;">{{ formatDate(doc.updatedAt) }}</div>
+
+                    <!-- 2. 阅读模式 -->
+                    <div v-else-if="viewingKbDoc">
+                        <div style="border-bottom: 2px solid #e0c9b8; padding-bottom: 15px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h1 style="font-size: 2em; margin-bottom: 5px;">{{ viewingKbDoc.title }}</h1>
+                                <span style="color:#999; font-size:0.8em;">最后更新: {{ formatDate(viewingKbDoc.updatedAt) }}</span>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn-sm" style="background:#ddd; color:#555;" @click="viewingKbDoc = null">返回列表</button>
+                                <button class="btn-sm" @click="editKbDoc(viewingKbDoc)">✏️ 编辑</button>
+                            </div>
                         </div>
-                        <div v-if="filteredKbDocs.length === 0" style="text-align: center; color: #999; margin-top: 50px;">这里还没有内容</div>
+                        <div style="white-space: pre-wrap; line-height: 1.8; font-size: 1.1em; color: #444;">{{ viewingKbDoc.content }}</div>
+                    </div>
+
+                    <!-- 3. 列表模式 -->
+                    <div v-else>
+                        <div v-for="doc in filteredKbDocs" :key="doc.id" class="kb-list-item" @click="viewingKbDoc = doc">
+                            <div>
+                                <div style="font-weight: bold; font-size: 1.1em; color:#5a4a42;">📄 {{ doc.title || '无标题文档' }}</div>
+                                <div style="font-size: 0.8em; color: #999; margin-top:5px;">{{ formatDate(doc.updatedAt) }}</div>
+                            </div>
+                            <span style="color:#ff9a8b; font-size:1.2em;">&rsaquo;</span>
+                        </div>
+                        <div v-if="filteredKbDocs.length === 0" style="text-align: center; color: #999; margin-top: 50px;">
+                            <div style="font-size:3em; margin-bottom:10px;">📭</div>
+                            此分类下暂无文档
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- 详情弹窗 -->
-    <div v-if="viewingItem" class="kb-overlay" @click.self="viewingItem = null">
-        <div class="card" style="width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
-            <h2>{{ viewingItem.title }}</h2>
-            <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; margin: 10px 0; border-radius: 10px;">
-            <p style="white-space: pre-wrap;">{{ viewingItem.content }}</p>
-            <button class="btn-sm btn-danger" @click="deleteItem(viewingItem)" style="margin-top: 20px;">删除</button>
+
+    <!-- 命例详情 -->
+    <div v-if="viewingItem" class="modal-overlay" @click.self="viewingItem = null">
+        <div class="detail-modal">
+             <span class="close-modal" @click="viewingItem = null">&times;</span>
+             <h2>{{ viewingItem.title }}</h2>
+             <img v-if="viewingItem.image" :src="viewingItem.image" style="width: 100%; margin: 15px 0; border-radius: 10px;">
+             <p style="white-space: pre-wrap;">{{ viewingItem.content }}</p>
+             <button class="btn-sm btn-danger" @click="deleteItem(viewingItem)" style="margin-top: 20px;">删除</button>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -616,29 +586,31 @@
                 isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                 loading: false, syncing: false, message: '', messageType: '',
                 
-                collapsed: { goals: false, stats: false, skills: false, achievements: false, reviews: false, books: false, cases: true, quests: false, shop: false },
+                collapsed: { goals: false, stats: false, quests: false, shop: false, reviews: false, books: false },
                 
-                playerData: { 
-                    level: 1, xp: 0, nextLevelXp: 100, 
-                    goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory: []
-                },
+                playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory: [] },
                 
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
                 newQuestTitle: '', 
                 newShopItem: { name: '', cost: 50, icon: '🥤' },
-                newAchievement: { name: '', description: '', icon: '🏆', requirement: 100, current: 0 },
-                newBook: { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' }, // 🆕 Tags String
-
-                skills: [], achievements: [], notes: [], cases: [], books: [],
-                kbCategories: [], kbDocs: [],
-                
-                activeReviewTab: 'stock', showReviewForm: false,
-                newNote: { title: '', content: '' },
-                newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
                 newSkillName: '',
                 
-                showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbEditorData: {},
-                showCaseForm: false, showBookForm: false, newCase: { title: '', content: '', image: null }, viewingItem: null,
+                skills: [], achievements: [], notes: [], cases: [], books: [], kbCategories: [], kbDocs: [],
+                
+                activeReviewTab: 'stock', showReviewForm: false, newNote: { title: '', content: '' },
+                newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
+                
+                // 读书笔记
+                showBookForm: false, 
+                bookSearchQuery: '', // 🔍 搜索关键词
+                viewingBook: null, // 当前查看的书籍对象
+                newBook: { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' },
+                
+                // 知识库 & 命例
+                showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, 
+                viewingKbDoc: null, // 📖 当前阅读的文档
+                kbEditorData: {},
+                showCaseForm: false, newCase: { title: '', content: '', image: null }, viewingItem: null,
                 
                 chartInstance: null
             };
@@ -646,12 +618,22 @@
         computed: {
             xpPercentage() { return Math.min(100, (this.playerData.xp / this.playerData.nextLevelXp) * 100); },
             filteredNotes() {
-                let res = this.notes.filter(n => {
-                    if (!n.type && this.activeReviewTab === 'daily') return true; 
-                    if (n.type === this.activeReviewTab) return true;
-                    return false;
-                });
+                let res = this.notes.filter(n => (!n.type && this.activeReviewTab==='daily') || n.type===this.activeReviewTab);
                 return res.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            },
+            // 📖 书籍搜索逻辑
+            filteredBooks() {
+                let list = this.books;
+                if (this.bookSearchQuery) {
+                    const q = this.bookSearchQuery.toLowerCase();
+                    list = list.filter(b => 
+                        (b.title && b.title.toLowerCase().includes(q)) || 
+                        (b.author && b.author.toLowerCase().includes(q)) || 
+                        (b.content && b.content.toLowerCase().includes(q)) || 
+                        (b.thoughts && b.thoughts.toLowerCase().includes(q))
+                    );
+                }
+                return list;
             },
             filteredKbDocs() {
                 if (this.kbCurrentCategory === 'all') return this.kbDocs;
@@ -661,31 +643,17 @@
         methods: {
             showMessage(txt, type='success') { this.message = txt; this.messageType = type; setTimeout(()=>this.message='', 4000); },
             formatDate(str) { if(!str) return ''; return new Date(str).toLocaleString('zh-CN'); },
-            
             calculateProgress(goal) { return goal.mode === 'text' ? (goal.current || 0) : (!goal.target ? 0 : Math.round((goal.current / goal.target) * 100)); },
             getProgressColor(p) { return p < 30 ? '#ff6b6b' : (p < 80 ? '#ffcc00' : '#2e7d32'); },
             getProgressClass(p) { return p >= 100 ? 'p-done' : (p < 30 ? 'p-low' : (p < 80 ? 'p-mid' : 'p-high')); },
-
-            // ⚠️ 核心修复：数据去重工具函数 ⚠️
-            deduplicate(arr) {
-                if (!arr || !Array.isArray(arr)) return [];
-                const seen = new Set();
-                return arr.filter(item => {
-                    const id = item.id;
-                    if (seen.has(id)) return false; // 已经见过这个ID，丢弃（去重）
-                    seen.add(id);
-                    return true;
-                });
-            },
+            deduplicate(arr) { if (!arr || !Array.isArray(arr)) return []; const seen = new Set(); return arr.filter(item => { const id = item.id; if (seen.has(id)) return false; seen.add(id); return true; }); },
 
             async login() {
-                if (!this.email || !this.password) return;
                 this.loading = true;
                 const { data, error } = await sb.auth.signInWithPassword({ email: this.email, password: this.password });
                 this.loading = false;
                 if (error) return this.showMessage(error.message, 'error');
-                this.isLoggedIn = true; this.userId = data.user.id; this.userEmail = data.user.email;
-                this.loadData();
+                this.isLoggedIn = true; this.userId = data.user.id; this.userEmail = data.user.email; this.loadData();
             },
             async logout() { await sb.auth.signOut(); this.isLoggedIn = false; },
 
@@ -710,16 +678,12 @@
                     this.checkDailyReset();
                 }
 
-                // 加载数据并立即执行去重清洗
                 if(s.data) this.skills = this.deduplicate(s.data.map(i => i.data));
                 if(a.data) this.achievements = this.deduplicate(a.data.map(i => i.data));
                 if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
                 if(b.data) this.books = this.deduplicate(b.data.map(i => i.data));
-                
-                // 重点修复知识库
                 if(kc.data) this.kbCategories = this.deduplicate(kc.data.map(i => i.data));
                 if(kd.data) this.kbDocs = this.deduplicate(kd.data.map(i => i.data));
-                
                 if(cs.data) this.cases = this.deduplicate(cs.data.map(i => i.data));
                 
                 this.syncing = false;
@@ -728,198 +692,70 @@
 
             async saveAll() {
                 if (!this.userId) return;
-                // 保存前再次去重以防万一
-                this.kbDocs = this.deduplicate(this.kbDocs);
-                this.kbCategories = this.deduplicate(this.kbCategories);
-
+                this.kbDocs = this.deduplicate(this.kbDocs); // Safety
                 await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
-                
-                const saveTbl = async (t, d) => { 
-                    // 先清空该用户该表所有数据
-                    await sb.from(t).delete().eq('user_id', this.userId); 
-                    // 再插入当前去重后的数据
-                    if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); 
-                };
-                
-                await Promise.all([
-                    saveTbl('skills', this.skills),
-                    saveTbl('achievements', this.achievements),
-                    saveTbl('notes', this.notes),
-                    saveTbl('cases', this.cases),
-                    saveTbl('books', this.books),
-                    saveTbl('kb_notes', this.kbDocs),
-                    saveTbl('kb_categories', this.kbCategories)
-                ]);
+                const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
+                await Promise.all([ saveTbl('skills', this.skills), saveTbl('achievements', this.achievements), saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
             },
             async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
-            checkDailyReset() {
-                const today = new Date().toDateString();
-                if (this.playerData.lastLoginDate !== today) {
-                    this.playerData.dailyTasks.forEach(t => t.completed = false);
-                    this.playerData.lastLoginDate = today;
-                    this.saveAll();
-                    this.showMessage('☀️ 新的一天，每日任务已刷新！');
-                }
-            },
-            addDailyQuest() {
-                if (!this.newQuestTitle) return;
-                this.playerData.dailyTasks.push({ id: Date.now(), title: this.newQuestTitle, completed: false });
-                this.newQuestTitle = '';
-                this.saveAll();
-            },
-            toggleQuest(quest) {
-                if (quest.completed) return; 
-                quest.completed = true;
-                this.addXp(5);
-                if (this.playerData.dailyTasks.every(t => t.completed)) {
-                    this.showMessage('🔥 全勤达成！');
-                    this.addXp(20);
-                }
-                this.saveAll();
-            },
-            deleteDailyQuest(id) {
-                if (confirm('确定删除?')) {
-                    this.playerData.dailyTasks = this.playerData.dailyTasks.filter(t => t.id !== id);
-                    this.saveAll();
-                }
-            },
+            checkDailyReset() { const today = new Date().toDateString(); if (this.playerData.lastLoginDate !== today) { this.playerData.dailyTasks.forEach(t => t.completed = false); this.playerData.lastLoginDate = today; this.saveAll(); this.showMessage('☀️ 每日任务已刷新'); } },
+            addDailyQuest() { if(this.newQuestTitle){ this.playerData.dailyTasks.push({id:Date.now(),title:this.newQuestTitle,completed:false}); this.newQuestTitle=''; this.saveAll(); } },
+            toggleQuest(q) { if(!q.completed){ q.completed=true; this.addXp(5); if(this.playerData.dailyTasks.every(t=>t.completed))this.addXp(20); this.saveAll(); } },
+            deleteDailyQuest(id) { if(confirm('删?')){ this.playerData.dailyTasks=this.playerData.dailyTasks.filter(t=>t.id!==id); this.saveAll(); } },
 
-            addShopItem() {
-                this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem });
-                this.newShopItem = { name: '', cost: 50, icon: '✨' };
-                this.saveAll();
-            },
-            deleteShopItem(id) { this.playerData.shopItems = this.playerData.shopItems.filter(i => i.id !== id); this.saveAll(); },
-            buyItem(item) {
-                if (this.playerData.xp >= item.cost) {
-                    if(!confirm(`确认消耗 ${item.cost} XP?`)) return;
-                    this.playerData.xp -= item.cost;
-                    this.notes.unshift({ id: Date.now(), type: 'daily', createdAt: new Date().toISOString(), title: '🎁 商店兑换', content: `兑换: ${item.name}` });
-                    this.showMessage(`兑换成功: ${item.name}`);
-                    this.saveAll();
-                }
-            },
+            addShopItem() { this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem }); this.newShopItem={name:'',cost:50,icon:'✨'}; this.saveAll(); },
+            deleteShopItem(id) { this.playerData.shopItems=this.playerData.shopItems.filter(i=>i.id!==id); this.saveAll(); },
+            buyItem(item) { if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ this.playerData.xp-=item.cost; this.notes.unshift({id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name}); this.saveAll(); } },
 
             loadChart() {
-                if (this.activeReviewTab !== 'stock') return;
-                const ctx = document.getElementById('assetChart');
-                if (!ctx) return;
-                if (this.chartInstance) this.chartInstance.destroy();
-                const history = (this.playerData.assetHistory || []).sort((a,b) => new Date(a.date) - new Date(b.date));
-                this.chartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: history.map(h => new Date(h.date).toLocaleDateString()),
-                        datasets: [{
-                            label: '总资产净值', data: history.map(h => h.value),
-                            borderColor: '#4ecdc4', backgroundColor: 'rgba(78, 205, 196, 0.1)', tension: 0.3, fill: true
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
+                if(this.activeReviewTab!=='stock')return; const ctx=document.getElementById('assetChart'); if(!ctx)return;
+                if(this.chartInstance)this.chartInstance.destroy();
+                const h=(this.playerData.assetHistory||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+                this.chartInstance=new Chart(ctx,{type:'line',data:{labels:h.map(x=>new Date(x.date).toLocaleDateString()),datasets:[{data:h.map(x=>x.value),borderColor:'#4ecdc4',backgroundColor:'rgba(78,205,196,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
             },
+            saveNote() { 
+                if(this.activeReviewTab==='stock'){
+                    if(this.newStockData.totalAsset){ this.playerData.assetHistory.push({date:new Date().toISOString(),value:this.newStockData.totalAsset}); setTimeout(()=>this.loadChart(),100); }
+                    if(this.newStockData.code) this.notes.unshift({id:Date.now(),type:'stock',createdAt:new Date().toISOString(),content:this.newNote.content,stockData:{...this.newStockData}});
+                } else if(this.newNote.title) { this.notes.unshift({id:Date.now(),type:this.activeReviewTab,createdAt:new Date().toISOString(),...this.newNote}); }
+                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; this.newNote={title:'',content:''}; this.showReviewForm=false; this.addXp(10); this.saveAll();
+            },
+            deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
 
-            addGoal() { if(!this.newGoal.title)return; this.playerData.goals.push({title:this.newGoal.title, mode:this.newGoal.mode, current:0, unit:this.newGoal.unit||'', target:this.newGoal.target||100, targetText: '完成'}); this.newGoal={title:'',target:null,current:0,unit:'',mode:'numeric'}; this.saveAll(); },
-            deleteGoal(i) { if(confirm('删除?')) { this.playerData.goals.splice(i,1); this.saveAll(); } },
-            addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){ this.playerData.xp-=this.playerData.nextLevelXp; this.playerData.level++; this.showMessage('升级了! Lv.'+this.playerData.level); } },
+            addGoal() { if(this.newGoal.title){ this.playerData.goals.push({title:this.newGoal.title,mode:this.newGoal.mode,current:0,unit:this.newGoal.unit||'',target:this.newGoal.target||100}); this.newGoal={title:'',target:null,current:0,unit:'',mode:'numeric'}; this.saveAll(); } },
+            deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.saveAll(); } },
+            addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
+            addNewSkillInline() { if(this.newSkillName){ this.skills.push({id:Date.now(),name:this.newSkillName,level:1,xp:0}); this.newSkillName=''; this.saveAll(); } },
+            practiceSkill(id){ const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=50){s.xp=0;s.level++;} this.addXp(5); this.saveAll(); } },
+            deleteSkill(id){ if(confirm('删?')){ this.skills=this.skills.filter(x=>x.id!==id); this.saveAll(); } },
+
+            handleImageUpload(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=(ev)=>{ const i=new Image(); i.src=ev.target.result; i.onload=()=>{ const c=document.createElement('canvas'); const ctx=c.getContext('2d'); let w=i.width,h=i.height; if(w>800){h=Math.round(h*(800/w));w=800;} c.width=w;c.height=h; ctx.drawImage(i,0,0,w,h); this.newCase.image=c.toDataURL('image/jpeg',0.7); } }; r.readAsDataURL(f); },
+            saveCase() { if(this.newCase.title){ this.cases.unshift({id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase}); this.newCase={title:'',content:'',image:null}; this.showCaseForm=false; this.addXp(20); this.saveAll(); } },
             
-            saveNote() {
-                if(this.activeReviewTab === 'stock') {
-                    if(!this.newStockData.code && !this.newStockData.totalAsset) return;
-                    if (this.newStockData.totalAsset) {
-                        this.playerData.assetHistory.push({ date: new Date().toISOString(), value: this.newStockData.totalAsset });
-                        setTimeout(() => this.loadChart(), 100);
-                    }
-                    this.notes.unshift({ id: Date.now(), type: 'stock', createdAt: new Date().toISOString(), content: `逻辑: ${this.newStockData.action} - ${this.newNote.content}`, stockData: {...this.newStockData} });
-                    this.newStockData = { code:'', action:'buy', price:'', profit:'', totalAsset: null };
-                } else {
-                    if(!this.newNote.title) return;
-                    this.notes.unshift({ id: Date.now(), type: this.activeReviewTab, createdAt: new Date().toISOString(), ...this.newNote });
-                    this.newNote = { title:'', content:'' };
-                }
-                this.showReviewForm = false; this.addXp(10); this.saveAll();
+            // 📚 Books Logic
+            saveBook() { 
+                if(this.newBook.title){ 
+                    const tags = this.newBook.tags ? this.newBook.tags.split(/[,，]/).map(t=>t.trim()).filter(t=>t) : [];
+                    this.books.unshift({id:Date.now(),...this.newBook, tags, createdAt:new Date().toISOString()}); 
+                    this.newBook={title:'',author:'',rating:5,content:'',thoughts:'',tags:''}; 
+                    this.showBookForm=false; this.addXp(20); this.saveAll(); 
+                } 
             },
-            deleteNote(id) { if(confirm('删除?')) { this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
-            
-            addNewSkillInline() { if(this.newSkillName){this.skills.push({id:Date.now(),name:this.newSkillName,icon:'✨',level:1,xp:0,maxXp:50}); this.newSkillName=''; this.addXp(10); this.saveAll();} },
-            practiceSkill(id) { const s=this.skills.find(x=>x.id===id); if(s){ s.xp+=10; if(s.xp>=s.maxXp){s.xp=0;s.level++;s.maxXp=Math.floor(s.maxXp*1.5);} this.addXp(5); this.saveAll(); } },
-            deleteSkill(id) { if(confirm('删除?')) { this.skills=this.skills.filter(x=>x.id!==id); this.saveAll(); } },
-            
-            handleImageUpload(e) { const file = e.target.files[0]; if(!file)return; const reader = new FileReader(); reader.onload = (evt) => { const img = new Image(); img.src = evt.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const maxW = 800; let w=img.width, h=img.height; if(w>maxW){ h=Math.round(h*(maxW/w)); w=maxW; } canvas.width=w; canvas.height=h; ctx.drawImage(img,0,0,w,h); this.newCase.image=canvas.toDataURL('image/jpeg',0.7); } }; reader.readAsDataURL(file); },
-            saveCase() { if(!this.newCase.title)return; this.cases.unshift({id:Date.now(), type:'case', createdAt:new Date().toISOString(), ...this.newCase}); this.newCase={title:'',content:'',image:null}; this.showCaseForm=false; this.addXp(30); this.saveAll(); },
-            
-            // KB Logic
-            openKbEditor() { this.kbEditorMode=true; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory === 'all' ? null : this.kbCurrentCategory.id}; },
-            editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; },
+            deleteBook(id) { if(confirm('删除此书?')){ this.books=this.books.filter(b=>b.id!==id); this.viewingBook=null; this.saveAll(); } },
+
+            // 📂 KB Logic (Optimized)
+            selectKbCategory(c) { this.kbCurrentCategory = c; this.viewingKbDoc = null; this.kbEditorMode = false; },
+            openKbEditor() { this.kbEditorMode=true; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
+            editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.viewingKbDoc=null; },
             saveKbDoc() { 
                 const now=new Date().toISOString(); 
-                if(this.kbEditorData.id){
-                    const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id);
-                    if(i !== -1) {
-                        this.kbDocs[i] = {...this.kbDocs[i], ...this.kbEditorData, updatedAt:now};
-                    }
-                } else {
-                    this.kbDocs.unshift({
-                        id: Date.now(), 
-                        title: this.kbEditorData.title || '无标题',
-                        content: this.kbEditorData.content,
-                        categoryId: this.kbEditorData.categoryId,
-                        createdAt: now, updatedAt: now
-                    });
-                }
-                this.kbEditorMode=false; 
-                this.saveAll(); 
+                if(this.kbEditorData.id){ const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); if(i!==-1)this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; viewingKbDoc = this.kbDocs[i]; } // Update view
+                else { this.kbDocs.unshift({id:Date.now(),title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now}); }
+                this.kbEditorMode=false; this.viewingKbDoc=null; this.saveAll(); 
             },
-            deleteKbDoc(id) {
-                if(confirm('确定删除此文档吗？')) {
-                    this.kbDocs = this.kbDocs.filter(d => d.id !== id);
-                    this.kbEditorMode = false;
-                    this.saveAll();
-                }
-            },
-            addKbCategory() { const n=prompt('分类名'); if(n)this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); },
-            
-            // Achievement
-            addAchievement() {
-                if(!this.newAchievement.name) return;
-                this.achievements.push({ id: Date.now(), ...this.newAchievement });
-                this.newAchievement = { name: '', description: '', icon: '🏆', requirement: 100, current: 0 };
-                this.saveAll();
-            },
-            deleteAchievement(id) {
-                if(confirm('删除此成就?')) {
-                    this.achievements = this.achievements.filter(a => a.id !== id);
-                    this.saveAll();
-                }
-            },
-
-            // Books (Updated with Tags)
-            saveBook() {
-                if(!this.newBook.title) return;
-                // 处理标签：分割逗号，去除空格，过滤空项
-                const tagsArray = this.newBook.tags 
-                    ? this.newBook.tags.split(/[,，]/).map(t => t.trim()).filter(t => t) 
-                    : [];
-
-                this.books.unshift({
-                    id: Date.now(),
-                    ...this.newBook,
-                    tags: tagsArray,
-                    createdAt: new Date().toISOString()
-                });
-                this.newBook = { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' };
-                this.showBookForm = false;
-                this.addXp(20);
-                this.saveAll();
-            },
-            deleteBook(id) {
-                if(confirm('移除这本书?')) {
-                    this.books = this.books.filter(b => b.id !== id);
-                    this.saveAll();
-                }
-            },
-
+            deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>d.id!==id); this.kbEditorMode=false; this.viewingKbDoc=null; this.saveAll(); } },
+            addKbCategory() { const n=prompt('新分类名'); if(n){ this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); } },
             deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case')this.cases=this.cases.filter(c=>c.id!==item.id); this.viewingItem=null; this.saveAll(); }
         },
         mounted() {
