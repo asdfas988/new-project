@@ -10,11 +10,8 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Marked.js (用于显示) -->
+    <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Vditor (所见即所得编辑器) -->
-    <link rel="stylesheet" href="https://unpkg.com/vditor/dist/index.css" />
-    <script src="https://unpkg.com/vditor/dist/index.min.js"></script>
     <!-- 字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -95,7 +92,7 @@
         /* Markdown */
         .markdown-content { line-height: 1.8; color: #444; overflow-wrap: break-word; }
         .markdown-content h1, .markdown-content h2 { border-bottom: 1px dashed #e0c9b8; padding-bottom: 5px; margin-top: 10px; }
-        .markdown-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid #eee; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+        .markdown-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid #eee; }
         .markdown-content blockquote { border-left: 4px solid #ff9a8b; background: #fffaf5; padding: 5px 15px; color: #666; margin: 10px 0; }
         .markdown-content pre { background: #333; color: white; padding: 10px; border-radius: 8px; overflow-x: auto; }
 
@@ -161,11 +158,6 @@
         .p-mid { background: linear-gradient(90deg, #f6d365, #fda085); }
         .p-high { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
         .p-done { background: linear-gradient(90deg, #4ecdc4, #556270); }
-
-        /* Vditor 定制样式 */
-        .vditor { border: 2px solid #e0c9b8 !important; border-radius: 12px; }
-        .vditor-toolbar { background: #fffaf9 !important; border-bottom: 2px dashed #e0c9b8 !important; }
-        .vditor-content { background: #fff !important; font-family: 'Noto Sans SC', sans-serif !important; }
 
         @media (max-width: 768px) {
             .kb-window { width: 100%; height: 100vh; border-radius: 0; }
@@ -298,11 +290,10 @@
                         <div class="review-tab" :class="{active: activeReviewTab === 'stock'}" @click="activeReviewTab = 'stock'; loadChart()">📈 股票/资产</div>
                         <div class="review-tab" :class="{active: activeReviewTab === 'daily'}" @click="activeReviewTab = 'daily'">📝 日常</div>
                         <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'">📅 周复盘</div>
-                        <div class="review-tab special" @click="toggleReviewForm()">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
+                        <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                     </div>
                     <div v-show="activeReviewTab === 'stock'" class="chart-container"><canvas id="assetChart"></canvas></div>
-                    
-                    <div v-show="showReviewForm" style="background:#fffaf5;padding:20px;border:2px dashed #ff9a8b;border-radius:15px;margin-bottom:20px;">
+                    <div v-if="showReviewForm" style="background:#fffaf5;padding:20px;border:2px dashed #ff9a8b;border-radius:15px;margin-bottom:20px;">
                         <div v-if="activeReviewTab === 'stock'">
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                                 <input v-model="newStockData.code" placeholder="代码/名称" class="note-input" style="margin:0;">
@@ -314,15 +305,21 @@
                         </div>
                         <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
                         
-                        <!-- ✨ Vditor: 复盘编辑器 (所有标签页都显示) -->
-                        <div>
-                           <div id="reviewVditor"></div>
-                           <p style="font-size: 0.8em; color: #888; margin-top: 5px;">* 在此处写分析、直接粘贴 K线图或交割单截图</p>
+                        <!-- 这里的 Textarea 增加了 @paste 监听 -->
+                        <textarea v-model="newNote.content" class="note-textarea" style="height:100px;" 
+                            placeholder="支持 Markdown，可直接 Ctrl+V 粘贴截图..."
+                            @paste="handlePaste($event, 'newNote.content')"></textarea>
+                        
+                        <!-- 📸 上传组件 (兼容按钮) -->
+                        <div style="margin-bottom:10px;">
+                            <input type="file" ref="reviewFileInput" @change="handleFileUpload($event, 'newNote.content')" style="display:none" accept="image/*">
+                            <button class="btn-sm btn-upload" @click="$refs.reviewFileInput.click()">
+                                {{ uploading ? '⏳ 上传中...' : '📸 插入图片' }}
+                            </button>
                         </div>
 
-                        <button class="btn" @click="saveNote" style="margin-top: 15px;">💾 保存</button>
+                        <button class="btn" @click="saveNote">💾 保存</button>
                     </div>
-                    
                     <div v-for="note in filteredNotes" :key="note.id" class="note-card">
                         <div style="font-size:0.8em;color:#999;margin-bottom:5px">{{ formatDate(note.createdAt) }}</div>
                         <div v-if="note.type === 'stock'" style="padding-bottom:5px;border-bottom:1px dashed #ddd;margin-bottom:5px;">
@@ -343,7 +340,7 @@
                 <div v-show="!collapsed.books">
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                         <input v-model="bookSearchQuery" class="search-bar" placeholder="🔍 搜索书名、作者..." style="margin-bottom: 0;">
-                        <button class="btn" style="width: auto; white-space: nowrap;" @click="toggleBookForm()">{{ showBookForm ? '收起' : '📖' }}</button>
+                        <button class="btn" style="width: auto; white-space: nowrap;" @click="showBookForm = !showBookForm">{{ showBookForm ? '收起' : '📖' }}</button>
                     </div>
 
                     <div v-if="showBookForm" style="background: #fffaf5; padding: 20px; border: 2px dashed #5a4a42; border-radius: 15px; margin-bottom: 20px;">
@@ -356,13 +353,14 @@
                             <span v-for="n in 5" :key="n" class="star" :class="{active: n <= newBook.rating}" @click="newBook.rating = n">★</span>
                         </div>
                         
-                        <!-- ✨ Vditor: 读书笔记编辑器 -->
-                        <div style="margin-bottom: 15px;">
-                             <div id="bookVditor"></div>
-                             <p style="font-size: 0.8em; color: #888; margin-top: 5px;">* 核心笔记 (直接截图粘贴图片)</p>
+                        <textarea v-model="newBook.content" placeholder="核心笔记 (可粘贴图片)..." class="note-textarea" style="height: 100px;" @paste="handlePaste($event, 'newBook.content')"></textarea>
+                        <!-- 📸 上传组件 -->
+                        <div style="margin-bottom:10px;">
+                            <input type="file" ref="bookFileInput" @change="handleFileUpload($event, 'newBook.content')" style="display:none" accept="image/*">
+                            <button class="btn-sm btn-upload" @click="$refs.bookFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                         </div>
 
-                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;"></textarea>
+                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢 (可粘贴图片)..." class="note-textarea" style="height: 80px; background: #f0fdf4; border-color: #a3de83;" @paste="handlePaste($event, 'newBook.thoughts')"></textarea>
                         
                         <button class="btn" @click="saveBook">💾 保存笔记</button>
                     </div>
@@ -395,15 +393,16 @@
             <div class="card">
                  <h2>☯️ 易学命例 <button class="collapse-btn" @click="collapsed.cases = !collapsed.cases">{{ collapsed.cases ? '展开' : '收起' }}</button></h2>
                  <div v-show="!collapsed.cases">
-                     <button class="btn" style="margin-bottom: 20px;" @click="toggleCaseForm()">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
+                     <button class="btn" style="margin-bottom: 20px;" @click="showCaseForm = !showCaseForm">{{ showCaseForm ? '收起' : '✨ 记录新命例' }}</button>
                      
                      <div v-if="showCaseForm" style="background:#fffaf9; padding:15px; border-radius:10px; border:2px dashed #e0c9b8; margin-bottom:20px;">
                         <input v-model="newCase.title" placeholder="命主 / 概要..." class="note-input">
+                        <textarea v-model="newCase.content" placeholder="断语与复盘 (可粘贴排盘截图)..." class="note-textarea" @paste="handlePaste($event, 'newCase.content')"></textarea>
                         
-                        <!-- ✨ Vditor: 命例编辑器 -->
-                        <div style="margin-bottom: 15px;">
-                            <div id="caseVditor"></div>
-                            <p style="font-size: 0.8em; color: #888; margin-top: 5px;">* 断语复盘 (直接截图粘贴排盘)</p>
+                        <!-- 📸 上传组件 -->
+                         <div style="margin-bottom:10px;">
+                            <input type="file" ref="caseFileInput" @change="handleFileUpload($event, 'newCase.content')" style="display:none" accept="image/*">
+                            <button class="btn-sm btn-upload" @click="$refs.caseFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                         </div>
                         
                         <button class="btn-sm" @click="saveCase">保存</button>
@@ -472,11 +471,18 @@
                 
                 <div class="kb-content">
                     <!-- 1. 编辑模式 -->
-                    <div v-if="kbEditorMode" style="display:flex; flex-direction:column; height:100%;">
+                    <div v-if="kbEditorMode">
                         <input v-model="kbEditorData.title" placeholder="文档标题" class="note-input" style="font-size:1.2em; font-weight:bold;">
-                        <!-- KB 使用独立的 Vditor 实例 -->
-                        <div id="kbVditor" style="flex:1; margin-bottom:10px;"></div>
+                        <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 50vh; font-family: monospace;" 
+                            placeholder="# 标题 &#10;- 列表 &#10;**加粗** &#10;（支持直接粘贴图片）"
+                            @paste="handlePaste($event, 'kbEditorData.content')"></textarea>
                         
+                        <!-- 📸 上传组件 -->
+                        <div style="margin-bottom:10px;">
+                            <input type="file" ref="kbFileInput" @change="handleFileUpload($event, 'kbEditorData.content')" style="display:none" accept="image/*">
+                            <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
+                        </div>
+
                         <div style="display: flex; gap: 10px; justify-content: flex-end;">
                             <button class="btn" style="background:#ccc; width:auto;" @click="kbEditorMode = false">取消</button>
                             <button v-if="kbEditorData.id" class="btn btn-danger" style="width:auto;" @click="deleteKbDoc(kbEditorData.id)">删除</button>
@@ -565,13 +571,7 @@
                 kbEditorData: {},
                 showCaseForm: false, newCase: { title: '', content: '' }, viewingItem: null,
                 
-                chartInstance: null,
-                
-                // ✨ 所有板块的编辑器实例
-                reviewVditor: null,
-                kbVditor: null,
-                bookVditor: null,
-                caseVditor: null
+                chartInstance: null
             };
         },
         computed: {
@@ -611,6 +611,7 @@
                 try { return marked.parse(text); } catch(e) { return text; }
             },
 
+            // 🚀 智能压缩 (保留)
             async compressImage(file) {
                 if (file.type === 'image/gif') return file;
                 return new Promise((resolve) => {
@@ -636,113 +637,72 @@
                     };
                 });
             },
-            
-            // ✨ 统一的 Vditor 图片上传处理函数
-            async handleVditorUpload(files) {
-                const resultImages = [];
-                for(const file of files) {
-                    try {
-                        const processedFile = await this.compressImage(file);
-                        const fileName = `${this.userId}/${Date.now()}_${processedFile.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
-                        const { data, error } = await sb.storage.from('images').upload(fileName, processedFile);
-                        if(!error) {
-                             const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(fileName);
-                             resultImages.push(publicUrl);
+
+            // 📋 监听粘贴事件 (New)
+            async handlePaste(event, modelPath) {
+                // 检查剪贴板中是否有文件
+                const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+                for (let item of items) {
+                    if (item.kind === 'file' && item.type.startsWith('image/')) {
+                        event.preventDefault(); // 阻止默认粘贴（避免粘贴出二进制乱码）
+                        const file = item.getAsFile();
+                        // 复用上传逻辑，并传入当前触发事件的目标元素（Textarea）以便插入光标位置
+                        await this.performUpload(file, modelPath, event.target);
+                        return;
+                    }
+                }
+            },
+
+            // 🖱️ 按钮点击上传 (兼容旧版)
+            async handleFileUpload(event, modelPath) {
+                const file = event.target.files[0];
+                if (!file) return;
+                await this.performUpload(file, modelPath, null);
+                event.target.value = ''; // Reset
+            },
+
+            // ☁️ 核心上传逻辑 (统一处理)
+            async performUpload(file, modelPath, textareaEl) {
+                if (file.size > 10 * 1024 * 1024) return alert('图片不能超过 10MB');
+                this.uploading = true;
+                
+                try {
+                    const processedFile = await this.compressImage(file);
+                    const fileName = `${this.userId}/${Date.now()}_${processedFile.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
+                    const { data, error } = await sb.storage.from('images').upload(fileName, processedFile);
+                    if (error) throw error;
+                    
+                    const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(fileName);
+                    const markdownImg = `![image](${publicUrl})`;
+
+                    // 🎯 更新数据模型
+                    const keys = modelPath.split('.');
+                    if (keys.length === 2) {
+                        const originalText = this[keys[0]][keys[1]] || '';
+                        
+                        // 如果是从 Textarea 粘贴的，尝试插在光标处
+                        if (textareaEl) {
+                            const start = textareaEl.selectionStart;
+                            const end = textareaEl.selectionEnd;
+                            const newText = originalText.substring(0, start) + markdownImg + originalText.substring(end);
+                            this[keys[0]][keys[1]] = newText;
+                            
+                            // 恢复光标位置 (可选优化)
+                            this.$nextTick(() => {
+                                textareaEl.selectionStart = textareaEl.selectionEnd = start + markdownImg.length;
+                            });
+                        } else {
+                            // 如果是按钮上传，直接追加到末尾
+                            this[keys[0]][keys[1]] = originalText + '\n' + markdownImg + '\n';
                         }
-                    } catch(e) {
-                        console.error(e);
-                        this.showMessage('上传部分失败', 'error');
                     }
+                    this.showMessage('📸 图片已插入');
+                } catch (error) {
+                    console.error(error);
+                    this.showMessage('上传失败: ' + error.message, 'error');
+                } finally {
+                    this.uploading = false;
                 }
-                return resultImages; // 返回 URL 列表给 Vditor
-            },
-            
-            // 通用 Vditor 创建器
-            initVditorInstance(domId, placeholder, onInput, initValue = '') {
-                 setTimeout(() => {
-                    if(document.getElementById(domId)) {
-                        return new Vditor(domId, {
-                            minHeight: 200,
-                            value: initValue,
-                            placeholder: placeholder,
-                            toolbar: ['bold', 'italic', 'link', 'upload', 'list', 'check', 'outdent', 'indent'],
-                            mode: 'ir', // 即时渲染模式
-                            cache: { enable: false },
-                            upload: {
-                                accept: 'image/*',
-                                handler: async (files) => {
-                                    const urls = await this.handleVditorUpload(files);
-                                    
-                                    // ✨ 重要修正：直接返回 Markdown 文本，防止显示 JSON
-                                    let result = '';
-                                    for (let i = 0; i < urls.length; i++) {
-                                        result += `![image](${urls[i]})\n`;
-                                    }
-                                    return result; 
-                                }
-                            },
-                            input: onInput
-                        });
-                    }
-                 }, 100);
-                 return null;
-            },
-
-            // 各个模块的编辑器初始化逻辑
-            toggleReviewForm() {
-                this.showReviewForm = !this.showReviewForm;
-                // ✨ 修复点：只要面板打开，就加载编辑器（包含Stock模式）
-                if(this.showReviewForm) {
-                    this.reviewVditor = this.initVditorInstance('reviewVditor', '写下复盘分析，可粘贴K线图或截图...', (v) => this.newNote.content = v);
-                }
-            },
-            toggleBookForm() {
-                this.showBookForm = !this.showBookForm;
-                if(this.showBookForm) {
-                    this.bookVditor = this.initVditorInstance('bookVditor', '核心笔记 (支持粘贴截图)...', (v) => this.newBook.content = v);
-                }
-            },
-            toggleCaseForm() {
-                this.showCaseForm = !this.showCaseForm;
-                if(this.showCaseForm) {
-                    this.caseVditor = this.initVditorInstance('caseVditor', '断语与复盘 (支持粘贴截图)...', (v) => this.newCase.content = v);
-                }
-            },
-
-            // 知识库比较特殊，因为高度和Toolbar不一样
-            openKbEditor() { 
-                this.kbEditorMode=true; this.viewingKbDoc=null; 
-                this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id};
-                this.initKbVditor('');
-            },
-            editKbDoc(d) { 
-                this.kbEditorData={...d}; this.kbEditorMode=true; this.viewingKbDoc=null; 
-                this.initKbVditor(d.content);
-            },
-            initKbVditor(content) {
-                setTimeout(() => {
-                   if(document.getElementById('kbVditor')) {
-                       this.kbVditor = new Vditor('kbVditor', {
-                           height: '100%',
-                           value: content || '',
-                           toolbar: ['emoji', 'headings', 'bold', 'italic', 'strike', 'link', '|', 'list', 'ordered-list', 'check', 'outdent', 'indent', '|', 'quote', 'line', 'code', 'inline-code', 'insert-before', 'insert-after', '|', 'upload', 'table'],
-                           mode: 'ir',
-                           cache: { enable: false },
-                           upload: {
-                               accept: 'image/*',
-                               handler: async (files) => {
-                                   const urls = await this.handleVditorUpload(files);
-                                   let result = '';
-                                    for (let i = 0; i < urls.length; i++) {
-                                        result += `![image](${urls[i]})\n`;
-                                    }
-                                    return result; 
-                               }
-                           },
-                           input: (val) => { this.kbEditorData.content = val; }
-                       });
-                   }
-                }, 100);
             },
 
             async login() {
@@ -809,21 +769,12 @@
                 const h=(this.playerData.assetHistory||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
                 this.chartInstance=new Chart(ctx,{type:'line',data:{labels:h.map(x=>new Date(x.date).toLocaleDateString()),datasets:[{data:h.map(x=>x.value),borderColor:'#4ecdc4',backgroundColor:'rgba(78,205,196,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
             },
-            
-            saveNote() {
-                // 如果启用了 Vditor，从实例获取值 (确保所有 Tab 都有效)
-                if (this.reviewVditor) this.newNote.content = this.reviewVditor.getValue();
-
+            saveNote() { 
                 if(this.activeReviewTab==='stock'){
                     if(this.newStockData.totalAsset){ this.playerData.assetHistory.push({date:new Date().toISOString(),value:this.newStockData.totalAsset}); setTimeout(()=>this.loadChart(),100); }
                     if(this.newStockData.code) this.notes.unshift({id:Date.now(),type:'stock',createdAt:new Date().toISOString(),content:this.newNote.content,stockData:{...this.newStockData}});
                 } else if(this.newNote.title) { this.notes.unshift({id:Date.now(),type:this.activeReviewTab,createdAt:new Date().toISOString(),...this.newNote}); }
-                
-                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; this.newNote={title:'',content:''}; 
-                
-                if(this.reviewVditor) this.reviewVditor.setValue('');
-                this.showReviewForm=false; 
-                this.addXp(10); this.saveAll();
+                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; this.newNote={title:'',content:''}; this.showReviewForm=false; this.addXp(10); this.saveAll();
             },
             deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
 
@@ -831,35 +782,22 @@
             deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.saveAll(); } },
             addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
 
-            saveCase() {
-                if (this.caseVditor) this.newCase.content = this.caseVditor.getValue();
-
-                if(this.newCase.title){ 
-                    this.cases.unshift({id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase}); 
-                    this.newCase={title:'',content:''}; 
-                    if(this.caseVditor) this.caseVditor.setValue('');
-                    this.showCaseForm=false; 
-                    this.addXp(20); this.saveAll(); 
-                } 
-            },
+            saveCase() { if(this.newCase.title){ this.cases.unshift({id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase}); this.newCase={title:'',content:''}; this.showCaseForm=false; this.addXp(20); this.saveAll(); } },
             
             saveBook() { 
-                if (this.bookVditor) this.newBook.content = this.bookVditor.getValue();
-
                 if(this.newBook.title){ 
                     const tags = this.newBook.tags ? this.newBook.tags.split(/[,，]/).map(t=>t.trim()).filter(t=>t) : [];
                     this.books.unshift({id:Date.now(),...this.newBook, tags, createdAt:new Date().toISOString()}); 
                     this.newBook={title:'',author:'',rating:5,content:'',thoughts:'',tags:''}; 
-                    if(this.bookVditor) this.bookVditor.setValue('');
                     this.showBookForm=false; this.addXp(20); this.saveAll(); 
                 } 
             },
             deleteBook(id) { if(confirm('删除此书?')){ this.books=this.books.filter(b=>b.id!==id); this.viewingBook=null; this.saveAll(); } },
 
             selectKbCategory(c) { this.kbCurrentCategory = c; this.viewingKbDoc = null; this.kbEditorMode = false; },
-            saveKbDoc() {
-                if (this.kbVditor) this.kbEditorData.content = this.kbVditor.getValue();
-
+            openKbEditor() { this.kbEditorMode=true; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
+            editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.viewingKbDoc=null; },
+            saveKbDoc() { 
                 const now=new Date().toISOString(); 
                 if(this.kbEditorData.id){ 
                     const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); 
@@ -873,7 +811,14 @@
                 }
                 this.kbEditorMode=false; this.saveAll(); 
             },
-            deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>d.id!==id); this.kbEditorMode=false; this.viewingKbDoc=null; this.saveAll(); } },
+            deleteKbDoc(id) { 
+                if(confirm('删除?')){ 
+                    this.kbDocs=this.kbDocs.filter(d=>d.id!==id); 
+                    this.kbEditorMode=false; 
+                    this.viewingKbDoc=null; 
+                    this.saveAll(); 
+                } 
+            },
             addKbCategory() { const n=prompt('新分类名'); if(n){ this.kbCategories.push({id:Date.now(),name:n}); this.saveAll(); } },
             deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case')this.cases=this.cases.filter(c=>c.id!==item.id); this.viewingItem=null; this.saveAll(); }
         },
