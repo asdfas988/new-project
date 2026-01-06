@@ -85,6 +85,40 @@
             font-size: 15px; margin-bottom: 10px; background: #fffaf9; font-family: inherit;
         }
         .note-textarea { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 1px dashed #e0c9b8; }
+        /* ... 之前的 CSS ... */
+
+        /* ========== 新增：目标模式切换按钮样式 ========== */
+        .goal-mode-switch { 
+            display: flex; 
+            background: #eee; 
+            border-radius: 8px; 
+            padding: 4px; 
+            margin-bottom: 10px; 
+            width: fit-content; 
+        }
+        .mode-btn { 
+            padding: 5px 15px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            font-size: 0.9em; 
+            color: #666; 
+            transition: all 0.2s; 
+            user-select: none;
+        }
+        .mode-btn:hover { background: rgba(255,255,255,0.5); }
+        .mode-btn.active { 
+            background: white; 
+            color: #ff9a8b; 
+            font-weight: bold; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        
+        /* 优化滑动条样式 */
+        input[type=range] {
+            accent-color: #ff9a8b;
+            cursor: pointer;
+        }
+
         
         /* 实时预览区域 (新增) */
         .live-preview {
@@ -247,41 +281,66 @@
             </div>
 
             <!-- 目标管理 -->
+            <!-- 目标管理 -->
             <div class="card">
                 <h2>🎯 阶段目标 <button class="collapse-btn" @click="collapsed.goals = !collapsed.goals">{{ collapsed.goals ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.goals">
                     <div style="background: #fffaf5; padding: 15px; border: 2px dashed #e0c9b8; border-radius: 12px; margin-bottom: 20px;">
+                        <!-- 1. 模式切换开关 -->
                         <div class="goal-mode-switch">
-                            <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值</div>
-                            <div class="mode-btn" :class="{active: newGoal.mode === 'text'}" @click="newGoal.mode = 'text'">🚩 关键成果</div>
+                            <div class="mode-btn" :class="{active: newGoal.mode === 'numeric'}" @click="newGoal.mode = 'numeric'">🔢 数值量化</div>
+                            <div class="mode-btn" :class="{active: newGoal.mode === 'slider'}" @click="newGoal.mode = 'slider'">🎚️ 进度滑块</div>
                         </div>
+
+                        <!-- 2. 输入区域 -->
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <input v-model="newGoal.title" placeholder="目标内容..." class="note-input" style="flex: 2; margin: 0;">
+                            <input v-model="newGoal.title" placeholder="目标内容 (例: 阅读书籍 / 保持心态)..." class="note-input" style="flex: 2; margin: 0;">
+                            
+                            <!-- 仅在数值模式下显示 目标值 和 单位 -->
                             <template v-if="newGoal.mode === 'numeric'">
-                                <input v-model.number="newGoal.target" type="number" placeholder="目标" class="note-input" style="flex: 1; margin: 0;">
-                                <input v-model="newGoal.unit" placeholder="单位" class="note-input" style="flex: 1; margin: 0;">
+                                <input v-model.number="newGoal.target" type="number" placeholder="目标值" class="note-input" style="flex: 1; margin: 0; min-width: 80px;">
+                                <input v-model="newGoal.unit" placeholder="单位 (页/个)" class="note-input" style="flex: 1; margin: 0; min-width: 60px;">
                             </template>
+                            
                             <button class="btn-sm" @click="addGoal" style="height: 42px; width: 80px;">添加</button>
                         </div>
+                        <div v-if="newGoal.mode === 'slider'" style="font-size: 0.8em; color: #888; margin-top: 5px;">
+                            * 进度滑块模式下，目标默认为 0% - 100% 的主观进度。
+                        </div>
                     </div>
+
+                    <!-- 3. 目标列表 -->
                     <div class="goal-list">
                         <div v-for="(goal, index) in playerData.goals || []" :key="index" class="goal-item" :class="{completed: calculateProgress(goal) >= 100}">
+                            <!-- 标题与百分比 -->
                             <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;">
                                 <span :style="{textDecoration: calculateProgress(goal) >= 100 ? 'line-through' : 'none'}">{{ goal.title }}</span>
                                 <span :style="{color: getProgressColor(calculateProgress(goal))}">{{ calculateProgress(goal) }}%</span>
                             </div>
+                            
+                            <!-- 进度条视觉展示 -->
                             <div class="goal-progress-bg">
                                 <div class="goal-progress-fill" :class="getProgressClass(calculateProgress(goal))" :style="{width: Math.min(100, calculateProgress(goal)) + '%'}"></div>
                             </div>
-                            <div style="margin-top:10px; display:flex; align-items:center; gap:5px;">
+
+                            <!-- 操作区域 -->
+                            <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
+                                <!-- A. 数值模式控件 -->
                                 <template v-if="goal.mode === 'numeric'">
-                                    <input type="number" v-model.number="goal.current" class="goal-input-small" @change="saveAll">
-                                    <span style="font-size:0.8em"> / {{ goal.target }} {{ goal.unit }}</span>
+                                    <div style="display:flex; align-items:center; background: white; padding: 2px 8px; border-radius: 8px; border: 1px solid #ddd;">
+                                        <input type="number" v-model.number="goal.current" style="border:none; width: 60px; font-weight:bold; text-align:right; outline:none;" @change="saveAll">
+                                        <span style="font-size:0.8em; color:#666; margin-left: 5px;"> / {{ goal.target }} {{ goal.unit }}</span>
+                                    </div>
                                 </template>
+
+                                <!-- B. 滑动条模式控件 -->
                                 <template v-else>
-                                    <input type="range" v-model.number="goal.current" min="0" max="100" style="flex:1" @change="saveAll">
+                                    <span style="font-size:0.8em; color:#666;">0%</span>
+                                    <input type="range" v-model.number="goal.current" min="0" max="100" step="1" style="flex:1;" @change="saveAll">
+                                    <span style="font-size:0.8em; color:#666;">100%</span>
                                 </template>
-                                <button class="btn-sm btn-danger" @click="deleteGoal(index)">✕</button>
+
+                                <button class="btn-sm btn-danger" @click="deleteGoal(index)" style="padding: 4px 10px;">✕</button>
                             </div>
                         </div>
                     </div>
@@ -843,7 +902,27 @@
             },
             deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.saveAll(); } },
 
-            addGoal() { if(this.newGoal.title){ this.playerData.goals.push({title:this.newGoal.title,mode:this.newGoal.mode,current:0,unit:this.newGoal.unit||'',target:this.newGoal.target||100}); this.newGoal={title:'',target:null,current:0,unit:'',mode:'numeric'}; this.saveAll(); } },
+            addGoal() { 
+                if (this.newGoal.title) {
+                    // 如果是滑块模式，目标固定为 100，单位为空
+                    const isSlider = this.newGoal.mode === 'slider';
+                    const target = isSlider ? 100 : (this.newGoal.target || 100);
+                    const unit = isSlider ? '' : (this.newGoal.unit || '');
+
+                    this.playerData.goals.push({
+                        title: this.newGoal.title,
+                        mode: this.newGoal.mode,
+                        current: 0,
+                        unit: unit,
+                        target: target
+                    });
+                    
+                    // 重置输入框，保留当前选中的模式
+                    const currentMode = this.newGoal.mode;
+                    this.newGoal = { title: '', target: null, current: 0, unit: '', mode: currentMode };
+                    this.saveAll(); 
+                } 
+            },
             deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.saveAll(); } },
             addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
 
@@ -896,3 +975,4 @@
 </script>
 </body>
 </html>
+
