@@ -773,12 +773,16 @@
             addShopItem() { this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem }); this.newShopItem={name:'',cost:50,icon:'✨'}; this.savePlayerData(); },
             deleteShopItem(id) { this.playerData.shopItems=this.playerData.shopItems.filter(i=>i.id!==id); this.savePlayerData(); },
             buyItem(item) { 
-                if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ 
-                    this.playerData.xp-=item.cost; 
-                    const note = {id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name};
-                    this.notes.unshift(note); 
-                    this.saveOne('notes', note).catch(console.error);
+                // 检查经验值是否足够
+                if(this.playerData.xp >= item.cost && confirm(`确定消耗 ${item.cost} XP 兑换 ${item.name} 吗?`)){ 
+                    // 1. 扣除经验
+                    this.playerData.xp -= item.cost; 
+                    
+                    // 2. 保存玩家数据
                     this.savePlayerData(); 
+                    
+                    // 3. 提示成功 (不再生成笔记)
+                    this.showMessage(`🎁 成功兑换: ${item.name}`);
                 } 
             },
 
@@ -959,6 +963,7 @@
 </script>
 </body>
 </html>
+
 
 
 
