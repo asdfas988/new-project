@@ -32,6 +32,8 @@
             padding: 20px;
         }
         .container { max-width: 1200px; margin: 0 auto; }
+        <!-- 临时按钮：点一下就会删除最后一条资产记录 -->
+<button class="btn-sm btn-danger" @click="playerData.assetHistory.pop(); savePlayerData(); loadChart();">🗑️ 修复图表</button>
 
         /* 禁止选中 */
         h1, h2, h3, h4, .level-display, .review-tab, .kb-nav-item, .toggle-btn, .preview-label {
@@ -923,4 +925,5 @@
 </script>
 </body>
 </html>
+
 
