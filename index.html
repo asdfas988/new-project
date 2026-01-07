@@ -843,7 +843,19 @@
                 } 
             },
             deleteGoal(i) { if(confirm('删?')){ this.playerData.goals.splice(i,1); this.savePlayerData(); } },
-            addXp(v) { this.playerData.xp+=v; if(this.playerData.xp>=this.playerData.nextLevelXp){this.playerData.xp-=this.playerData.nextLevelXp;this.playerData.level++;} },
+            addXp(v) { 
+                this.playerData.xp += v; 
+                // 检查是否达到升级标准
+                if(this.playerData.xp >= this.playerData.nextLevelXp){
+                    // 扣除当前等级所需经验
+                    this.playerData.xp -= this.playerData.nextLevelXp;
+                    // 等级 +1
+                    this.playerData.level++;
+                    // 📈 核心修改：下一级所需经验增加 50 点
+                    // 比如：1级升2级要100，2级升3级就要150，3级升4级要200...
+                    this.playerData.nextLevelXp += 50;
+                } 
+            },
 
             saveCase() { 
                 if(this.newCase.title){ 
@@ -911,3 +923,4 @@
 </script>
 </body>
 </html>
+
