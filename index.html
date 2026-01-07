@@ -339,8 +339,15 @@
                         <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'; reviewPage = 1">📅 周复盘</div>
                         <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                     </div>
-                    <!-- 临时按钮：点一下就会删除最后一条资产记录 -->
-<button class="btn-sm btn-danger" @click="playerData.assetHistory.pop(); savePlayerData(); loadChart();">🗑️ 修复图表</button>
+                    <!-- 救命按钮：从笔记列表中重新生成图表数据 -->
+<button class="btn-sm" style="background: #4ecdc4; margin-left: 10px;" @click="
+    playerData.assetHistory = notes
+        .filter(n => n.type === 'stock' && n.stockData && n.stockData.totalAsset)
+        .map(n => ({ date: n.createdAt, value: n.stockData.totalAsset }));
+    savePlayerData();
+    loadChart();
+    alert('成功恢复 ' + playerData.assetHistory.length + ' 条数据！');
+">🔄 一键恢复图表</button>
                     <div v-show="activeReviewTab === 'stock'" class="chart-container"><canvas id="assetChart"></canvas></div>
                     <div v-if="showReviewForm" style="background:#fffaf5;padding:20px;border:2px dashed #ff9a8b;border-radius:15px;margin-bottom:20px;">
                         <div v-if="activeReviewTab === 'stock'">
@@ -925,6 +932,7 @@
 </script>
 </body>
 </html>
+
 
 
 
