@@ -45,6 +45,26 @@
             cursor: pointer;
         }
 
+        /* ========== 新增：积分商店按钮样式 ========== */
+        .shop-btn-group {
+            display: flex;
+            justify-content: center; /* 左右居中对齐 */
+            align-items: center;
+            gap: 15px;               /* 两个按钮之间的间距 */
+            margin-top: 15px;
+        }
+
+        .shop-btn-big {
+            padding: 8px 24px !important; /* 增加内边距，让按钮变大 */
+            font-size: 1em !important;    /* 增大字体 */
+            width: auto !important;       /* 覆盖原来的宽度限制 */
+            min-width: 80px;              /* 确保按钮有最小宽度，看起来更协调 */
+            height: 40px;                 /* 固定高度，确保两个按钮一样高 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         /* 头部 */
         .header {
             text-align: center; margin-bottom: 30px; padding: 30px;
@@ -411,7 +431,12 @@
                     <div class="shop-grid">
                         <div v-for="item in playerData.shopItems || []" :key="item.id" class="shop-card">
                             <div><span style="font-size:2em">{{ item.icon }}</span><h3>{{ item.name }}</h3><div style="color:#ff9a8b;font-weight:bold">{{ item.cost }} XP</div></div>
-                            <div style="display:flex;gap:5px; margin-top:10px;"><button class="btn-buy" :disabled="playerData.xp < item.cost" @click="buyItem(item)">兑换</button><button class="btn-sm btn-danger" style="width:30px;padding:0" @click="deleteShopItem(item.id)">✕</button></div>
+                           <!-- 修改后的按钮组 -->
+                            <div class="shop-btn-group">
+                                <button class="btn-sm shop-btn-big" :disabled="playerData.xp < item.cost" @click="buyItem(item)">兑换</button>
+                                <!-- 为了对称美观，建议把 '✕' 改为 '删除'，或者保持 '✕' 但按钮变宽 -->
+                                <button class="btn-sm btn-danger shop-btn-big" @click="deleteShopItem(item.id)">删除</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1172,4 +1197,5 @@
 </script>
 </body>
 </html>
+
 
