@@ -339,15 +339,6 @@
                         <div class="review-tab" :class="{active: activeReviewTab === 'weekly'}" @click="activeReviewTab = 'weekly'; reviewPage = 1">📅 周复盘</div>
                         <div class="review-tab special" @click="showReviewForm = !showReviewForm">{{ showReviewForm ? '✖️ 取消' : '➕ 新建' }}</div>
                     </div>
-                    <!-- 救命按钮：从笔记列表中重新生成图表数据 -->
-<button class="btn-sm" style="background: #4ecdc4; margin-left: 10px;" @click="
-    playerData.assetHistory = notes
-        .filter(n => n.type === 'stock' && n.stockData && n.stockData.totalAsset)
-        .map(n => ({ date: n.createdAt, value: n.stockData.totalAsset }));
-    savePlayerData();
-    loadChart();
-    alert('成功恢复 ' + playerData.assetHistory.length + ' 条数据！');
-">🔄 一键恢复图表</button>
                     <div v-show="activeReviewTab === 'stock'" class="chart-container"><canvas id="assetChart"></canvas></div>
                     <div v-if="showReviewForm" style="background:#fffaf5;padding:20px;border:2px dashed #ff9a8b;border-radius:15px;margin-bottom:20px;">
                         <div v-if="activeReviewTab === 'stock'">
@@ -841,7 +832,26 @@
                     this.reviewPage = 1;
                 }
             },
-            deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.deleteOne('notes', id); } },
+            deleteNote(id){ 
+                if(!confirm('确定删除这条记录吗？')) return;
+                
+                // 1. 查找要删除的笔记
+                const noteToDelete = this.notes.find(n => n.id === id);
+                
+                // 2. 如果是股票笔记，尝试删除关联的图表数据
+                if (noteToDelete && noteToDelete.type === 'stock' && noteToDelete.createdAt) {
+                    const idx = this.playerData.assetHistory.findIndex(h => h.date === noteToDelete.createdAt);
+                    if (idx !== -1) {
+                        this.playerData.assetHistory.splice(idx, 1);
+                        this.loadChart(); // 刷新图表
+                        this.savePlayerData(); // 保存更改
+                    }
+                }
+
+                // 3. 删除笔记本身
+                this.notes = this.notes.filter(n => n.id !== id); 
+                this.deleteOne('notes', id);
+            },
 
             addGoal() { 
                 if (this.newGoal.title) {
@@ -932,6 +942,7 @@
 </script>
 </body>
 </html>
+
 
 
 
