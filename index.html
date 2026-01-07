@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人空间 - 旗舰版 (优化版)</title>
+    <title>个人空间 - 终极版</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -33,7 +33,7 @@
         }
         .container { max-width: 1200px; margin: 0 auto; }
 
-        /* 禁止标题和界面元素被选中 */
+        /* 禁止选中 */
         h1, h2, h3, h4, .level-display, .review-tab, .kb-nav-item, .toggle-btn, .preview-label {
             user-select: none; -webkit-user-select: none; cursor: default;
         }
@@ -41,21 +41,23 @@
             cursor: pointer;
         }
 
-        /* 积分商店按钮样式 */
-        .shop-btn-group { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px; }
-        .shop-btn-big {
-            padding: 8px 24px !important; font-size: 1em !important; width: auto !important; min-width: 80px; height: 40px; display: flex; justify-content: center; align-items: center; transition: transform 0.1s;
-        }
-        .shop-btn-big:active { transform: translateY(2px); }
-
-        /* 头部 */
+        /* ⚡ 优化：吸顶导航栏样式 */
         .header {
-            text-align: center; margin-bottom: 30px; padding: 30px;
-            background: #fffaf0; border-radius: 24px;
+            text-align: center; margin-bottom: 30px; padding: 20px 30px;
+            border-radius: 20px;
             box-shadow: 8px 8px 0px #e0c9b8; border: 3px solid #5a4a42;
             display: flex; flex-direction: column; align-items: center;
+            /* 吸顶核心代码 */
+            position: sticky; top: 10px; z-index: 100;
+            background: rgba(255, 250, 240, 0.95); /* 微透明背景 */
+            backdrop-filter: blur(8px); /* 毛玻璃特效 */
         }
         .header h1 { font-size: 2.2em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; margin-bottom: 10px; }
+
+        /* 商店按钮 */
+        .shop-btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .shop-btn-big { padding: 8px 24px !important; font-size: 1em !important; width: auto !important; min-width: 80px; height: 40px; display: flex; justify-content: center; align-items: center; }
+        .shop-btn-big:active { transform: translateY(2px); }
 
         .grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-bottom: 40px; }
         
@@ -70,7 +72,6 @@
             font-size: 1.4em; font-weight: 700; display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* 按钮 */
         .btn {
             background: linear-gradient(90deg, #ff9a8b, #ff6b6b); border: none; padding: 12px 30px;
             border-radius: 50px; color: white; cursor: pointer; font-size: 16px; font-weight: 700;
@@ -82,47 +83,26 @@
             background: linear-gradient(90deg, #4ecdc4, #a3de83);
             box-shadow: 3px 3px 0px #2ba69b; border: none; color: white; font-weight: bold; cursor: pointer;
         }
-        .btn-upload {
-            background: #eee; color: #555; box-shadow: none; border: 1px solid #ccc; display: inline-flex; align-items: center; gap: 5px; transition: background 0.3s;
-        }
+        .btn-upload { background: #eee; color: #555; box-shadow: none; border: 1px solid #ccc; display: inline-flex; align-items: center; gap: 5px; transition: background 0.3s; }
         .btn-upload:hover { background: #e0e0e0; }
         .btn-danger { background: #ff6b6b; box-shadow: 3px 3px 0px #c0392b; }
-        .collapse-btn {
-            background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b;
-            padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; cursor: pointer;
-        }
+        .collapse-btn { background: #fffaf5; border: 2px solid #ff9a8b; color: #ff6b6b; padding: 4px 12px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
 
-        /* 输入框 & 自动高度优化 */
         .note-input, .note-textarea {
             width: 100%; padding: 12px; border: 2px solid #e0c9b8; border-radius: 12px;
             font-size: 15px; margin-bottom: 10px; background: #fffaf9; font-family: inherit;
         }
-        .note-textarea { 
-            margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; 
-            border-bottom: 1px dashed #e0c9b8; 
-            resize: none; /* 禁用手动调整，改为自动脚本调整 */
-            overflow-y: hidden; /* 隐藏滚动条 */
-            min-height: 80px;
-        }
+        .note-textarea { margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: 1px dashed #e0c9b8; resize: none; overflow-y: hidden; min-height: 80px; }
         
-        /* 实时预览区域 */
-        .live-preview {
-            width: 100%; min-height: 60px; max-height: 300px; overflow-y: auto;
-            background: #fff; border: 2px solid #e0c9b8; border-top: none;
-            border-radius: 0 0 12px 12px; padding: 15px; margin-bottom: 10px;
-        }
-        .preview-label {
-            font-size: 0.75em; color: #999; font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .live-preview { width: 100%; min-height: 60px; max-height: 300px; overflow-y: auto; background: #fff; border: 2px solid #e0c9b8; border-top: none; border-radius: 0 0 12px 12px; padding: 15px; margin-bottom: 10px; }
+        .preview-label { font-size: 0.75em; color: #999; font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px; }
 
         .goal-mode-switch { display: flex; background: #eee; border-radius: 8px; padding: 4px; margin-bottom: 10px; width: fit-content; }
         .mode-btn { padding: 5px 15px; cursor: pointer; border-radius: 6px; font-size: 0.9em; color: #666; transition: all 0.2s; user-select: none; }
         .mode-btn:hover { background: rgba(255,255,255,0.5); }
         .mode-btn.active { background: white; color: #ff9a8b; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
         input[type=range] { accent-color: #ff9a8b; cursor: pointer; }
 
-        /* 分页控件 */
         .pagination-controls { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e0c9b8; }
         .page-info { font-size: 0.9em; font-weight: bold; color: #7a6a62; }
         .btn-page { background: #fff; border: 2px solid #e0c9b8; border-radius: 8px; padding: 5px 12px; cursor: pointer; color: #5a4a42; font-weight: bold; transition: all 0.2s; }
@@ -131,7 +111,6 @@
 
         .search-bar { padding: 12px 15px; border: 2px solid #5a4a42; border-radius: 50px; width: 100%; margin-bottom: 20px; background: white; font-weight: bold; }
 
-        /* Markdown */
         .markdown-content { line-height: 1.8; color: #444; overflow-wrap: break-word; }
         .markdown-content h1, .markdown-content h2 { border-bottom: 1px dashed #e0c9b8; padding-bottom: 5px; margin-top: 10px; }
         .markdown-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; border: 1px solid #eee; display: block; }
@@ -139,7 +118,6 @@
         .markdown-content pre { background: #333; color: white; padding: 10px; border-radius: 8px; overflow-x: auto; }
         .markdown-content pre code { font-family: monospace; }
         .markdown-content a { color: #ff9a8b; text-decoration: none; border-bottom: 1px dotted #ff9a8b; }
-        .markdown-content a:hover { color: #ff6b6b; border-bottom-style: solid; }
 
         .quest-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
         .quest-item { background: #fffaf5; border: 2px solid #e0c9b8; border-radius: 15px; padding: 15px; display: flex; align-items: center; cursor: pointer; }
@@ -182,7 +160,6 @@
         .toggle-btn { padding: 5px 15px; border: none; background: transparent; cursor: pointer; border-radius: 6px; font-weight: bold; color: #5a4a42; }
         .toggle-btn.active { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* 弹窗动画 */
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
 
@@ -191,7 +168,6 @@
             background: rgba(90, 74, 66, 0.6); backdrop-filter: blur(3px); 
             z-index: 999; display: flex; justify-content: center; align-items: center; 
         }
-
         .detail-modal { background: #fffefc; width: 90%; max-width: 700px; max-height: 85vh; border-radius: 20px; border: 3px solid #5a4a42; padding: 30px; overflow-y: auto; position: relative; box-shadow: 10px 10px 0px rgba(0,0,0,0.2); }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer; color: #999; z-index: 10; }
         .detail-section { margin-top: 20px; background: #fffaf5; padding: 15px; border-radius: 10px; border: 1px dashed #e0c9b8; }
@@ -376,25 +352,21 @@
                         </div>
                         <input v-if="activeReviewTab !== 'stock'" v-model="newNote.title" placeholder="标题..." class="note-input">
                         
-                        <!-- 优化：自动高度 & 粘贴支持 -->
+                        <!-- ⚡ 优化：Ctrl+Enter 和 自动高度 -->
                         <textarea v-model="newNote.content" class="note-textarea" 
-                            placeholder="支持 Markdown，Ctrl+V 粘贴截图..."
+                            placeholder="支持 Markdown (Ctrl+Enter 提交)..."
                             @input="autoResize"
+                            @keydown.ctrl.enter.prevent="saveNote"
                             @paste="handlePaste($event, 'newNote.content')"></textarea>
                         
-                        <div v-if="newNote.content" class="live-preview">
-                            <span class="preview-label">👁️ 实时预览</span>
-                            <div class="markdown-content" v-html="renderMarkdown(newNote.content)"></div>
-                        </div>
+                        <div v-if="newNote.content" class="live-preview"><span class="preview-label">👁️ 实时预览</span><div class="markdown-content" v-html="renderMarkdown(newNote.content)"></div></div>
                         
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="reviewFileInput" @change="handleFileUpload($event, 'newNote.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.reviewFileInput.click()">
-                                {{ uploading ? '⏳ 上传中...' : '📸 插入图片' }}
-                            </button>
+                            <button class="btn-sm btn-upload" @click="$refs.reviewFileInput.click()" :disabled="uploading">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                         </div>
 
-                        <button class="btn" @click="saveNote">💾 保存</button>
+                        <button class="btn" @click="saveNote" :disabled="uploading">💾 保存</button>
                     </div>
 
                     <div v-for="note in paginatedNotes" :key="note.id" class="note-card" @click="viewingNote = note">
@@ -421,12 +393,10 @@
                 </div>
             </div>
 
-            <!-- 复盘详情弹窗 -->
             <transition name="fade">
             <div v-if="viewingNote" class="modal-overlay" @click.self="viewingNote = null">
                 <div class="detail-modal">
                     <span class="close-modal" @click="viewingNote = null">&times;</span>
-                    
                     <div style="padding-bottom:15px; border-bottom:2px solid #5a4a42; margin-bottom:20px;">
                         <div style="font-size:0.9em; color:#999;">{{ formatDate(viewingNote.createdAt) }}</div>
                         <div v-if="viewingNote.type === 'stock'" style="margin-top:10px; font-size:1.1em;">
@@ -438,9 +408,7 @@
                         </div>
                         <h2 v-if="viewingNote.title" style="margin-top:10px; border:none;">{{ viewingNote.title }}</h2>
                     </div>
-
                     <div class="markdown-content" v-html="renderMarkdown(viewingNote.content)"></div>
-                    
                     <button class="btn-sm btn-danger" @click="deleteNote(viewingNote.id); viewingNote = null;" style="margin-top: 30px; float: right;">删除此记录</button>
                 </div>
             </div>
@@ -451,7 +419,6 @@
                 <h2>📚 读书笔记 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.books">
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <!-- 优化：搜索输入框绑定新的变量，并触发防抖 -->
                         <input v-model="bookSearchInput" @input="onSearchInput" class="search-bar" placeholder="🔍 搜索书名、作者..." style="margin-bottom: 0;">
                         <button class="btn" style="width: auto; white-space: nowrap;" @click="showBookForm = !showBookForm">{{ showBookForm ? '收起' : '📖' }}</button>
                     </div>
@@ -466,17 +433,17 @@
                             <span v-for="n in 5" :key="n" class="star" :class="{active: n <= newBook.rating}" @click="newBook.rating = n">★</span>
                         </div>
                         
-                        <textarea v-model="newBook.content" placeholder="核心笔记..." class="note-textarea" @input="autoResize" @paste="handlePaste($event, 'newBook.content')"></textarea>
+                        <textarea v-model="newBook.content" placeholder="核心笔记 (Ctrl+Enter 提交)..." class="note-textarea" @input="autoResize" @keydown.ctrl.enter.prevent="saveBook" @paste="handlePaste($event, 'newBook.content')"></textarea>
                         <div v-if="newBook.content" class="live-preview"><span class="preview-label">👁️ 笔记预览</span><div class="markdown-content" v-html="renderMarkdown(newBook.content)"></div></div>
 
                         <div style="margin-bottom:10px;">
                             <input type="file" ref="bookFileInput" @change="handleFileUpload($event, 'newBook.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.bookFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
+                            <button class="btn-sm btn-upload" @click="$refs.bookFileInput.click()" :disabled="uploading">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                         </div>
 
-                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢..." class="note-textarea" style="background: #f0fdf4; border-color: #a3de83;" @input="autoResize" @paste="handlePaste($event, 'newBook.thoughts')"></textarea>
+                        <textarea v-model="newBook.thoughts" placeholder="感悟与致谢 (Ctrl+Enter 提交)..." class="note-textarea" style="background: #f0fdf4; border-color: #a3de83;" @input="autoResize" @keydown.ctrl.enter.prevent="saveBook" @paste="handlePaste($event, 'newBook.thoughts')"></textarea>
                         
-                        <button class="btn" @click="saveBook">💾 保存笔记</button>
+                        <button class="btn" @click="saveBook" :disabled="uploading">💾 保存笔记</button>
                     </div>
 
                     <div class="book-list">
@@ -511,15 +478,14 @@
                      
                      <div v-if="showCaseForm" style="background:#fffaf9; padding:15px; border-radius:10px; border:2px dashed #e0c9b8; margin-bottom:20px;">
                         <input v-model="newCase.title" placeholder="命主 / 概要..." class="note-input">
-                        <textarea v-model="newCase.content" placeholder="断语与复盘 (可粘贴排盘截图)..." class="note-textarea" @input="autoResize" @paste="handlePaste($event, 'newCase.content')"></textarea>
+                        <textarea v-model="newCase.content" placeholder="断语与复盘 (Ctrl+Enter 提交)..." class="note-textarea" @input="autoResize" @keydown.ctrl.enter.prevent="saveCase" @paste="handlePaste($event, 'newCase.content')"></textarea>
                         <div v-if="newCase.content" class="live-preview"><span class="preview-label">👁️ 实时预览</span><div class="markdown-content" v-html="renderMarkdown(newCase.content)"></div></div>
 
                          <div style="margin-bottom:10px;">
                             <input type="file" ref="caseFileInput" @change="handleFileUpload($event, 'newCase.content')" style="display:none" accept="image/*">
-                            <button class="btn-sm btn-upload" @click="$refs.caseFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
+                            <button class="btn-sm btn-upload" @click="$refs.caseFileInput.click()" :disabled="uploading">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                         </div>
-                        
-                        <button class="btn-sm" @click="saveCase">保存</button>
+                        <button class="btn-sm" @click="saveCase" :disabled="uploading">保存</button>
                      </div>
 
                      <div class="case-grid">
@@ -533,7 +499,6 @@
         </div>
     </div>
 
-    <!-- 📚 书籍详情弹窗 -->
     <transition name="fade">
     <div v-if="viewingBook" class="modal-overlay" @click.self="viewingBook = null">
         <div class="detail-modal">
@@ -548,23 +513,13 @@
                     <span v-for="tag in viewingBook.tags" :key="tag" class="tag-pill">#{{ tag }}</span>
                 </div>
             </div>
-
-            <div class="detail-section">
-                <h4>📝 核心笔记</h4>
-                <div class="markdown-content" v-html="renderMarkdown(viewingBook.content || '暂无笔记')"></div>
-            </div>
-
-            <div v-if="viewingBook.thoughts" class="detail-section" style="background: #f0fdf4; border-color: #a3de83;">
-                <h4 style="color: #2e7d32; border-color: #2e7d32;">🙏 感悟与致谢</h4>
-                <div class="markdown-content" style="color: #1b5e20;" v-html="renderMarkdown(viewingBook.thoughts)"></div>
-            </div>
-
+            <div class="detail-section"><h4>📝 核心笔记</h4><div class="markdown-content" v-html="renderMarkdown(viewingBook.content || '暂无笔记')"></div></div>
+            <div v-if="viewingBook.thoughts" class="detail-section" style="background: #f0fdf4; border-color: #a3de83;"><h4 style="color: #2e7d32; border-color: #2e7d32;">🙏 感悟与致谢</h4><div class="markdown-content" style="color: #1b5e20;" v-html="renderMarkdown(viewingBook.thoughts)"></div></div>
             <button class="btn-sm btn-danger" @click="deleteBook(viewingBook.id)" style="margin-top: 30px; float: right;">删除此记录</button>
         </div>
     </div>
     </transition>
 
-    <!-- 📂 知识库弹窗 -->
     <transition name="fade">
     <div v-if="showKnowledgeBase" class="modal-overlay" @click.self="showKnowledgeBase = false">
         <div class="kb-window">
@@ -579,13 +534,11 @@
                     </div>
                 </div>
             </div>
-            
             <div class="kb-main">
                 <div class="kb-toolbar">
                     <span style="font-weight:bold; color:#5a4a42; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ kbCurrentCategory === 'all' ? '全部文档' : kbCurrentCategory.name }}</span>
                     <button class="btn-sm" @click="openKbEditor()">+ 新建</button>
                 </div>
-                
                 <div class="kb-content">
                     <div v-if="kbEditorMode">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -595,28 +548,22 @@
                                 <button class="toggle-btn" :class="{active: kbPreviewMode}" @click="kbPreviewMode = true">👁️ 预览</button>
                             </div>
                         </div>
-
                         <div style="margin-top: 15px;">
                             <div v-show="!kbPreviewMode">
-                                <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 50vh; font-family: monospace; border-bottom: 2px solid #e0c9b8; border-radius: 12px;" 
-                                    placeholder="# 标题 &#10;- 列表 &#10;**加粗** &#10;（支持直接粘贴图片）"
-                                    @paste="handlePaste($event, 'kbEditorData.content')"></textarea>
+                                <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 50vh; font-family: monospace; border-bottom: 2px solid #e0c9b8; border-radius: 12px;" placeholder="# 标题 &#10;- 列表 &#10;**加粗** &#10;（支持直接粘贴图片）" @paste="handlePaste($event, 'kbEditorData.content')"></textarea>
                                 <div style="margin-top:10px;">
                                     <input type="file" ref="kbFileInput" @change="handleFileUpload($event, 'kbEditorData.content')" style="display:none" accept="image/*">
-                                    <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
+                                    <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()" :disabled="uploading">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
                                 </div>
                             </div>
-                            <div v-show="kbPreviewMode" class="markdown-content" style="height: 50vh; overflow-y: auto; background: white; border: 2px solid #e0c9b8; border-radius: 12px; padding: 20px;" v-html="renderMarkdown(kbEditorData.content || '暂无内容')">
-                            </div>
+                            <div v-show="kbPreviewMode" class="markdown-content" style="height: 50vh; overflow-y: auto; background: white; border: 2px solid #e0c9b8; border-radius: 12px; padding: 20px;" v-html="renderMarkdown(kbEditorData.content || '暂无内容')"></div>
                         </div>
-
                         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
                             <button class="btn" style="background:#ccc; width:auto;" @click="kbEditorMode = false">取消</button>
                             <button v-if="kbEditorData.id" class="btn btn-danger" style="width:auto;" @click="deleteKbDoc(kbEditorData.id)">删除</button>
                             <button class="btn" style="width:auto;" @click="saveKbDoc">保存</button>
                         </div>
                     </div>
-
                     <div v-else-if="viewingKbDoc">
                         <div style="border-bottom: 2px solid #e0c9b8; padding-bottom: 15px; margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
                             <div style="overflow: hidden;">
@@ -630,7 +577,6 @@
                         </div>
                         <div class="markdown-content" v-html="renderMarkdown(viewingKbDoc.content)"></div>
                     </div>
-
                     <div v-else>
                         <div v-for="doc in filteredKbDocs" :key="doc.id" class="kb-list-item" @click="viewingKbDoc = doc">
                             <div style="flex:1; overflow:hidden;">
@@ -639,10 +585,7 @@
                             </div>
                             <span style="color:#ff9a8b; font-size:1.2em; margin-left:10px;">&rsaquo;</span>
                         </div>
-                        <div v-if="filteredKbDocs.length === 0" style="text-align: center; color: #999; margin-top: 50px;">
-                            <div style="font-size:3em; margin-bottom:10px;">📭</div>
-                            此分类下暂无文档
-                        </div>
+                        <div v-if="filteredKbDocs.length === 0" style="text-align: center; color: #999; margin-top: 50px;"><div style="font-size:3em; margin-bottom:10px;">📭</div>此分类下暂无文档</div>
                     </div>
                 </div>
             </div>
@@ -650,7 +593,6 @@
     </div>
     </transition>
 
-    <!-- 命例详情弹窗 -->
     <transition name="fade">
     <div v-if="viewingItem" class="modal-overlay" @click.self="viewingItem = null">
         <div class="detail-modal">
@@ -661,7 +603,6 @@
         </div>
     </div>
     </transition>
-
 </div>
 
 <script>
@@ -675,37 +616,18 @@
             return {
                 isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                 loading: false, syncing: false, uploading: false, message: '', messageType: '',
-                
                 collapsed: { goals: false, stats: false, quests: false, shop: false, reviews: false, books: false, cases: false },
-                
                 playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory: [] },
-                
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
-                newQuestTitle: '', 
-                newShopItem: { name: '', cost: 50, icon: '🥤' },
-                
+                newQuestTitle: '', newShopItem: { name: '', cost: 50, icon: '🥤' },
                 notes: [], cases: [], books: [], kbCategories: [], kbDocs: [],
-                
                 activeReviewTab: 'stock', showReviewForm: false, newNote: { title: '', content: '' },
                 newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
-                
-                showBookForm: false, 
-                // 🚀 优化：分离输入变量与搜索变量
-                bookSearchInput: '',
-                bookSearchQuery: '',
-                searchTimer: null, 
-
-                viewingBook: null, 
-                newBook: { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' },
-                
+                showBookForm: false, bookSearchInput: '', bookSearchQuery: '', searchTimer: null, 
+                viewingBook: null, newBook: { title: '', author: '', rating: 5, content: '', thoughts: '', tags: '' },
                 showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbPreviewMode: false,
-                viewingKbDoc: null, 
-                kbEditorData: {},
-                showCaseForm: false, newCase: { title: '', content: '' }, viewingItem: null,
-                
-                chartInstance: null,
-                reviewPage: 1, reviewPageSize: 5,
-                viewingNote: null
+                viewingKbDoc: null, kbEditorData: {}, showCaseForm: false, newCase: { title: '', content: '' }, viewingItem: null,
+                chartInstance: null, reviewPage: 1, reviewPageSize: 5, viewingNote: null
             };
         },
         computed: {
@@ -722,15 +644,9 @@
             totalReviewPages() { return Math.ceil(this.filteredNotes.length / this.reviewPageSize) || 1; },
             filteredBooks() {
                 let list = this.books;
-                // 🚀 优化：使用防抖后的 Query 进行过滤
                 if (this.bookSearchQuery) {
                     const q = this.bookSearchQuery.toLowerCase();
-                    list = list.filter(b => 
-                        (b.title && b.title.toLowerCase().includes(q)) || 
-                        (b.author && b.author.toLowerCase().includes(q)) || 
-                        (b.content && b.content.toLowerCase().includes(q)) || 
-                        (b.thoughts && b.thoughts.toLowerCase().includes(q))
-                    );
+                    list = list.filter(b => (b.title && b.title.toLowerCase().includes(q)) || (b.author && b.author.toLowerCase().includes(q)) || (b.content && b.content.toLowerCase().includes(q)) || (b.thoughts && b.thoughts.toLowerCase().includes(q)));
                 }
                 return list;
             },
@@ -747,151 +663,70 @@
             getProgressClass(p) { return p >= 100 ? 'p-done' : (p < 30 ? 'p-low' : (p < 80 ? 'p-mid' : 'p-high')); },
             deduplicate(arr) { if (!arr || !Array.isArray(arr)) return []; const seen = new Set(); return arr.filter(item => { const id = item.id; if (seen.has(id)) return false; seen.add(id); return true; }); },
             
-            renderMarkdown(text) {
-                if (!text) return '';
-                try { return marked.parse(text); } catch(e) { return text; }
-            },
+            renderMarkdown(text) { if (!text) return ''; try { return marked.parse(text); } catch(e) { return text; } },
 
-            // 🚀 优化：输入框自动高度
-            autoResize(event) {
-                const el = event.target;
-                el.style.height = 'auto'; // 重置高度
-                el.style.height = el.scrollHeight + 'px'; // 设置为内容高度
-            },
+            autoResize(event) { const el = event.target; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; },
+            onSearchInput() { if (this.searchTimer) clearTimeout(this.searchTimer); this.searchTimer = setTimeout(() => { this.bookSearchQuery = this.bookSearchInput; }, 300); },
 
-            // 🚀 优化：搜索防抖
-            onSearchInput() {
-                if (this.searchTimer) clearTimeout(this.searchTimer);
-                this.searchTimer = setTimeout(() => {
-                    this.bookSearchQuery = this.bookSearchInput;
-                }, 300); // 300ms 延迟
-            },
-
-            // 🚀 优化：更健壮的增量保存逻辑
             async saveOne(tableName, item) {
                 if (!this.userId) return;
                 try {
-                    // 1. 尝试更新
-                    const { count, error } = await sb.from(tableName)
-                        .update({ data: item })
-                        .eq('user_id', this.userId)
-                        .eq('data->>id', item.id)
-                        .select('id', { count: 'exact' });
-
+                    const { count, error } = await sb.from(tableName).update({ data: item }).eq('user_id', this.userId).eq('data->>id', item.id).select('id', { count: 'exact' });
                     if (error) throw error;
-
-                    // 2. 如果没更新到（不存在），则插入
-                    if (count === 0) {
-                        const { error: insertError } = await sb.from(tableName).insert({ user_id: this.userId, data: item });
-                        if(insertError) throw insertError;
-                    }
-                } catch (err) {
-                    console.error('保存失败:', err);
-                    this.showMessage('保存同步失败，请检查网络', 'error');
-                }
+                    if (count === 0) { const { error: insertError } = await sb.from(tableName).insert({ user_id: this.userId, data: item }); if(insertError) throw insertError; }
+                } catch (err) { console.error('保存失败:', err); this.showMessage('同步失败，请检查网络', 'error'); }
             },
-
-            async deleteOne(tableName, itemId) {
-                if (!this.userId) return;
-                await sb.from(tableName).delete().eq('user_id', this.userId).eq('data->>id', itemId);
-            },
-
-            async savePlayerData() {
-                if (!this.userId) return;
-                await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' });
-            },
+            async deleteOne(tableName, itemId) { if (!this.userId) return; await sb.from(tableName).delete().eq('user_id', this.userId).eq('data->>id', itemId); },
+            async savePlayerData() { if (!this.userId) return; await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' }); },
 
             async compressImage(file) {
                 if (file.type === 'image/gif') return file;
                 return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
+                    const reader = new FileReader(); reader.readAsDataURL(file);
                     reader.onload = (event) => {
-                        const img = new Image();
-                        img.src = event.target.result;
+                        const img = new Image(); img.src = event.target.result;
                         img.onload = () => {
                             const canvas = document.createElement('canvas');
-                            let width = img.width;
-                            let height = img.height;
-                            const MAX_WIDTH = 1280;
+                            let width = img.width, height = img.height; const MAX_WIDTH = 1280;
                             if (width > MAX_WIDTH) { height = Math.round(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
-                            canvas.width = width; canvas.height = height;
-                            const ctx = canvas.getContext('2d');
+                            canvas.width = width; canvas.height = height; const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
-                            canvas.toBlob((blob) => {
-                                const newFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
-                                resolve(newFile);
-                            }, 'image/jpeg', 0.7); 
+                            canvas.toBlob((blob) => { resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() })); }, 'image/jpeg', 0.7); 
                         };
                     };
                 });
             },
-
             async handlePaste(event, modelPath) {
                 const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-                for (let item of items) {
-                    if (item.kind === 'file' && item.type.startsWith('image/')) {
-                        event.preventDefault();
-                        const file = item.getAsFile();
-                        await this.performUpload(file, modelPath, event.target);
-                        return;
-                    }
-                }
+                for (let item of items) { if (item.kind === 'file' && item.type.startsWith('image/')) { event.preventDefault(); const file = item.getAsFile(); await this.performUpload(file, modelPath, event.target); return; } }
             },
-
-            async handleFileUpload(event, modelPath) {
-                const file = event.target.files[0];
-                if (!file) return;
-                await this.performUpload(file, modelPath, null);
-                event.target.value = '';
-            },
-
+            async handleFileUpload(event, modelPath) { const file = event.target.files[0]; if (!file) return; await this.performUpload(file, modelPath, null); event.target.value = ''; },
             async performUpload(file, modelPath, textareaEl) {
                 if (file.size > 10 * 1024 * 1024) return alert('图片不能超过 10MB');
                 this.uploading = true;
-                
                 try {
                     const processedFile = await this.compressImage(file);
                     const fileName = `${this.userId}/${Date.now()}_${processedFile.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
-                    const { data, error } = await sb.storage.from('images').upload(fileName, processedFile);
+                    const { error } = await sb.storage.from('images').upload(fileName, processedFile);
                     if (error) throw error;
-                    
                     const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(fileName);
                     const markdownImg = `![image](${publicUrl})`;
-
                     const keys = modelPath.split('.');
                     if (keys.length === 2) {
                         const originalText = this[keys[0]][keys[1]] || '';
                         if (textareaEl) {
-                            const start = textareaEl.selectionStart;
-                            const end = textareaEl.selectionEnd;
+                            const start = textareaEl.selectionStart, end = textareaEl.selectionEnd;
                             const newText = originalText.substring(0, start) + markdownImg + originalText.substring(end);
                             this[keys[0]][keys[1]] = newText;
-                            this.$nextTick(() => {
-                                const newPos = start + markdownImg.length;
-                                textareaEl.selectionStart = textareaEl.selectionEnd = newPos;
-                                textareaEl.focus();
-                                // 上传后自动调整高度
-                                textareaEl.style.height = 'auto';
-                                textareaEl.style.height = textareaEl.scrollHeight + 'px';
-                            });
-                        } else {
-                            this[keys[0]][keys[1]] = originalText + '\n' + markdownImg + '\n';
-                        }
+                            this.$nextTick(() => { const newPos = start + markdownImg.length; textareaEl.selectionStart = textareaEl.selectionEnd = newPos; textareaEl.focus(); textareaEl.style.height = 'auto'; textareaEl.style.height = textareaEl.scrollHeight + 'px'; });
+                        } else { this[keys[0]][keys[1]] = originalText + '\n' + markdownImg + '\n'; }
                     }
                     this.showMessage('📸 图片已插入');
-                } catch (error) {
-                    console.error(error);
-                    this.showMessage('上传失败: ' + error.message, 'error');
-                } finally {
-                    this.uploading = false;
-                }
+                } catch (error) { console.error(error); this.showMessage('上传失败: ' + error.message, 'error'); } finally { this.uploading = false; }
             },
 
             async login() {
-                this.loading = true;
-                const { data, error } = await sb.auth.signInWithPassword({ email: this.email, password: this.password });
-                this.loading = false;
+                this.loading = true; const { data, error } = await sb.auth.signInWithPassword({ email: this.email, password: this.password }); this.loading = false;
                 if (error) return this.showMessage(error.message, 'error');
                 this.isLoggedIn = true; this.userId = data.user.id; this.userEmail = data.user.email; this.loadData();
             },
@@ -907,7 +742,6 @@
                     sb.from('kb_notes').select('*').eq('user_id', this.userId),
                     sb.from('cases').select('*').eq('user_id', this.userId)
                 ]);
-                
                 if(p.data && p.data.data) {
                     this.playerData = { ...this.playerData, ...p.data.data };
                     if(!this.playerData.dailyTasks) this.playerData.dailyTasks = [];
@@ -915,17 +749,14 @@
                     if(!this.playerData.assetHistory) this.playerData.assetHistory = [];
                     this.checkDailyReset();
                 }
-
                 if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
                 if(b.data) this.books = this.deduplicate(b.data.map(i => i.data));
                 if(kc.data) this.kbCategories = this.deduplicate(kc.data.map(i => i.data));
                 if(kd.data) this.kbDocs = this.deduplicate(kd.data.map(i => i.data)).filter(d => d && d.id);
                 if(cs.data) this.cases = this.deduplicate(cs.data.map(i => i.data));
-                
-                this.syncing = false;
-                setTimeout(() => this.loadChart(), 500);
+                this.syncing = false; setTimeout(() => this.loadChart(), 500);
             },
-
+            async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
             async saveAll() {
                 if (!this.userId) return;
                 this.kbDocs = this.deduplicate(this.kbDocs);
@@ -933,7 +764,6 @@
                 const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
                 await Promise.all([ saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
             },
-            async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
 
             checkDailyReset() { const today = new Date().toDateString(); if (this.playerData.lastLoginDate !== today) { this.playerData.dailyTasks.forEach(t => t.completed = false); this.playerData.lastLoginDate = today; this.savePlayerData(); this.showMessage('☀️ 每日任务已刷新'); } },
             addDailyQuest() { if(this.newQuestTitle){ this.playerData.dailyTasks.push({id:Date.now(),title:this.newQuestTitle,completed:false}); this.newQuestTitle=''; this.savePlayerData(); } },
@@ -942,58 +772,73 @@
 
             addShopItem() { this.playerData.shopItems.push({ id: Date.now(), ...this.newShopItem }); this.newShopItem={name:'',cost:50,icon:'✨'}; this.savePlayerData(); },
             deleteShopItem(id) { this.playerData.shopItems=this.playerData.shopItems.filter(i=>i.id!==id); this.savePlayerData(); },
-            buyItem(item) { if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ this.playerData.xp-=item.cost; this.notes.unshift({id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name}); this.saveOne('notes', this.notes[0]); this.savePlayerData(); } },
-
-            loadChart() {
-                if(this.activeReviewTab!=='stock')return; const ctx=document.getElementById('assetChart'); if(!ctx)return;
-                if(this.chartInstance)this.chartInstance.destroy();
-                const h=(this.playerData.assetHistory||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
-                this.chartInstance=new Chart(ctx,{type:'line',data:{labels:h.map(x=>new Date(x.date).toLocaleDateString()),datasets:[{data:h.map(x=>x.value),borderColor:'#4ecdc4',backgroundColor:'rgba(78,205,196,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-            },
-            
-            saveNote() { 
-                let itemToSave = null;
-                if(this.activeReviewTab==='stock'){
-                    if(this.newStockData.totalAsset){ 
-                        this.playerData.assetHistory.push({date:new Date().toISOString(),value:this.newStockData.totalAsset}); 
-                        this.savePlayerData();
-                        setTimeout(()=>this.loadChart(),100); 
-                    }
-                    if(this.newStockData.code) {
-                        itemToSave = {id:Date.now(),type:'stock',createdAt:new Date().toISOString(),content:this.newNote.content,stockData:{...this.newStockData}};
-                        this.notes.unshift(itemToSave);
-                    }
-                } else if(this.newNote.title || this.newNote.content) { 
-                    itemToSave = {id:Date.now(),type:this.activeReviewTab,createdAt:new Date().toISOString(),...this.newNote};
-                    this.notes.unshift(itemToSave); 
-                }
-                
-                if(itemToSave) {
-                    this.saveOne('notes', itemToSave);
-                }
-
-                this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; 
-                this.newNote={title:'',content:''}; 
-                this.showReviewForm=false; 
-                this.addXp(10); 
-                this.savePlayerData();
-                this.reviewPage = 1;
-            },
-            deleteNote(id){ 
-                if(confirm('删?')){ 
-                    this.notes=this.notes.filter(n=>n.id!==id); 
-                    this.deleteOne('notes', id);
+            buyItem(item) { 
+                if(this.playerData.xp>=item.cost && confirm(`兑换 ${item.name}?`)){ 
+                    this.playerData.xp-=item.cost; 
+                    const note = {id:Date.now(),type:'daily',createdAt:new Date().toISOString(),title:'🎁 商店兑换',content:item.name};
+                    this.notes.unshift(note); 
+                    this.saveOne('notes', note).catch(console.error);
+                    this.savePlayerData(); 
                 } 
             },
 
+            loadChart() {
+                if(this.activeReviewTab!=='stock')return; 
+                if(typeof Chart === 'undefined') return;
+                const ctx=document.getElementById('assetChart'); if(!ctx)return;
+                const h=(this.playerData.assetHistory||[]).sort((a,b)=>new Date(a.date)-new Date(b.date));
+                const labels = h.map(x=>new Date(x.date).toLocaleDateString());
+                const data = h.map(x=>x.value);
+
+                if(this.chartInstance) {
+                    // ⚡ 优化：图表平滑更新
+                    this.chartInstance.data.labels = labels;
+                    this.chartInstance.data.datasets[0].data = data;
+                    this.chartInstance.update();
+                } else {
+                    this.chartInstance=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{data:data,borderColor:'#4ecdc4',backgroundColor:'rgba(78,205,196,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},animation:{duration:800}}});
+                }
+            },
+            
+            saveNote() { 
+                // ⚡ 优化：乐观 UI - 零延迟保存
+                const now = new Date().toISOString();
+                let itemToSave = null;
+
+                if(this.activeReviewTab==='stock'){
+                    if(this.newStockData.totalAsset){ 
+                        this.playerData.assetHistory.push({date:now, value:this.newStockData.totalAsset}); 
+                        this.savePlayerData();
+                        setTimeout(()=>this.loadChart(), 0); 
+                    }
+                    if(this.newStockData.code) {
+                        itemToSave = {id:Date.now(),type:'stock',createdAt:now,content:this.newNote.content,stockData:{...this.newStockData}};
+                    }
+                } else if(this.newNote.title || this.newNote.content) { 
+                    itemToSave = {id:Date.now(),type:this.activeReviewTab,createdAt:now,...this.newNote};
+                }
+                
+                if(itemToSave) {
+                    this.notes.unshift(itemToSave);
+                    // 立即清空，提升体验
+                    this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; 
+                    this.newNote={title:'',content:''}; 
+                    this.showReviewForm=false; 
+                    
+                    this.saveOne('notes', itemToSave).catch(e => { console.error(e); this.showMessage('后台同步出错', 'error'); });
+                    
+                    this.addXp(10); 
+                    this.savePlayerData();
+                    this.reviewPage = 1;
+                }
+            },
+            deleteNote(id){ if(confirm('删?')){ this.notes=this.notes.filter(n=>n.id!==id); this.deleteOne('notes', id); } },
+
             addGoal() { 
                 if (this.newGoal.title) {
-                    const isSlider = this.newGoal.mode === 'slider';
-                    const target = isSlider ? 100 : (this.newGoal.target || 100);
-                    const unit = isSlider ? '' : (this.newGoal.unit || '');
+                    const isSlider = this.newGoal.mode === 'slider'; const target = isSlider ? 100 : (this.newGoal.target || 100); const unit = isSlider ? '' : (this.newGoal.unit || '');
                     this.playerData.goals.push({ title: this.newGoal.title, mode: this.newGoal.mode, current: 0, unit: unit, target: target });
-                    const currentMode = this.newGoal.mode;
-                    this.newGoal = { title: '', target: null, current: 0, unit: '', mode: currentMode };
+                    const currentMode = this.newGoal.mode; this.newGoal = { title: '', target: null, current: 0, unit: '', mode: currentMode };
                     this.savePlayerData(); 
                 } 
             },
@@ -1004,112 +849,60 @@
                 if(this.newCase.title){ 
                     const newItem = {id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase};
                     this.cases.unshift(newItem); 
-                    this.saveOne('cases', newItem);
-                    this.newCase={title:'',content:''}; 
-                    this.showCaseForm=false; 
-                    this.addXp(20); 
-                    this.savePlayerData();
+                    this.newCase={title:'',content:''}; this.showCaseForm=false; 
+                    this.saveOne('cases', newItem).catch(console.error);
+                    this.addXp(20); this.savePlayerData();
                 } 
             },
-            
             saveBook() { 
                 if(this.newBook.title){ 
                     const tags = this.newBook.tags ? this.newBook.tags.split(/[,，]/).map(t=>t.trim()).filter(t=>t) : [];
                     const newItem = {id:Date.now(),...this.newBook, tags, createdAt:new Date().toISOString()};
                     this.books.unshift(newItem); 
-                    this.saveOne('books', newItem);
-                    this.newBook={title:'',author:'',rating:5,content:'',thoughts:'',tags:''}; 
-                    this.showBookForm=false; 
-                    this.addXp(20); 
-                    this.savePlayerData();
+                    this.newBook={title:'',author:'',rating:5,content:'',thoughts:'',tags:''}; this.showBookForm=false; 
+                    this.saveOne('books', newItem).catch(console.error);
+                    this.addXp(20); this.savePlayerData();
                 } 
             },
-            deleteBook(id) { 
-                if(confirm('删除此书?')){ 
-                    this.books=this.books.filter(b=>b.id!==id); 
-                    this.viewingBook=null; 
-                    this.deleteOne('books', id);
-                } 
-            },
+            deleteBook(id) { if(confirm('删除此书?')){ this.books=this.books.filter(b=>b.id!==id); this.viewingBook=null; this.deleteOne('books', id); } },
 
             selectKbCategory(c) { this.kbCurrentCategory = c; this.viewingKbDoc = null; this.kbEditorMode = false; },
             openKbEditor() { this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
             editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; },
-            
             saveKbDoc() { 
-                const now=new Date().toISOString(); 
-                let docToSave = null;
+                const now=new Date().toISOString(); let docToSave = null;
                 if(this.kbEditorData.id){ 
                     const i=this.kbDocs.findIndex(d=>d.id===this.kbEditorData.id); 
-                    if(i!==-1) {
-                        this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; 
-                        this.viewingKbDoc = this.kbDocs[i];
-                        docToSave = this.kbDocs[i];
-                    }
+                    if(i!==-1) { this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; this.viewingKbDoc = this.kbDocs[i]; docToSave = this.kbDocs[i]; }
                 } else { 
-                    const newId = Date.now();
-                    docToSave = {id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now};
+                    const newId = Date.now(); docToSave = {id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now};
                     this.kbDocs.unshift(docToSave); 
                 }
-                if (docToSave) this.saveOne('kb_notes', docToSave);
+                if (docToSave) this.saveOne('kb_notes', docToSave).catch(console.error);
                 this.kbEditorMode=false; 
             },
-            deleteKbDoc(id) { 
-                if(confirm('删除?')){ 
-                    this.kbDocs=this.kbDocs.filter(d=>d.id!==id); 
-                    this.kbEditorMode=false; 
-                    this.viewingKbDoc=null; 
-                    this.deleteOne('kb_notes', id);
-                } 
-            },
-            
-            addKbCategory() { const n=prompt('新分类名'); if(n){ const item = {id:Date.now(),name:n}; this.kbCategories.push(item); this.saveOne('kb_categories', item); } },
-            deleteItem(item) { 
-                if(!confirm('删除?'))return; 
-                if(item.type==='case') { this.cases=this.cases.filter(c=>c.id!==item.id); this.deleteOne('cases', item.id); }
-                this.viewingItem=null; 
-            }
+            deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>d.id!==id); this.kbEditorMode=false; this.viewingKbDoc=null; this.deleteOne('kb_notes', id); } },
+            addKbCategory() { const n=prompt('新分类名'); if(n){ const item = {id:Date.now(),name:n}; this.kbCategories.push(item); this.saveOne('kb_categories', item).catch(console.error); } },
+            deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case') { this.cases=this.cases.filter(c=>c.id!==item.id); this.deleteOne('cases', item.id); } this.viewingItem=null; }
         },
         mounted() {
-            // 🚀 修复版配置：兼容 Marked.js 新旧版本的参数传递方式
+            // 🐛 修复 Marked.js 图片渲染
             const renderer = new marked.Renderer();
-            
-            // 1. 修复图片渲染
             renderer.image = function(token) {
-                // 判断是新版(对象)还是旧版(参数)
-                let href, text, title;
-                if (typeof token === 'object' && token !== null && !arguments[1]) {
-                    // 新版 Marked v12+ 传入的是对象
-                    ({ href, title, text } = token);
-                } else {
-                    // 旧版传入的是三个参数
-                    href = token;
-                    title = arguments[1];
-                    text = arguments[2];
-                }
-                
-                // 处理 text 为 null 的情况，防止显示 "null"
-                const alt = text || ''; 
-                return `<img src="${href}" alt="${alt}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
+                let href, text; if (typeof token === 'object' && !arguments[1]) { ({ href, text } = token); } else { href = token; text = arguments[2]; }
+                return `<img src="${href}" alt="${text||''}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
             };
-            
-            // 2. 修复链接渲染
             renderer.link = function(token) {
-                let href, text, title;
-                if (typeof token === 'object' && token !== null && !arguments[1]) {
-                    ({ href, title, text } = token);
-                } else {
-                    href = token;
-                    title = arguments[1];
-                    text = arguments[2];
-                }
-
+                let href, text; if (typeof token === 'object' && !arguments[1]) { ({ href, text } = token); } else { href = token; text = arguments[2]; }
                 return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#ff9a8b; text-decoration:none; border-bottom:1px dotted #ff9a8b;">${text}</a>`;
             };
-
             marked.use({ renderer });
 
-            // 下面是原本的登录检查逻辑
+            // 🧠 智能日期检测
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === 'visible' && this.isLoggedIn) { this.checkDailyReset(); }
+            });
+
             sb.auth.getSession().then(({ data: { session } }) => {
                 if(session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadData(); }
             });
@@ -1118,4 +911,3 @@
 </script>
 </body>
 </html>
-
