@@ -806,27 +806,44 @@
                 let itemToSave = null;
 
                 if(this.activeReviewTab==='stock'){
+                    // 1. 处理图表数据
                     if(this.newStockData.totalAsset){ 
                         this.playerData.assetHistory.push({date:now, value:this.newStockData.totalAsset}); 
                         this.savePlayerData();
                         setTimeout(()=>this.loadChart(), 0); 
                     }
-                    if(this.newStockData.code) {
-                        itemToSave = {id:Date.now(),type:'stock',createdAt:now,content:this.newNote.content,stockData:{...this.newStockData}};
+
+                    // 2. 生成列表记录 (修复Bug：只要有代码 OR 有金额，都生成记录)
+                    if(this.newStockData.code || this.newStockData.totalAsset) {
+                        itemToSave = {
+                            id: Date.now(),
+                            type: 'stock',
+                            createdAt: now,
+                            content: this.newNote.content || '', // 允许内容为空
+                            stockData: {
+                                ...this.newStockData,
+                                // 如果没填代码（纯资产更新），自动给个名字
+                                code: this.newStockData.code || '💰 资产更新'
+                            }
+                        };
                     }
                 } else if(this.newNote.title || this.newNote.content) { 
+                    // 普通笔记逻辑
                     itemToSave = {id:Date.now(),type:this.activeReviewTab,createdAt:now,...this.newNote};
                 }
                 
                 if(itemToSave) {
                     this.notes.unshift(itemToSave);
-                    // 立即清空，提升体验
+                    
+                    // 立即清空表单
                     this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; 
                     this.newNote={title:'',content:''}; 
                     this.showReviewForm=false; 
                     
+                    // 后台保存
                     this.saveOne('notes', itemToSave).catch(e => { console.error(e); this.showMessage('后台同步出错', 'error'); });
                     
+                    // 奖励结算
                     this.addXp(10); 
                     this.savePlayerData();
                     this.reviewPage = 1;
@@ -942,6 +959,7 @@
 </script>
 </body>
 </html>
+
 
 
 
