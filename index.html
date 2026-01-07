@@ -1071,21 +1071,45 @@
             }
         },
         mounted() {
-            // 🚀 优化：配置 Marked.js - 懒加载 & 新窗口打开链接
+            // 🚀 修复版配置：兼容 Marked.js 新旧版本的参数传递方式
             const renderer = new marked.Renderer();
             
-            // 图片懒加载
-            renderer.image = function(href, title, text) {
-                return `<img src="${href}" alt="${text}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
+            // 1. 修复图片渲染
+            renderer.image = function(token) {
+                // 判断是新版(对象)还是旧版(参数)
+                let href, text, title;
+                if (typeof token === 'object' && token !== null && !arguments[1]) {
+                    // 新版 Marked v12+ 传入的是对象
+                    ({ href, title, text } = token);
+                } else {
+                    // 旧版传入的是三个参数
+                    href = token;
+                    title = arguments[1];
+                    text = arguments[2];
+                }
+                
+                // 处理 text 为 null 的情况，防止显示 "null"
+                const alt = text || ''; 
+                return `<img src="${href}" alt="${alt}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
             };
             
-            // 链接在新标签页打开
-            renderer.link = function(href, title, text) {
+            // 2. 修复链接渲染
+            renderer.link = function(token) {
+                let href, text, title;
+                if (typeof token === 'object' && token !== null && !arguments[1]) {
+                    ({ href, title, text } = token);
+                } else {
+                    href = token;
+                    title = arguments[1];
+                    text = arguments[2];
+                }
+
                 return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#ff9a8b; text-decoration:none; border-bottom:1px dotted #ff9a8b;">${text}</a>`;
             };
 
             marked.use({ renderer });
 
+            // 下面是原本的登录检查逻辑
             sb.auth.getSession().then(({ data: { session } }) => {
                 if(session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadData(); }
             });
@@ -1094,3 +1118,4 @@
 </script>
 </body>
 </html>
+
