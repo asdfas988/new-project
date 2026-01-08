@@ -53,6 +53,12 @@
             backdrop-filter: blur(8px); /* 毛玻璃特效 */
         }
         .header h1 { font-size: 2.2em; font-weight: 700; text-shadow: 3px 3px 0px #ffd6cc; margin-bottom: 10px; }
+        /* 🔧 修复：知识库长文档编辑时的滚动问题 */
+        .kb-textarea {
+            height: 60vh !important;       /* 强制固定高度为屏幕高度的 60% */
+            overflow-y: auto !important;   /* 强制开启垂直滚动条 */
+            resize: vertical;              /* 允许用户手动拖拽调整高度 */
+        }
 
         /* 商店按钮 */
         .shop-btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
@@ -550,7 +556,7 @@
                         </div>
                         <div style="margin-top: 15px;">
                             <div v-show="!kbPreviewMode">
-                                <textarea v-model="kbEditorData.content" class="note-textarea" style="height: 50vh; font-family: monospace; border-bottom: 2px solid #e0c9b8; border-radius: 12px;" placeholder="# 标题 &#10;- 列表 &#10;**加粗** &#10;（支持直接粘贴图片）" @paste="handlePaste($event, 'kbEditorData.content')"></textarea>
+                                <textarea v-model="kbEditorData.content" class="note-textarea kb-textarea" style="height: 50vh; font-family: monospace; border-bottom: 2px solid #e0c9b8; border-radius: 12px;" placeholder="# 标题 &#10;- 列表 &#10;**加粗** &#10;（支持直接粘贴图片）" @paste="handlePaste($event, 'kbEditorData.content')"></textarea>
                                 <div style="margin-top:10px;">
                                     <input type="file" ref="kbFileInput" @change="handleFileUpload($event, 'kbEditorData.content')" style="display:none" accept="image/*">
                                     <button class="btn-sm btn-upload" @click="$refs.kbFileInput.click()" :disabled="uploading">{{ uploading ? '⏳' : '📸 插入图片' }}</button>
@@ -963,6 +969,7 @@
 </script>
 </body>
 </html>
+
 
 
 
