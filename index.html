@@ -954,7 +954,11 @@
                 let href, text; if (typeof token === 'object' && !arguments[1]) { ({ href, text } = token); } else { href = token; text = arguments[2]; }
                 return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#ff9a8b; text-decoration:none; border-bottom:1px dotted #ff9a8b;">${text}</a>`;
             };
-            marked.use({ renderer });
+           marked.use({ 
+                renderer, 
+                breaks: true,  // ✨ 开启这个选项，按回车就是换行
+                gfm: true      // 开启 GitHub 风格 Markdown
+            });
 
             // 🧠 智能日期检测
             document.addEventListener("visibilitychange", () => {
@@ -969,6 +973,7 @@
 </script>
 </body>
 </html>
+
 
 
 
