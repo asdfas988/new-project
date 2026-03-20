@@ -1026,43 +1026,58 @@
             async autoFetchCover(title) {
   if (!title) return this.showMessage('请先输入书名', 'error');
   this.showMessage('⏳ 正在搜索封面...', 'success');
-  
-  // 尝试 Google Books
-  try {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    console.log('Google Books data:', data);
-    
+
+  // 辅助函数：从Google Books API响应中提取封面URL
+  const extractCover = (data) => {
     if (data.items && data.items.length > 0) {
-      const volume = data.items[0].volumeInfo;
-      if (volume.imageLinks) {
-        let coverUrl = volume.imageLinks.thumbnail || volume.imageLinks.smallThumbnail;
-        if (coverUrl) {
-          this.newBook.cover = coverUrl.replace('http:', 'https:');
-          this.showMessage('✅ 自动获取封面成功！');
-          return;
+      for (const item of data.items) {
+        const imageLinks = item.volumeInfo?.imageLinks;
+        if (imageLinks) {
+          // 优先使用 thumbnail，如果没有则用 smallThumbnail
+          let coverUrl = imageLinks.thumbnail || imageLinks.smallThumbnail;
+          if (coverUrl) {
+            // 强制转为 HTTPS
+            return coverUrl.replace('http:', 'https:');
+          }
         }
       }
     }
-  } catch (e) {
-    console.warn('Google Books 获取失败:', e);
+    return null;
+  };
+
+  // 构建查询数组，按优先级尝试
+  const queries = [];
+
+  // 1. 精确书名查询（intitle）
+  queries.push(`intitle:${encodeURIComponent(title)}`);
+
+  // 2. 如果有作者，加上作者进行组合查询
+  if (this.newBook.author && this.newBook.author.trim() !== '') {
+    queries.push(`intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(this.newBook.author)}`);
   }
 
-  // 备选：Open Library
-  try {
-    const olUrl = `https://covers.openlibrary.org/b/title/${encodeURIComponent(title)}-M.jpg`;
-    const headRes = await fetch(olUrl, { method: 'HEAD' });
-    if (headRes.ok) {
-      this.newBook.cover = olUrl;
-      this.showMessage('✅ 使用 Open Library 封面');
-      return;
+  // 3. 最后尝试不加限定符的全文搜索（万一书名很特殊）
+  queries.push(encodeURIComponent(title));
+
+  for (const query of queries) {
+    try {
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const cover = extractCover(data);
+      if (cover) {
+        this.newBook.cover = cover;
+        this.showMessage('✅ 自动获取封面成功！');
+        return;
+      }
+    } catch (e) {
+      console.warn(`查询 "${query}" 失败:`, e);
+      // 继续尝试下一个查询
     }
-  } catch (e) {
-    console.warn('Open Library 检查失败:', e);
   }
 
+  // 所有尝试都失败
   this.showMessage('未能自动找到封面，请手动粘贴图片链接', 'error');
 },
             importWeRead() {
