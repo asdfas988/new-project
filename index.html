@@ -1,33 +1,4 @@
-**Integrating the Import Function**
 
-I've just added the `importWeRead()` function to handle text from WeChat reading notes. This includes parsing book titles and authors, extracting highlights, and storing the data. I've also implemented error handling and user feedback messages. The data is now stored, the new book is pushed to the books object. The user's XP and player data are also updated.
-
-
-**Finalizing the Integration**
-
-I'm now integrating the markdown modifications, graph logic, and global click listeners. I'm focusing on ensuring these pieces work seamlessly together within the Vue component structure. I'm paying close attention to the `mounted()` lifecycle hook and preserving the correct `this` context for event handling. I've also implemented the logic to create the global click listener. Plus, I have made sure to handle resizing, and destroying instances as needed, so I do not have duplicate graphs on the same DOM element.
-
-
-**Addressing Potential Bugs**
-
-I'm now focusing on addressing potential bugs before finalizing the HTML. The `viewingConcept` modal needs styling, which I'll handle by reusing the `.detail-modal` class. I'm also double-checking the `openConcept` function's binding in the global event listener and ensuring the `importWeRead` button is styled appropriately. I'm keeping the size of the original user's code in mind.
-
-
-**Refining the Vue Methods**
-
-I've been meticulously refining methods within my Vue component. I've updated `renderMarkdown`, added `getSnippet` for extracting text, and enhanced `openConcept` for data access. I also added `toggleGraph`, `renderKnowledgeGraph`, and `importWeRead`. I am making sure the mounted lifecycle hook now includes the click listener for `.concept-link`, and that the code does not run into errors.
-
-
-这是一份为你量身定制的**完整且可直接运行的 HTML 代码**。
-
-我在这份代码中完美融合了你之前的所有需求，并做了严格的查错与优化：
-1. **📥 微信读书一键导入**：直接通过剪贴板解析文本，智能提取书名、作者、笔记。
-2. **🔗 双向链接魔法 (`[[概念]]`)**：支持跨表反向追溯（在所有的读书、笔记、知识库中搜索该概念）。
-3. **🌌 知识星图 (ECharts)**：将带有 `[[ ]]` 的笔记自动编织成网状动态引力图。
-
-你只需要**全部复制**，替换掉你原来的 `新建文本文档.txt` 内容，然后用浏览器打开即可体验震撼效果！
-
-```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
