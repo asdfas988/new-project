@@ -461,9 +461,7 @@
                             <div style="flex: 1;">
     <input v-model="newBook.cover" placeholder="封面图片链接 (支持自动获取或手动粘贴 URL)" class="note-input" style="margin-bottom: 8px;">
     <button class="btn-sm" style="background: #ccc; color: #333;" @click="autoFetchCover(newBook.title)">🔄 重新从网络获取封面</button>
-    <!-- ========== 新增：百度搜封面按钮 ========== -->
-    <button class="btn-sm" style="background: #4a90e2; color: white; margin-left: 8px;" @click="searchBaiduImage(newBook.title)" :disabled="!newBook.title">🔍 百度搜封面</button>
-</div>
+   
                         </div>
                         
                         <!-- 快速打标签区 -->
@@ -1076,15 +1074,6 @@
     } catch (e) {
       console.warn(`查询 "${query}" 失败:`, e);
       // 继续尝试下一个查询
-        searchBaiduImage(title) {
-        if (!title) {
-            this.showMessage('请先填写书名', 'error');
-            return;
-        }
-        const keyword = encodeURIComponent(title + ' 封面');
-        const url = `https://image.baidu.com/search/index?tn=baiduimage&word=${keyword}`;
-        window.open(url, '_blank');
-    },
     }
   }
 
