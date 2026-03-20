@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ✨ 关键新增：破解百度、微信图片防盗链，确保获取到的封面能正常显示 -->
+    <!-- 破解百度、微信图片防盗链，确保获取到的封面能正常显示 -->
     <meta name="referrer" content="no-referrer">
     
     <title>个人空间 - 终极版 · 每日复盘模板</title>
@@ -682,7 +682,6 @@
             </div>
         </div>
     </div>
-    </transition>
 
     <transition name="fade">
     <div v-if="viewingItem" class="modal-overlay" @click.self="viewingItem = null">
@@ -711,14 +710,14 @@
                 playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks:[], lastLoginDate: '', shopItems: [], assetHistory:[] },
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
                 newQuestTitle: '', newShopItem: { name: '', cost: 50, icon: '🥤' },
-                notes:[], cases: [], books: [], kbCategories: [], kbDocs:[],
+                notes:[], cases:[], books: [], kbCategories: [], kbDocs:[],
                 activeReviewTab: 'stock', showReviewForm: false, newNote: { title: '', content: '' },
                 newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
                 
                 // ✨ 读书笔记模块变量
                 showBookForm: false, bookSearchInput: '', bookSearchQuery: '', searchTimer: null, viewingBook: null, 
                 newBook: { id: null, title: '', author: '', cover: '', rating: 0, content: '', thoughts: '', tags:[] },
-                predefinedTags:['个人成长', '心理学', '商业', '历史', '政治', '哲学', '文学', '生物学', '科技', '经济学'],
+                predefinedTags:['个人成长', '心理学', '商业', '历史', '政治', '哲学', '文学', '科技', '微信读书'],
                 selectedTagFilter: '全部',
                 
                 showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbPreviewMode: false,
@@ -740,14 +739,18 @@
             },
             totalReviewPages() { return Math.ceil(this.filteredNotes.length / this.reviewPageSize) || 1; },
             
+            // ✨ 修复：知识库的 computed 过滤必须存在！
+            filteredKbDocs() {
+                if (this.kbCurrentCategory === 'all') return this.kbDocs;
+                return this.kbDocs.filter(d => d.categoryId === this.kbCurrentCategory.id);
+            },
+
             // ✨ 书库标签过滤与穿透搜索
             filteredBooks() {
                 let list = this.books;
-                // 1. 顶部标签过滤
                 if (this.selectedTagFilter !== '全部') {
                     list = list.filter(b => b.tags && b.tags.includes(this.selectedTagFilter));
                 }
-                // 2. 搜索框过滤
                 if (this.bookSearchQuery) {
                     const q = this.bookSearchQuery.toLowerCase();
                     list = list.filter(b => 
@@ -757,7 +760,6 @@
                         (b.thoughts && b.thoughts.toLowerCase().includes(q))
                     );
                 }
-                // 最新添加的排在前面
                 return list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             },
             dailyReviewPreview() {
@@ -1027,13 +1029,13 @@
                 else this.newBook.tags.push(tag);
             },
             
-            // ✨ 自动获取封面核心代码：加入代理解决跨域，优先百度搜索
+            // ✨ 自动获取封面：加入代理解决跨域，优先百度搜索
             async autoFetchCover(title) {
                 if (!title) return this.showMessage('请先输入书名', 'error');
                 this.showMessage('⏳ 正在搜索封面...', 'success');
                 
                 try {
-                    // 方案A：利用开源代理（allorigins）去访问百度的 JSON 接口获取图片
+                    // 利用开源代理（allorigins）去访问百度的 JSON 接口
                     const keyword = encodeURIComponent(title + ' 书籍 封面');
                     const targetUrl = `https://image.baidu.com/search/acjson?tn=resultjson_com&word=${keyword}`;
                     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
@@ -1053,7 +1055,7 @@
                     console.error('百度搜索封面失败:', e);
                 }
                 
-                // 方案B：百度没搜到，再用 Google 兜底
+                // 百度没搜到，再用 Google 兜底
                 try {
                     const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`);
                     const data = await res.json();
@@ -1094,7 +1096,6 @@
                     }
                     const content = highlights.length > 0 ? highlights.join('\n\n') : text;
 
-                    // 填入表单，等待手动保存
                     this.newBook = {
                         id: null,
                         title: title, author: author, cover: '',
@@ -1121,7 +1122,6 @@
                 if(this.newBook.title){ 
                     const now = new Date().toISOString();
                     if (this.newBook.id) {
-                        // 更新逻辑
                         const index = this.books.findIndex(b => b.id === this.newBook.id);
                         if (index !== -1) {
                             this.books[index] = { ...this.newBook, updatedAt: now };
@@ -1129,7 +1129,6 @@
                             this.showMessage('✅ 更新成功');
                         }
                     } else {
-                        // 新增逻辑
                         const newItem = { id: Date.now(), ...this.newBook, createdAt: now };
                         this.books.unshift(newItem); 
                         this.saveOne('books', newItem).catch(console.error);
@@ -1169,16 +1168,6 @@
             deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>d.id!==id); this.kbEditorMode=false; this.viewingKbDoc=null; this.deleteOne('kb_notes', id); } },
             addKbCategory() { const n=prompt('新分类名'); if(n){ const item = {id:Date.now(),name:n}; this.kbCategories.push(item); this.saveOne('kb_categories', item).catch(console.error); } },
             deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case') { this.cases=this.cases.filter(c=>c.id!==item.id); this.deleteOne('cases', item.id); } this.viewingItem=null; }
-        },
-        watch: {
-            activeReviewTab() {
-                this.resetDailyReview();
-            },
-            showReviewForm(newVal) {
-                if (newVal && this.activeReviewTab === 'daily') {
-                    this.resetDailyReview();
-                }
-            }
         },
         mounted() {
             const renderer = new marked.Renderer();
