@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✨ 关键新增：破解百度、微信图片防盗链，确保获取到的封面能正常显示 -->
+    <meta name="referrer" content="no-referrer">
+    
     <title>个人空间 - 终极版 · 每日复盘模板</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
@@ -133,7 +136,7 @@
         .xp-progress { height: 20px; background: #ffe8d6; border-radius: 12px; overflow: hidden; border: 2px solid #5a4a42; margin: 10px 0; }
         .xp-fill { height: 100%; background: linear-gradient(90deg, #4ecdc4, #a3de83); transition: width 0.5s ease; }
 
-        /* ========== ✨ 新增：书籍画廊专属样式 ========== */
+        /* ========== 书籍画廊专属样式 ========== */
         .book-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
         .book-card-gallery { background: #fff; border-radius: 12px; border: 2px solid #e0c9b8; overflow: hidden; box-shadow: 4px 4px 0px #d4b8a7; cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
         .book-card-gallery:hover { transform: translateY(-5px); border-color: #ff9a8b; }
@@ -427,7 +430,7 @@
                 </div>
             </div>
 
-            <!-- ========== ✨ 全新改造：📚 读书笔记 (画廊分类版) ========== -->
+            <!-- ========== ✨ 书籍画廊分类版 ========== -->
             <div class="card" id="book-section">
                 <h2>📚 书籍画廊 <button class="collapse-btn" @click="collapsed.books = !collapsed.books">{{ collapsed.books ? '展开' : '收起' }}</button></h2>
                 <div v-show="!collapsed.books">
@@ -452,16 +455,16 @@
                             <input v-model="newBook.author" placeholder="作者" class="note-input" style="margin: 0;">
                         </div>
 
-                        <!-- 封面配置区 -->
+                        <!-- 封面配置区 (支持百度搜图与回退机制) -->
                         <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
                             <div class="book-cover-wrapper" style="width: 80px; height: 106px; border-radius: 6px; flex-shrink: 0; background: #eee;">
                                 <img v-if="newBook.cover" :src="newBook.cover" class="book-cover-img">
                                 <span v-else style="font-size: 0.8em; color: #999;">暂无封面</span>
                             </div>
                             <div style="flex: 1;">
-    <input v-model="newBook.cover" placeholder="封面图片链接 (支持自动获取或手动粘贴 URL)" class="note-input" style="margin-bottom: 8px;">
-    <button class="btn-sm" style="background: #ccc; color: #333;" @click="autoFetchCover(newBook.title)">🔄 重新从网络获取封面</button>
-   
+                                <input v-model="newBook.cover" placeholder="封面图片链接 (支持自动获取或手动粘贴 URL)" class="note-input" style="margin-bottom: 8px;">
+                                <button class="btn-sm" style="background: #ccc; color: #333;" @click="autoFetchCover(newBook.title)">🔄 重新从网络获取封面</button>
+                            </div>
                         </div>
                         
                         <!-- 快速打标签区 -->
@@ -489,7 +492,7 @@
                     </div>
                     </transition>
 
-                    <!-- ✨ 全新画廊视图 -->
+                    <!-- 画廊视图 -->
                     <div class="book-gallery">
                         <div v-for="book in filteredBooks" :key="book.id" class="book-card-gallery" @click="viewingBook = book">
                             <div class="book-cover-wrapper">
@@ -705,17 +708,17 @@
                 isLoggedIn: false, userId: null, userEmail: '', email: '', password: '',
                 loading: false, syncing: false, uploading: false, message: '', messageType: '',
                 collapsed: { goals: false, stats: false, quests: false, shop: false, reviews: false, books: false, cases: false },
-                playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks: [], lastLoginDate: '', shopItems: [], assetHistory:[] },
+                playerData: { level: 1, xp: 0, nextLevelXp: 100, goals: [], dailyTasks:[], lastLoginDate: '', shopItems: [], assetHistory:[] },
                 newGoal: { title: '', target: null, current: 0, unit: '', mode: 'numeric' },
                 newQuestTitle: '', newShopItem: { name: '', cost: 50, icon: '🥤' },
-                notes: [], cases: [], books: [], kbCategories: [], kbDocs:[],
+                notes:[], cases: [], books: [], kbCategories: [], kbDocs:[],
                 activeReviewTab: 'stock', showReviewForm: false, newNote: { title: '', content: '' },
                 newStockData: { code: '', action: 'buy', price: '', profit: '', totalAsset: null },
                 
                 // ✨ 读书笔记模块变量
                 showBookForm: false, bookSearchInput: '', bookSearchQuery: '', searchTimer: null, viewingBook: null, 
                 newBook: { id: null, title: '', author: '', cover: '', rating: 0, content: '', thoughts: '', tags:[] },
-                predefinedTags:['个人成长', '心理学', '商业', '历史', '政治', '哲学', '文学', '科技', '微信读书'],
+                predefinedTags:['个人成长', '心理学', '商业', '历史', '政治', '哲学', '文学', '生物学', '科技', '经济学'],
                 selectedTagFilter: '全部',
                 
                 showKnowledgeBase: false, kbCurrentCategory: 'all', kbEditorMode: false, kbPreviewMode: false,
@@ -737,7 +740,7 @@
             },
             totalReviewPages() { return Math.ceil(this.filteredNotes.length / this.reviewPageSize) || 1; },
             
-            // ✨ 增强版：书库标签过滤与穿透搜索
+            // ✨ 书库标签过滤与穿透搜索
             filteredBooks() {
                 let list = this.books;
                 // 1. 顶部标签过滤
@@ -1010,7 +1013,7 @@
                 } 
             },
 
-            // ✨ 书籍操作相关（导入、编辑、保存、标签）
+            // ✨ 书籍操作相关
             openNewBookForm() {
                 this.showBookForm = !this.showBookForm;
                 if(this.showBookForm) {
@@ -1023,63 +1026,49 @@
                 if (idx > -1) this.newBook.tags.splice(idx, 1);
                 else this.newBook.tags.push(tag);
             },
+            
+            // ✨ 自动获取封面核心代码：加入代理解决跨域，优先百度搜索
             async autoFetchCover(title) {
-  if (!title) return this.showMessage('请先输入书名', 'error');
-  this.showMessage('⏳ 正在搜索封面...', 'success');
-
-  // 辅助函数：从Google Books API响应中提取封面URL
-  const extractCover = (data) => {
-    if (data.items && data.items.length > 0) {
-      for (const item of data.items) {
-        const imageLinks = item.volumeInfo?.imageLinks;
-        if (imageLinks) {
-          // 优先使用 thumbnail，如果没有则用 smallThumbnail
-          let coverUrl = imageLinks.thumbnail || imageLinks.smallThumbnail;
-          if (coverUrl) {
-            // 强制转为 HTTPS
-            return coverUrl.replace('http:', 'https:');
-          }
-        }
-      }
-    }
-    return null;
-  };
-
-  // 构建查询数组，按优先级尝试
-  const queries = [];
-
-  // 1. 精确书名查询（intitle）
-  queries.push(`intitle:${encodeURIComponent(title)}`);
-
-  // 2. 如果有作者，加上作者进行组合查询
-  if (this.newBook.author && this.newBook.author.trim() !== '') {
-    queries.push(`intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(this.newBook.author)}`);
-  }
-
-  // 3. 最后尝试不加限定符的全文搜索（万一书名很特殊）
-  queries.push(encodeURIComponent(title));
-
-  for (const query of queries) {
-    try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const cover = extractCover(data);
-      if (cover) {
-        this.newBook.cover = cover;
-        this.showMessage('✅ 自动获取封面成功！');
-        return;
-      }
-    } catch (e) {
-      console.warn(`查询 "${query}" 失败:`, e);
-      // 继续尝试下一个查询
-    }
-  }
-
-  // 所有尝试都失败
-  this.showMessage('未能自动找到封面，请手动粘贴图片链接', 'error');
-},
+                if (!title) return this.showMessage('请先输入书名', 'error');
+                this.showMessage('⏳ 正在搜索封面...', 'success');
+                
+                try {
+                    // 方案A：利用开源代理（allorigins）去访问百度的 JSON 接口获取图片
+                    const keyword = encodeURIComponent(title + ' 书籍 封面');
+                    const targetUrl = `https://image.baidu.com/search/acjson?tn=resultjson_com&word=${keyword}`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                    
+                    const res = await fetch(proxyUrl);
+                    const baiduData = await res.json();
+                    
+                    if (baiduData && baiduData.data && baiduData.data.length > 0) {
+                        const validImg = baiduData.data.find(item => item.thumbURL || item.objURL);
+                        if (validImg) {
+                            this.newBook.cover = validImg.thumbURL || validImg.objURL;
+                            this.showMessage('✅ 百度搜图获取封面成功！');
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error('百度搜索封面失败:', e);
+                }
+                
+                // 方案B：百度没搜到，再用 Google 兜底
+                try {
+                    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`);
+                    const data = await res.json();
+                    if (data.items && data.items.length > 0 && data.items[0].volumeInfo.imageLinks) {
+                        let coverUrl = data.items[0].volumeInfo.imageLinks.thumbnail.replace('http:', 'https:');
+                        this.newBook.cover = coverUrl;
+                        this.showMessage('✅ Google 获取封面成功！');
+                        return;
+                    }
+                } catch (e) {
+                    console.error('获取封面失败:', e);
+                }
+                this.showMessage('未能自动找到封面，请手动粘贴图片链接', 'error');
+            },
+            
             importWeRead() {
                 const text = prompt("请在此粘贴从微信读书复制的笔记内容：");
                 if (!text) return;
@@ -1113,7 +1102,6 @@
                     };
 
                     this.showBookForm = true;
-                    this.showMessage(`✅ 解析成功！正在尝试获取封面...`);
                     this.autoFetchCover(title);
                     
                     this.$nextTick(() => { document.getElementById('book-section').scrollIntoView({ behavior: 'smooth' }); });
