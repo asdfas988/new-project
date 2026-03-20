@@ -1024,23 +1024,47 @@
                 else this.newBook.tags.push(tag);
             },
             async autoFetchCover(title) {
-                if (!title) return this.showMessage('请先输入书名', 'error');
-                this.showMessage('⏳ 正在搜索封面...', 'success');
-                try {
-                    // 使用 Google Books API，因其支持跨域且库很全
-                    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`);
-                    const data = await res.json();
-                    if (data.items && data.items.length > 0 && data.items[0].volumeInfo.imageLinks) {
-                        let coverUrl = data.items[0].volumeInfo.imageLinks.thumbnail.replace('http:', 'https:');
-                        this.newBook.cover = coverUrl;
-                        this.showMessage('✅ 自动获取封面成功！');
-                        return;
-                    }
-                } catch (e) {
-                    console.error('获取封面失败:', e);
-                }
-                this.showMessage('未能自动找到封面，请手动粘贴图片链接', 'error');
-            },
+  if (!title) return this.showMessage('请先输入书名', 'error');
+  this.showMessage('⏳ 正在搜索封面...', 'success');
+  
+  // 尝试 Google Books
+  try {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}&maxResults=1`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    console.log('Google Books data:', data);
+    
+    if (data.items && data.items.length > 0) {
+      const volume = data.items[0].volumeInfo;
+      if (volume.imageLinks) {
+        let coverUrl = volume.imageLinks.thumbnail || volume.imageLinks.smallThumbnail;
+        if (coverUrl) {
+          this.newBook.cover = coverUrl.replace('http:', 'https:');
+          this.showMessage('✅ 自动获取封面成功！');
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Google Books 获取失败:', e);
+  }
+
+  // 备选：Open Library
+  try {
+    const olUrl = `https://covers.openlibrary.org/b/title/${encodeURIComponent(title)}-M.jpg`;
+    const headRes = await fetch(olUrl, { method: 'HEAD' });
+    if (headRes.ok) {
+      this.newBook.cover = olUrl;
+      this.showMessage('✅ 使用 Open Library 封面');
+      return;
+    }
+  } catch (e) {
+    console.warn('Open Library 检查失败:', e);
+  }
+
+  this.showMessage('未能自动找到封面，请手动粘贴图片链接', 'error');
+},
             importWeRead() {
                 const text = prompt("请在此粘贴从微信读书复制的笔记内容：");
                 if (!text) return;
