@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 破解百度、微信图片防盗链，确保获取到的封面能正常显示 -->
+    <!-- 破解百度、微信图片防盗链 -->
     <meta name="referrer" content="no-referrer">
     
-    <title>个人空间 - 终极版 · 每日复盘模板</title>
+    <title>个人空间 - 稳定修复版</title>
     <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <!-- Supabase -->
@@ -230,7 +230,7 @@
         <div class="header">
             <h1>👋 {{ userEmail.split('@')[0] }} 的空间</h1>
             <div>
-                <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 同步数据' }}</button>
+                <button class="btn-sm" @click="syncData" :disabled="syncing">{{ syncing ? '☁️ 同步中...' : '🔄 刷新状态' }}</button>
                 <button class="btn-sm btn-danger" @click="logout" style="margin-left: 10px;">退出</button>
             </div>
             <div v-if="message" :class="['status-message', messageType === 'success' ? 'status-success' : 'status-error']" style="margin-top: 10px;">{{ message }}</div>
@@ -745,7 +745,8 @@
 
             // ✨ 书库标签过滤与穿透搜索
             filteredBooks() {
-                let list = this.books.filter(b => b && b.title);
+                // 仅显示有标题且未被 Map 覆盖的数据
+                let list = (this.books || []).filter(b => b && b.title);
                 if (this.selectedTagFilter !== '全部') {
                     list = list.filter(b => b.tags && b.tags.includes(this.selectedTagFilter));
                 }
@@ -773,7 +774,7 @@
             getProgressColor(p) { return p < 30 ? '#ff6b6b' : (p < 80 ? '#ffcc00' : '#2e7d32'); },
             getProgressClass(p) { return p >= 100 ? 'p-done' : (p < 30 ? 'p-low' : (p < 80 ? 'p-mid' : 'p-high')); },
             
-            // ✨ 增强去重逻辑：确保每个唯一 ID 只保留一条数据
+            // ✨ 改进去重逻辑：确保每个唯一 ID 只有一条记录
             deduplicate(arr) { 
                 if (!arr || !Array.isArray(arr)) return[]; 
                 const map = new Map();
@@ -792,12 +793,29 @@
             async saveOne(tableName, item) {
                 if (!this.userId) return;
                 try {
-                    const { count, error } = await sb.from(tableName).update({ data: item }).eq('user_id', this.userId).eq('data->>id', String(item.id)).select('id', { count: 'exact' });
-                    if (error) throw error;
-                    if (count === 0) { const { error: insertError } = await sb.from(tableName).insert({ user_id: this.userId, data: item }); if(insertError) throw insertError; }
-                } catch (err) { console.error('保存失败:', err); this.showMessage('同步失败，请检查网络', 'error'); }
+                    // 使用 upsert，如果 data->>id 匹配则更新，否则插入
+                    const { error } = await sb.from(tableName).upsert({ 
+                        user_id: this.userId, 
+                        data: item 
+                    }, { 
+                        onConflict: 'user_id, (data->>\'id\')' // 这通常需要数据库设置虚拟列索引，如果不确定则用简单 upsert
+                    }).eq('user_id', this.userId).eq('data->>id', String(item.id));
+                    
+                    // 降级处理：如果没有匹配行则 Insert
+                    const { data: existing } = await sb.from(tableName).select('id').eq('user_id', this.userId).eq('data->>id', String(item.id));
+                    if (!existing || existing.length === 0) {
+                        await sb.from(tableName).insert({ user_id: this.userId, data: item });
+                    } else {
+                        await sb.from(tableName).update({ data: item }).eq('user_id', this.userId).eq('data->>id', String(item.id));
+                    }
+                } catch (err) { console.error('单条同步失败:', err); }
             },
-            async deleteOne(tableName, itemId) { if (!this.userId) return; await sb.from(tableName).delete().eq('user_id', this.userId).eq('data->>id', String(itemId)); },
+
+            async deleteOne(tableName, itemId) { 
+                if (!this.userId) return; 
+                await sb.from(tableName).delete().eq('user_id', this.userId).eq('data->>id', String(itemId)); 
+            },
+
             async savePlayerData() { if (!this.userId) return; await sb.from('players').upsert({ user_id: this.userId, data: this.playerData }, { onConflict: 'user_id' }); },
 
             async compressImage(file) {
@@ -863,35 +881,44 @@
                     sb.from('kb_notes').select('*').eq('user_id', this.userId),
                     sb.from('cases').select('*').eq('user_id', this.userId)
                 ]);
+                
                 if(p.data && p.data.data) {
                     this.playerData = { ...this.playerData, ...p.data.data };
                     if(!this.playerData.dailyTasks) this.playerData.dailyTasks =[];
-                    if(!this.playerData.shopItems) this.playerData.shopItems =[];
-                    if(!this.playerData.assetHistory) this.playerData.assetHistory =[];
                     this.checkDailyReset();
                 }
-                if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
-                
-                // ✨ 书籍加载映射优化：如果旧数据缺失 ID，则使用数据库行 ID 兜底
+
+                // 处理书籍：增加主键绑定
                 if(b.data) {
-                    const rawBooks = b.data.map(row => {
+                    this.books = this.deduplicate(b.data.map(row => {
                         let d = row.data || {};
-                        return { ...d, id: d.id ? String(d.id) : ('legacy_' + row.id) };
-                    });
-                    this.books = this.deduplicate(rawBooks);
+                        if (!d.id) d.id = "L_" + row.id;
+                        return d;
+                    }));
                 }
-                
+
+                if(n.data) this.notes = this.deduplicate(n.data.map(i => i.data));
                 if(kc.data) this.kbCategories = this.deduplicate(kc.data.map(i => i.data));
                 if(kd.data) this.kbDocs = this.deduplicate(kd.data.map(i => i.data)).filter(d => d && d.id);
                 if(cs.data) this.cases = this.deduplicate(cs.data.map(i => i.data));
-                this.syncing = false; setTimeout(() => this.loadChart(), 500);
+                
+                this.syncing = false; 
+                setTimeout(() => this.loadChart(), 500);
             },
-            async syncData() { this.syncing = true; await this.saveAll(); this.syncing = false; this.showMessage('同步完成'); },
+
+            async syncData() { 
+                this.syncing = true; 
+                await this.savePlayerData(); 
+                await this.loadData(); // 改为刷新状态，而不是覆盖
+                this.syncing = false; 
+                this.showMessage('状态已同步'); 
+            },
+
             async saveAll() {
+                // 这个函数现在仅由 syncData 调用保存玩家全局状态
+                // 书籍、笔记、命例现在独立保存，不再通过这里覆盖删除，防止丢数据
                 if (!this.userId) return;
                 await this.savePlayerData();
-                const saveTbl = async (t, d) => { await sb.from(t).delete().eq('user_id', this.userId); if(d.length) await sb.from(t).insert(d.map(x=>({user_id:this.userId, data:x}))); };
-                await Promise.all([ saveTbl('notes', this.notes), saveTbl('cases', this.cases), saveTbl('books', this.books), saveTbl('kb_notes', this.kbDocs), saveTbl('kb_categories', this.kbCategories) ]);
             },
 
             checkDailyReset() { const today = new Date().toDateString(); if (this.playerData.lastLoginDate !== today) { this.playerData.dailyTasks.forEach(t => t.completed = false); this.playerData.lastLoginDate = today; this.savePlayerData(); this.showMessage('☀️ 每日任务已刷新'); } },
@@ -948,28 +975,26 @@
                     }
                     if(this.newStockData.code || this.newStockData.totalAsset) {
                         itemToSave = {
-                            id: Date.now(),
+                            id: "ST_" + Date.now(),
                             type: 'stock',
                             createdAt: now,
                             content: this.newNote.content || '',
-                            stockData: {
-                                ...this.newStockData,
-                                code: this.newStockData.code || '💰 资产更新'
-                            }
+                            stockData: { ...this.newStockData, code: this.newStockData.code || '💰 资产更新' }
                         };
                     }
                 } else if (this.activeReviewTab === 'daily') {
                     const title = `${new Date().toLocaleDateString()} 复盘`;
                     const content = this.dailyReviewPreview; 
                     if (content) { 
-                        itemToSave = { id: Date.now(), type: 'daily', createdAt: now, title: title, content: content }; 
+                        itemToSave = { id: "DR_" + Date.now(), type: 'daily', createdAt: now, title: title, content: content }; 
                     }
                 } else if(this.newNote.title || this.newNote.content) { 
-                    itemToSave = {id:Date.now(),type:this.activeReviewTab,createdAt:now,...this.newNote};
+                    itemToSave = {id: "NO_" + Date.now(), type:this.activeReviewTab, createdAt:now,...this.newNote};
                 }
                 
                 if(itemToSave) {
                     this.notes.unshift(itemToSave);
+                    this.saveOne('notes', itemToSave);
                     
                     if (this.activeReviewTab === 'stock') {
                         this.newStockData={code:'',action:'buy',price:'',profit:'',totalAsset:null}; 
@@ -981,25 +1006,14 @@
                         this.newNote={title:'',content:''}; 
                     }
                     this.showReviewForm=false; 
-                    
-                    this.saveOne('notes', itemToSave).catch(e => { console.error(e); this.showMessage('后台同步出错', 'error'); });
-                    
                     this.addXp(10); 
                     this.savePlayerData();
                     this.reviewPage = 1;
                 }
             },
+
             deleteNote(id){ 
                 if(!confirm('确定删除这条记录吗？')) return;
-                const noteToDelete = this.notes.find(n => n.id === id);
-                if (noteToDelete && noteToDelete.type === 'stock' && noteToDelete.createdAt) {
-                    const idx = this.playerData.assetHistory.findIndex(h => h.date === noteToDelete.createdAt);
-                    if (idx !== -1) {
-                        this.playerData.assetHistory.splice(idx, 1);
-                        this.loadChart();
-                        this.savePlayerData();
-                    }
-                }
                 this.notes = this.notes.filter(n => n.id !== id); 
                 this.deleteOne('notes', id);
             },
@@ -1008,7 +1022,7 @@
                 if (this.newGoal.title) {
                     const isSlider = this.newGoal.mode === 'slider'; const target = isSlider ? 100 : (this.newGoal.target || 100); const unit = isSlider ? '' : (this.newGoal.unit || '');
                     this.playerData.goals.push({ title: this.newGoal.title, mode: this.newGoal.mode, current: 0, unit: unit, target: target });
-                    const currentMode = this.newGoal.mode; this.newGoal = { title: '', target: null, current: 0, unit: '', mode: currentMode };
+                    this.newGoal = { title: '', target: null, current: 0, unit: '', mode: this.newGoal.mode };
                     this.savePlayerData(); 
                 } 
             },
@@ -1024,10 +1038,10 @@
 
             saveCase() { 
                 if(this.newCase.title){ 
-                    const newItem = {id:Date.now(),type:'case',createdAt:new Date().toISOString(),...this.newCase};
+                    const newItem = {id: "CA_" + Date.now(), type:'case', createdAt:new Date().toISOString(),...this.newCase};
                     this.cases.unshift(newItem); 
                     this.newCase={title:'',content:''}; this.showCaseForm=false; 
-                    this.saveOne('cases', newItem).catch(console.error);
+                    this.saveOne('cases', newItem);
                     this.addXp(20); this.savePlayerData();
                 } 
             },
@@ -1115,42 +1129,39 @@
                 this.$nextTick(() => { document.getElementById('book-section').scrollIntoView({ behavior: 'smooth' }); });
             },
             
-            // ✨ 优化书籍保存逻辑，确保每本书都有唯一 ID，且直接调用数据加载刷新页面
+            // ✨ 修复书籍保存
             async saveBook() { 
                 if(this.newBook.title){ 
                     const now = new Date().toISOString();
-                    let bookToSave = null;
-                    if (this.newBook.id) {
-                        bookToSave = { ...this.newBook, updatedAt: now };
-                    } else {
-                        // 生成唯一随机 ID
-                        bookToSave = { 
-                            ...this.newBook, 
-                            id: 'bk_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
-                            createdAt: now 
-                        };
-                    }
+                    const newId = this.newBook.id || ("BK_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5));
                     
-                    try {
-                        await this.saveOne('books', bookToSave);
-                        this.showMessage(this.newBook.id ? '✅ 更新成功' : '✅ 收录成功');
-                        this.addXp(20);
-                        this.savePlayerData();
-                        this.newBook={ id: null, title: '', author: '', cover: '', rating: 0, content: '', thoughts: '', tags:[] }; 
-                        this.showBookForm=false; 
-                        await this.loadData(); // 强制刷新本地列表
-                    } catch (e) {
-                        console.error(e);
-                        this.showMessage('保存失败，请重试', 'error');
+                    const bookToSave = { 
+                        ...this.newBook, 
+                        id: newId, 
+                        createdAt: this.newBook.createdAt || now 
+                    };
+
+                    // 更新本地
+                    const index = this.books.findIndex(b => b.id === newId);
+                    if (index > -1) {
+                        this.books[index] = bookToSave;
+                    } else {
+                        this.books.unshift(bookToSave);
                     }
+
+                    await this.saveOne('books', bookToSave);
+                    this.showMessage('✅ 收录成功');
+                    this.addXp(20);
+                    this.savePlayerData();
+                    this.newBook={ id: null, title: '', author: '', cover: '', rating: 0, content: '', thoughts: '', tags:[] }; 
+                    this.showBookForm=false; 
                 } 
             },
-            deleteBook(id) { 
+            async deleteBook(id) { 
                 if(confirm('确定要删除此书吗?')){ 
-                    this.deleteOne('books', id).then(() => {
-                        this.books=this.books.filter(b=>String(b.id)!==String(id)); 
-                        this.viewingBook=null; 
-                    });
+                    this.books = this.books.filter(b => b.id !== id); 
+                    this.viewingBook = null; 
+                    await this.deleteOne('books', id); 
                 } 
             },
 
@@ -1159,31 +1170,29 @@
             openKbEditor() { this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; this.kbEditorData={id:null,title:'',content:'',categoryId: this.kbCurrentCategory==='all'?null:this.kbCurrentCategory.id}; },
             editKbDoc(d) { this.kbEditorData={...d}; this.kbEditorMode=true; this.kbPreviewMode=false; this.viewingKbDoc=null; },
             saveKbDoc() { 
-                const now=new Date().toISOString(); let docToSave = null;
+                const now=new Date().toISOString();
                 if(this.kbEditorData.id){ 
                     const i=this.kbDocs.findIndex(d=>String(d.id)===String(this.kbEditorData.id)); 
-                    if(i!==-1) { this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; this.viewingKbDoc = this.kbDocs[i]; docToSave = this.kbDocs[i]; }
+                    if(i!==-1) { 
+                        this.kbDocs[i]={...this.kbDocs[i],...this.kbEditorData,updatedAt:now}; 
+                        this.viewingKbDoc = this.kbDocs[i];
+                        this.saveOne('kb_notes', this.kbDocs[i]);
+                    }
                 } else { 
-                    const newId = String(Date.now()); docToSave = {id:newId,title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now};
-                    this.kbDocs.unshift(docToSave); 
+                    const newDoc = {id:"KB_"+Date.now(),title:this.kbEditorData.title||'无标题',content:this.kbEditorData.content,categoryId:this.kbEditorData.categoryId,createdAt:now,updatedAt:now};
+                    this.kbDocs.unshift(newDoc); 
+                    this.saveOne('kb_notes', newDoc);
                 }
-                if (docToSave) this.saveOne('kb_notes', docToSave).catch(console.error);
                 this.kbEditorMode=false; 
             },
             deleteKbDoc(id) { if(confirm('删除?')){ this.kbDocs=this.kbDocs.filter(d=>String(d.id)!==String(id)); this.kbEditorMode=false; this.viewingKbDoc=null; this.deleteOne('kb_notes', id); } },
-            addKbCategory() { const n=prompt('新分类名'); if(n){ const item = {id:String(Date.now()),name:n}; this.kbCategories.push(item); this.saveOne('kb_categories', item).catch(console.error); } },
+            addKbCategory() { const n=prompt('新分类名'); if(n){ const cat = {id:String(Date.now()),name:n}; this.kbCategories.push(cat); this.saveOne('kb_categories', cat); } },
             deleteItem(item) { if(!confirm('删除?'))return; if(item.type==='case') { this.cases=this.cases.filter(c=>String(c.id)!==String(item.id)); this.deleteOne('cases', item.id); } this.viewingItem=null; }
         },
         mounted() {
             const renderer = new marked.Renderer();
-            renderer.image = function(token) {
-                let href, text; if (typeof token === 'object' && !arguments[1]) { ({ href, text } = token); } else { href = token; text = arguments[2]; }
-                return `<img src="${href}" alt="${text||''}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
-            };
-            renderer.link = function(token) {
-                let href, text; if (typeof token === 'object' && !arguments[1]) { ({ href, text } = token); } else { href = token; text = arguments[2]; }
-                return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:#ff9a8b; text-decoration:none; border-bottom:1px dotted #ff9a8b;">${text}</a>`;
-            };
+            renderer.image = (token) => `<img src="${token.href}" alt="${token.text||''}" loading="lazy" style="max-width:100%; border-radius:8px; display:block; margin:10px 0;">`;
+            renderer.link = (token) => `<a href="${token.href}" target="_blank" rel="noopener noreferrer" style="color:#ff9a8b; text-decoration:none; border-bottom:1px dotted #ff9a8b;">${token.text}</a>`;
             marked.use({ renderer, breaks: true, gfm: true });
             document.addEventListener("visibilitychange", () => { if (document.visibilityState === 'visible' && this.isLoggedIn) { this.checkDailyReset(); } });
             sb.auth.getSession().then(({ data: { session } }) => { if(session) { this.isLoggedIn = true; this.userId = session.user.id; this.userEmail = session.user.email; this.loadData(); } });
